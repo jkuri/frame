@@ -1,0 +1,527 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 90;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* FrameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* FrameApp.swift */; };
+		A10000000000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* AppDelegate.swift */; };
+		A10000000000000000000003 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* Permissions.swift */; };
+		A10000000000000000000004 /* LogBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* LogBootstrap.swift */; };
+		A10000000000000000000005 /* RotatingFileLogHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* RotatingFileLogHandler.swift */; };
+		A10000000000000000000006 /* CaptureState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* CaptureState.swift */; };
+		A10000000000000000000007 /* CaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* CaptureCoordinator.swift */; };
+		A10000000000000000000008 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* MenuBarView.swift */; };
+		A10000000000000000000009 /* MenuBarIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* MenuBarIconView.swift */; };
+		A1000000000000000000000A /* RecordingTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000A /* RecordingTimerView.swift */; };
+		A1000000000000000000000B /* SelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000B /* SelectionCoordinator.swift */; };
+		A1000000000000000000000C /* SelectionOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000C /* SelectionOverlayWindow.swift */; };
+		A1000000000000000000000D /* SelectionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000D /* SelectionOverlayView.swift */; };
+		A1000000000000000000000E /* SelectionRect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000E /* SelectionRect.swift */; };
+		A1000000000000000000000F /* ResizeHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000F /* ResizeHandle.swift */; };
+		A10000000000000000000010 /* RecordingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* RecordingCoordinator.swift */; };
+		A10000000000000000000011 /* ScreenCaptureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* ScreenCaptureSession.swift */; };
+		A10000000000000000000012 /* VideoWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* VideoWriter.swift */; };
+		A10000000000000000000013 /* FileManager+Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* FileManager+Frame.swift */; };
+		A10000000000000000000014 /* NSScreen+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* NSScreen+Extensions.swift */; };
+		A10000000000000000000015 /* CGRect+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* CGRect+Extensions.swift */; };
+		A10000000000000000000016 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* Assets.xcassets */; };
+		A10000000000000000000017 /* ScreenCaptureKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* ScreenCaptureKit.framework */; };
+		A10000000000000000000018 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* AVFoundation.framework */; };
+		A10000000000000000000019 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = E10000000000000000000001 /* Logging */; };
+		A1000000000000000000001A /* MenuBarExtraAccess in Frameworks */ = {isa = PBXBuildFile; productRef = E10000000000000000000002 /* MenuBarExtraAccess */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B10000000000000000000001 /* FrameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameApp.swift; sourceTree = "<group>"; };
+		B10000000000000000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
+		B10000000000000000000004 /* LogBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogBootstrap.swift; sourceTree = "<group>"; };
+		B10000000000000000000005 /* RotatingFileLogHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatingFileLogHandler.swift; sourceTree = "<group>"; };
+		B10000000000000000000006 /* CaptureState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureState.swift; sourceTree = "<group>"; };
+		B10000000000000000000007 /* CaptureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureCoordinator.swift; sourceTree = "<group>"; };
+		B10000000000000000000008 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		B10000000000000000000009 /* MenuBarIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIconView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000A /* RecordingTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingTimerView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000B /* SelectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionCoordinator.swift; sourceTree = "<group>"; };
+		B1000000000000000000000C /* SelectionOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionOverlayWindow.swift; sourceTree = "<group>"; };
+		B1000000000000000000000D /* SelectionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionOverlayView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000E /* SelectionRect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionRect.swift; sourceTree = "<group>"; };
+		B1000000000000000000000F /* ResizeHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizeHandle.swift; sourceTree = "<group>"; };
+		B10000000000000000000010 /* RecordingCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingCoordinator.swift; sourceTree = "<group>"; };
+		B10000000000000000000011 /* ScreenCaptureSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureSession.swift; sourceTree = "<group>"; };
+		B10000000000000000000012 /* VideoWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoWriter.swift; sourceTree = "<group>"; };
+		B10000000000000000000013 /* FileManager+Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Frame.swift"; sourceTree = "<group>"; };
+		B10000000000000000000014 /* NSScreen+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSScreen+Extensions.swift"; sourceTree = "<group>"; };
+		B10000000000000000000015 /* CGRect+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extensions.swift"; sourceTree = "<group>"; };
+		B10000000000000000000016 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10000000000000000000017 /* ScreenCaptureKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenCaptureKit.framework; path = System/Library/Frameworks/ScreenCaptureKit.framework; sourceTree = SDKROOT; };
+		B10000000000000000000018 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		B10000000000000000000019 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B1000000000000000000001A /* Frame.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Frame.entitlements; sourceTree = "<group>"; };
+		B1000000000000000000001B /* Frame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Frame.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C10000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				A10000000000000000000017 /* ScreenCaptureKit.framework in Frameworks */,
+				A10000000000000000000018 /* AVFoundation.framework in Frameworks */,
+				A10000000000000000000019 /* Logging in Frameworks */,
+				A1000000000000000000001A /* MenuBarExtraAccess in Frameworks */,
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D10000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				D10000000000000000000002 /* Frame */,
+				D1000000000000000000000A /* Frameworks */,
+				D1000000000000000000000B /* Products */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 1;
+			usesTabs = 0;
+		};
+		D10000000000000000000002 /* Frame */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000001 /* FrameApp.swift */,
+				B10000000000000000000019 /* Info.plist */,
+				B1000000000000000000001A /* Frame.entitlements */,
+				B10000000000000000000016 /* Assets.xcassets */,
+				D10000000000000000000003 /* App */,
+				D10000000000000000000004 /* Logging */,
+				D10000000000000000000005 /* State */,
+				D10000000000000000000006 /* MenuBar */,
+				D10000000000000000000007 /* Selection */,
+				D10000000000000000000008 /* Recording */,
+				D10000000000000000000009 /* Utilities */,
+			);
+			path = Frame;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000003 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000002 /* AppDelegate.swift */,
+				B10000000000000000000003 /* Permissions.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000004 /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000004 /* LogBootstrap.swift */,
+				B10000000000000000000005 /* RotatingFileLogHandler.swift */,
+			);
+			path = Logging;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000005 /* State */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000006 /* CaptureState.swift */,
+				B10000000000000000000007 /* CaptureCoordinator.swift */,
+			);
+			path = State;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000006 /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000008 /* MenuBarView.swift */,
+				B10000000000000000000009 /* MenuBarIconView.swift */,
+				B1000000000000000000000A /* RecordingTimerView.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000007 /* Selection */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000000B /* SelectionCoordinator.swift */,
+				B1000000000000000000000C /* SelectionOverlayWindow.swift */,
+				B1000000000000000000000D /* SelectionOverlayView.swift */,
+				B1000000000000000000000E /* SelectionRect.swift */,
+				B1000000000000000000000F /* ResizeHandle.swift */,
+			);
+			path = Selection;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000008 /* Recording */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000010 /* RecordingCoordinator.swift */,
+				B10000000000000000000011 /* ScreenCaptureSession.swift */,
+				B10000000000000000000012 /* VideoWriter.swift */,
+				B10000000000000000000013 /* FileManager+Frame.swift */,
+			);
+			path = Recording;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000009 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000014 /* NSScreen+Extensions.swift */,
+				B10000000000000000000015 /* CGRect+Extensions.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000017 /* ScreenCaptureKit.framework */,
+				B10000000000000000000018 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000001B /* Frame.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F10000000000000000000001 /* Frame */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F10000000000000000000004 /* Build configuration list for PBXNativeTarget "Frame" */;
+			buildPhases = (
+				C10000000000000000000002 /* Sources */,
+				C10000000000000000000001 /* Frameworks */,
+				C10000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			name = Frame;
+			packageProductDependencies = (
+				E10000000000000000000001 /* Logging */,
+				E10000000000000000000002 /* MenuBarExtraAccess */,
+			);
+			productName = Frame;
+			productReference = B1000000000000000000001B /* Frame.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F10000000000000000000002 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					F10000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = F10000000000000000000003 /* Build configuration list for PBXProject "Frame" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D10000000000000000000001;
+			packageReferences = (
+				E10000000000000000000003 /* XCRemoteSwiftPackageReference "swift-log" */,
+				E10000000000000000000004 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */,
+			);
+			preferredProjectObjectVersion = 90;
+			productRefGroup = D1000000000000000000000B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F10000000000000000000001 /* Frame */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C10000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				A10000000000000000000016 /* Assets.xcassets in Resources */,
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C10000000000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				A10000000000000000000001 /* FrameApp.swift in Sources */,
+				A10000000000000000000002 /* AppDelegate.swift in Sources */,
+				A10000000000000000000003 /* Permissions.swift in Sources */,
+				A10000000000000000000004 /* LogBootstrap.swift in Sources */,
+				A10000000000000000000005 /* RotatingFileLogHandler.swift in Sources */,
+				A10000000000000000000006 /* CaptureState.swift in Sources */,
+				A10000000000000000000007 /* CaptureCoordinator.swift in Sources */,
+				A10000000000000000000008 /* MenuBarView.swift in Sources */,
+				A10000000000000000000009 /* MenuBarIconView.swift in Sources */,
+				A1000000000000000000000A /* RecordingTimerView.swift in Sources */,
+				A1000000000000000000000B /* SelectionCoordinator.swift in Sources */,
+				A1000000000000000000000C /* SelectionOverlayWindow.swift in Sources */,
+				A1000000000000000000000D /* SelectionOverlayView.swift in Sources */,
+				A1000000000000000000000E /* SelectionRect.swift in Sources */,
+				A1000000000000000000000F /* ResizeHandle.swift in Sources */,
+				A10000000000000000000010 /* RecordingCoordinator.swift in Sources */,
+				A10000000000000000000011 /* ScreenCaptureSession.swift in Sources */,
+				A10000000000000000000012 /* VideoWriter.swift in Sources */,
+				A10000000000000000000013 /* FileManager+Frame.swift in Sources */,
+				A10000000000000000000014 /* NSScreen+Extensions.swift in Sources */,
+				A10000000000000000000015 /* CGRect+Extensions.swift in Sources */,
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F10000000000000000000005 /* Debug configuration for PBXProject "Frame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 5A5U3XX696;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F10000000000000000000006 /* Release configuration for PBXProject "Frame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5A5U3XX696;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		F10000000000000000000007 /* Debug configuration for PBXNativeTarget "Frame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Frame/Frame.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Frame/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Frame;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = eu.jkuri.frame;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		F10000000000000000000008 /* Release configuration for PBXNativeTarget "Frame" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Frame/Frame.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Frame/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Frame;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = eu.jkuri.frame;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F10000000000000000000003 /* Build configuration list for PBXProject "Frame" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F10000000000000000000005 /* Debug configuration for PBXProject "Frame" */,
+				F10000000000000000000006 /* Release configuration for PBXProject "Frame" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		F10000000000000000000004 /* Build configuration list for PBXNativeTarget "Frame" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F10000000000000000000007 /* Debug configuration for PBXNativeTarget "Frame" */,
+				F10000000000000000000008 /* Release configuration for PBXNativeTarget "Frame" */,
+			);
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E10000000000000000000003 /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.0;
+			};
+		};
+		E10000000000000000000004 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/orchetect/MenuBarExtraAccess";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E10000000000000000000001 /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E10000000000000000000003 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
+		E10000000000000000000002 /* MenuBarExtraAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E10000000000000000000004 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */;
+			productName = MenuBarExtraAccess;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F10000000000000000000002 /* Project object */;
+}
