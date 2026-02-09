@@ -8,48 +8,53 @@ struct SelectionControlsView: View {
   @State private var h: Int = 0
   @State private var isEditing = false
 
-  private let fieldBg = Color.white.opacity(0.08)
-  private let labelColor = Color.white.opacity(0.4)
-
   var body: some View {
     VStack(spacing: 0) {
       VStack(spacing: 10) {
         HStack(spacing: 0) {
           Text("Size")
             .font(.system(size: 12))
-            .foregroundStyle(labelColor)
+            .foregroundStyle(FrameColors.dimLabel)
             .frame(width: 56, alignment: .leading)
 
-          numericField(value: $w)
+          NumberField(value: $w, onCommit: commitEditing)
+            .onTapGesture { isEditing = true }
+            .onChange(of: w) { if isEditing { applyValues() } }
           Text("\u{00D7}")
             .font(.system(size: 12))
-            .foregroundStyle(labelColor)
+            .foregroundStyle(FrameColors.dimLabel)
             .frame(width: 20)
-          numericField(value: $h)
+          NumberField(value: $h, onCommit: commitEditing)
+            .onTapGesture { isEditing = true }
+            .onChange(of: h) { if isEditing { applyValues() } }
           Text("px")
             .font(.system(size: 11))
-            .foregroundStyle(labelColor)
+            .foregroundStyle(FrameColors.dimLabel)
             .frame(width: 24, alignment: .trailing)
         }
 
         HStack(spacing: 0) {
           Text("Position")
             .font(.system(size: 12))
-            .foregroundStyle(labelColor)
+            .foregroundStyle(FrameColors.dimLabel)
             .frame(width: 56, alignment: .leading)
 
-          numericField(value: $x)
+          NumberField(value: $x, onCommit: commitEditing)
+            .onTapGesture { isEditing = true }
+            .onChange(of: x) { if isEditing { applyValues() } }
           Spacer().frame(width: 20)
-          numericField(value: $y)
+          NumberField(value: $y, onCommit: commitEditing)
+            .onTapGesture { isEditing = true }
+            .onChange(of: y) { if isEditing { applyValues() } }
           Text("px")
             .font(.system(size: 11))
-            .foregroundStyle(labelColor)
+            .foregroundStyle(FrameColors.dimLabel)
             .frame(width: 24, alignment: .trailing)
         }
       }
       .padding(.horizontal, 30)
       .padding(.vertical, 30)
-      .background(Color(white: 0.1))
+      .background(FrameColors.panelBackground)
       .clipShape(RoundedRectangle(cornerRadius: 6))
 
       Button(action: { session.overlayView?.confirmSelection() }) {
@@ -79,27 +84,9 @@ struct SelectionControlsView: View {
     }
   }
 
-  private func numericField(value: Binding<Int>) -> some View {
-    TextField("", value: value, format: .number)
-      .textFieldStyle(.plain)
-      .font(.system(size: 14, design: .monospaced))
-      .foregroundStyle(.white)
-      .multilineTextAlignment(.center)
-      .frame(width: 70, height: 40)
-      .background(fieldBg)
-      .clipShape(RoundedRectangle(cornerRadius: 6))
-      .onSubmit {
-        isEditing = false
-        applyValues()
-      }
-      .onChange(of: value.wrappedValue) {
-        if isEditing {
-          applyValues()
-        }
-      }
-      .onTapGesture {
-        isEditing = true
-      }
+  private func commitEditing() {
+    isEditing = false
+    applyValues()
   }
 
   private func applyValues() {

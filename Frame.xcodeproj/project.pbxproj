@@ -36,6 +36,8 @@
 		A1000000000000000000001C /* VideoTranscoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001C /* VideoTranscoder.swift */; };
 		A1000000000000000000001D /* RecordingBorderWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001D /* RecordingBorderWindow.swift */; };
 		A1000000000000000000001E /* SelectionControlsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001E /* SelectionControlsPanel.swift */; };
+		A1000000000000000000001F /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001F /* Colors.swift */; };
+		A10000000000000000000020 /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* NumberField.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -69,6 +71,8 @@
 		B1000000000000000000001C /* VideoTranscoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTranscoder.swift; sourceTree = "<group>"; };
 		B1000000000000000000001D /* RecordingBorderWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingBorderWindow.swift; sourceTree = "<group>"; };
 		B1000000000000000000001E /* SelectionControlsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionControlsPanel.swift; sourceTree = "<group>"; };
+		B1000000000000000000001F /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		B10000000000000000000020 /* NumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,8 +114,18 @@
 				D10000000000000000000007 /* Selection */,
 				D10000000000000000000008 /* Recording */,
 				D10000000000000000000009 /* Utilities */,
+				D1000000000000000000000C /* UI */,
 			);
 			path = Frame;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000C /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000001F /* Colors.swift */,
+				B10000000000000000000020 /* NumberField.swift */,
+			);
+			path = UI;
 			sourceTree = "<group>";
 		};
 		D10000000000000000000003 /* App */ = {
@@ -299,6 +313,8 @@
 				A10000000000000000000013 /* FileManager+Frame.swift in Sources */,
 				A10000000000000000000014 /* NSScreen+Extensions.swift in Sources */,
 				A10000000000000000000015 /* CGRect+Extensions.swift in Sources */,
+				A1000000000000000000001F /* Colors.swift in Sources */,
+				A10000000000000000000020 /* NumberField.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

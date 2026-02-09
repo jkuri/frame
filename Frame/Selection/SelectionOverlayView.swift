@@ -42,7 +42,7 @@ final class SelectionOverlayView: NSView {
   override func draw(_ dirtyRect: NSRect) {
     guard let context = NSGraphicsContext.current?.cgContext else { return }
 
-    context.setFillColor(NSColor(white: 0.1, alpha: 0.6).cgColor)
+    context.setFillColor(FrameColors.overlayBackground.cgColor)
     context.fill(bounds)
 
     if let rect = selectionRect {
@@ -50,8 +50,7 @@ final class SelectionOverlayView: NSView {
       context.fill(rect)
       context.setBlendMode(.normal)
 
-      let borderColor = NSColor(white: 0.55, alpha: 0.6)
-      context.setStrokeColor(borderColor.cgColor)
+      context.setStrokeColor(FrameColors.selectionBorder.cgColor)
       context.setLineWidth(1.0)
       context.setLineDash(phase: 0, lengths: [5, 4])
       context.stroke(rect)
@@ -59,7 +58,7 @@ final class SelectionOverlayView: NSView {
       drawGrid(context: context, rect: rect)
       drawCircularHandles(context: context, rect: rect)
     } else {
-      let crossColor = NSColor.white.withAlphaComponent(0.3)
+      let crossColor = FrameColors.crosshair
       context.setStrokeColor(crossColor.cgColor)
       context.setLineWidth(0.5)
       context.setLineDash(phase: 0, lengths: [])
@@ -75,7 +74,7 @@ final class SelectionOverlayView: NSView {
   }
 
   private func drawGrid(context: CGContext, rect: CGRect) {
-    let gridColor = NSColor(white: 0.55, alpha: 0.3)
+    let gridColor = FrameColors.selectionGrid
     context.setStrokeColor(gridColor.cgColor)
     context.setLineWidth(0.5)
     context.setLineDash(phase: 0, lengths: [4, 4])
@@ -104,10 +103,10 @@ final class SelectionOverlayView: NSView {
       let handleRect = handle.rect(for: rect)
       let insetRect = handleRect.insetBy(dx: 1, dy: 1)
 
-      context.setFillColor(NSColor(white: 0.15, alpha: 0.9).cgColor)
+      context.setFillColor(FrameColors.handleFill.cgColor)
       context.fillEllipse(in: insetRect)
 
-      context.setStrokeColor(NSColor(white: 0.7, alpha: 0.8).cgColor)
+      context.setStrokeColor(FrameColors.handleStroke.cgColor)
       context.setLineWidth(1.5)
       context.strokeEllipse(in: insetRect)
     }
