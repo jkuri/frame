@@ -28,7 +28,7 @@ final class VideoWriter: @unchecked Sendable {
     let writer = try AVAssetWriter(outputURL: outputURL, fileType: .mp4)
 
     let videoSettings: [String: Any] = [
-      AVVideoCodecKey: AVVideoCodecType.hevc,
+      AVVideoCodecKey: AVVideoCodecType.h264,
       AVVideoWidthKey: width,
       AVVideoHeightKey: height,
       AVVideoColorPropertiesKey: [
@@ -37,10 +37,9 @@ final class VideoWriter: @unchecked Sendable {
         AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
       ] as [String: Any],
       AVVideoCompressionPropertiesKey: [
-        AVVideoAverageBitRateKey: max(80_000_000, width * height * 12),
+        AVVideoAverageBitRateKey: width * height * 12,
         AVVideoExpectedSourceFrameRateKey: 60,
-        AVVideoMaxKeyFrameIntervalKey: 60,
-        AVVideoAllowFrameReorderingKey: false,
+        AVVideoAllowFrameReorderingKey: true,
       ] as [String: Any],
     ]
 
