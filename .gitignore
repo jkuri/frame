@@ -63,3 +63,5 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 .agent/
+
+.DS_Store
