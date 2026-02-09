@@ -12,6 +12,7 @@ struct NumberField: View {
       .textFieldStyle(.plain)
       .font(.system(size: fontSize, design: .monospaced))
       .foregroundStyle(.white)
+      .tint(FrameColors.textSelection)
       .multilineTextAlignment(.center)
       .frame(width: width, height: height)
       .background(FrameColors.fieldBackground)

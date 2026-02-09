@@ -12,4 +12,5 @@ enum FrameColors {
   static let panelBackground = Color(white: 0.1)
   static let fieldBackground = Color.white.opacity(0.08)
   static let dimLabel = Color.white.opacity(0.4)
+  static let textSelection = Color(white: 0.35)
 }
