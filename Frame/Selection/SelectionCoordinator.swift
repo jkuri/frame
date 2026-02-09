@@ -3,6 +3,7 @@ import AppKit
 @MainActor
 final class SelectionCoordinator {
   private var overlayWindow: SelectionOverlayWindow?
+  private var borderWindow: RecordingBorderWindow?
 
   func beginSelection(completion: @escaping (SelectionRect?) -> Void) {
     let window = SelectionOverlayWindow { rect in
@@ -14,8 +15,22 @@ final class SelectionCoordinator {
     NSApp.activate(ignoringOtherApps: true)
   }
 
-  func dismiss() {
+  func showRecordingBorder(screenRect: CGRect) {
+    destroyOverlay()
+    let window = RecordingBorderWindow(screenRect: screenRect)
+    borderWindow = window
+    window.orderFrontRegardless()
+  }
+
+  func destroyOverlay() {
     overlayWindow?.orderOut(nil)
+    overlayWindow?.contentView = nil
     overlayWindow = nil
+  }
+
+  func destroyAll() {
+    destroyOverlay()
+    borderWindow?.orderOut(nil)
+    borderWindow = nil
   }
 }

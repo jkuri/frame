@@ -4,9 +4,9 @@ import Logging
 actor RecordingCoordinator {
   private var captureSession: ScreenCaptureSession?
   private var videoWriter: VideoWriter?
-  private let logger = Logger(label: "com.frame.recording-coordinator")
+  private let logger = Logger(label: "eu.jankuri.frame.recording-coordinator")
 
-  func startRecording(selection: SelectionRect, fps: Int = 30) async throws -> Date {
+  func startRecording(selection: SelectionRect, fps: Int = 60) async throws -> Date {
     let tempURL = FileManager.default.tempRecordingURL()
 
     let writer = try VideoWriter(

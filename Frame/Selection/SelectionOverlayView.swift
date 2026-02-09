@@ -35,24 +35,20 @@ final class SelectionOverlayView: NSView {
   override func draw(_ dirtyRect: NSRect) {
     guard let context = NSGraphicsContext.current?.cgContext else { return }
 
-    // Dimmed overlay
     context.setFillColor(NSColor.black.withAlphaComponent(0.3).cgColor)
     context.fill(bounds)
 
     if let rect = selectionRect {
-      // Clear the selection area
       context.setBlendMode(.clear)
       context.fill(rect)
       context.setBlendMode(.normal)
 
-      // Selection border
       let borderColor = NSColor.white.withAlphaComponent(0.8)
       context.setStrokeColor(borderColor.cgColor)
       context.setLineWidth(1.5)
       context.setLineDash(phase: 0, lengths: [6, 4])
       context.stroke(rect)
 
-      // Resize handles
       context.setLineDash(phase: 0, lengths: [])
       for handle in ResizeHandle.allCases {
         let handleRect = handle.rect(for: rect)
@@ -63,7 +59,6 @@ final class SelectionOverlayView: NSView {
         context.stroke(handleRect)
       }
 
-      // Dimension label
       let w = Int(rect.width)
       let h = Int(rect.height)
       let label = "\(w) x \(h)"
@@ -87,18 +82,15 @@ final class SelectionOverlayView: NSView {
         withAttributes: attrs
       )
     } else {
-      // Crosshair cursor lines
       let crossColor = NSColor.white.withAlphaComponent(0.5)
       context.setStrokeColor(crossColor.cgColor)
       context.setLineWidth(0.5)
       context.setLineDash(phase: 0, lengths: [])
 
-      // Horizontal line
       context.move(to: CGPoint(x: bounds.minX, y: mouseLocation.y))
       context.addLine(to: CGPoint(x: bounds.maxX, y: mouseLocation.y))
       context.strokePath()
 
-      // Vertical line
       context.move(to: CGPoint(x: mouseLocation.x, y: bounds.minY))
       context.addLine(to: CGPoint(x: mouseLocation.x, y: bounds.maxY))
       context.strokePath()
@@ -217,7 +209,6 @@ final class SelectionOverlayView: NSView {
   override func keyDown(with event: NSEvent) {
     switch event.keyCode {
     case 53:  // ESC
-      window?.orderOut(nil)
       onComplete?(nil)
     case 36:  // Enter
       confirmSelection()
@@ -245,7 +236,6 @@ final class SelectionOverlayView: NSView {
     let displayID = NSScreen.displayID(for: CGPoint(x: screenRect.midX, y: screenRect.midY))
 
     let selection = SelectionRect(rect: screenRect, displayID: displayID)
-    window.orderOut(nil)
     onComplete?(selection)
   }
 }

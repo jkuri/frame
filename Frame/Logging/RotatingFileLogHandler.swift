@@ -11,7 +11,7 @@ struct RotatingFileLogHandler: LogHandler {
   }
 
   private let label: String
-  private static let queue = DispatchQueue(label: "com.frame.log-writer")
+  private static let queue = DispatchQueue(label: "eu.jankuri.frame.log-writer")
   private static let maxFileSize: UInt64 = 5 * 1024 * 1024  // 5 MB
   private static let maxFiles = 3
 

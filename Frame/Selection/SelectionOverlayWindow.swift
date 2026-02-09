@@ -23,6 +23,7 @@ final class SelectionOverlayWindow: NSWindow {
     ignoresMouseEvents = false
     acceptsMouseMovedEvents = true
     hasShadow = false
+    sharingType = .none
 
     let overlayView = SelectionOverlayView(frame: unionRect)
     overlayView.onComplete = { [weak self] rect in

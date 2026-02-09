@@ -12,7 +12,7 @@ final class StateProjection {
 actor CaptureCoordinator {
   @MainActor let ui = StateProjection()
 
-  private let logger = Logger(label: "com.frame.coordinator")
+  private let logger = Logger(label: "eu.jankuri.frame.coordinator")
   private var state: CaptureState = .idle {
     didSet {
       let newState = state
@@ -23,6 +23,7 @@ actor CaptureCoordinator {
 
   private var storedSelection: SelectionRect?
   private var recordingCoordinator: RecordingCoordinator?
+  private nonisolated(unsafe) var selectionCoordinator: SelectionCoordinator?
 
   // MARK: - Selection
 
@@ -42,6 +43,7 @@ actor CaptureCoordinator {
     let result: SelectionRect? = await withCheckedContinuation { continuation in
       Task { @MainActor in
         let coordinator = SelectionCoordinator()
+        self.selectionCoordinator = coordinator
         coordinator.beginSelection { rect in
           continuation.resume(returning: rect)
         }
@@ -49,11 +51,14 @@ actor CaptureCoordinator {
     }
 
     if let result {
+      await MainActor.run { selectionCoordinator?.showRecordingBorder(screenRect: result.rect) }
       storedSelection = result
       state = .idle
       logger.info("Selection confirmed: \(result.rect)")
       try await startRecording()
     } else {
+      await MainActor.run { selectionCoordinator?.destroyAll() }
+      selectionCoordinator = nil
       state = .idle
       logger.info("Selection cancelled")
     }
@@ -91,6 +96,8 @@ actor CaptureCoordinator {
     }
 
     state = .processing
+    await MainActor.run { selectionCoordinator?.destroyAll() }
+    selectionCoordinator = nil
 
     if let url = try await recordingCoordinator?.stopRecording() {
       Task { @MainActor in ui.lastRecordingURL = url }

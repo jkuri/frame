@@ -19,10 +19,12 @@ struct SelectionRect: Sendable {
   }
 
   var pixelWidth: Int {
-    Int(rect.width * backingScaleFactor)
+    let w = Int(rect.width * backingScaleFactor)
+    return w & ~1
   }
 
   var pixelHeight: Int {
-    Int(rect.height * backingScaleFactor)
+    let h = Int(rect.height * backingScaleFactor)
+    return h & ~1
   }
 }

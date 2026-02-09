@@ -19,18 +19,5 @@ struct FrameApp: App {
     }
     .menuBarExtraStyle(.window)
     .menuBarExtraAccess(isPresented: $isMenuPresented)
-    .onChange(of: isMenuPresented) { _, newValue in
-      guard newValue else { return }
-      let currentState = coordinator.ui.state
-      switch currentState {
-      case .recording, .paused:
-        isMenuPresented = false
-        Task {
-          try? await coordinator.stopRecording()
-        }
-      default:
-        break
-      }
-    }
   }
 }
