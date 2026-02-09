@@ -1,8 +1,9 @@
 import AppKit
+import SwiftUI
 
 @MainActor
 final class SelectionOverlayView: NSView {
-  var onComplete: ((SelectionRect?) -> Void)?
+  private let session: SessionState
 
   private var selectionRect: CGRect?
   private var dragOrigin: CGPoint?
@@ -11,11 +12,19 @@ final class SelectionOverlayView: NSView {
   private var handleDragStart: CGPoint?
   private var originalRectBeforeResize: CGRect?
   private var mouseLocation: CGPoint = .zero
-
-  // MARK: - Setup
+  private var controlsHost: NSHostingView<SelectionControlsView>?
 
   override var acceptsFirstResponder: Bool { true }
   override var isFlipped: Bool { false }
+
+  init(frame: NSRect, session: SessionState) {
+    self.session = session
+    super.init(frame: frame)
+  }
+
+  required init?(coder: NSCoder) {
+    fatalError()
+  }
 
   override func viewDidMoveToWindow() {
     super.viewDidMoveToWindow()
@@ -30,12 +39,10 @@ final class SelectionOverlayView: NSView {
     )
   }
 
-  // MARK: - Drawing
-
   override func draw(_ dirtyRect: NSRect) {
     guard let context = NSGraphicsContext.current?.cgContext else { return }
 
-    context.setFillColor(NSColor.black.withAlphaComponent(0.3).cgColor)
+    context.setFillColor(NSColor(white: 0.1, alpha: 0.6).cgColor)
     context.fill(bounds)
 
     if let rect = selectionRect {
@@ -43,46 +50,16 @@ final class SelectionOverlayView: NSView {
       context.fill(rect)
       context.setBlendMode(.normal)
 
-      let borderColor = NSColor.white.withAlphaComponent(0.8)
+      let borderColor = NSColor(white: 0.55, alpha: 0.6)
       context.setStrokeColor(borderColor.cgColor)
-      context.setLineWidth(1.5)
-      context.setLineDash(phase: 0, lengths: [6, 4])
+      context.setLineWidth(1.0)
+      context.setLineDash(phase: 0, lengths: [5, 4])
       context.stroke(rect)
 
-      context.setLineDash(phase: 0, lengths: [])
-      for handle in ResizeHandle.allCases {
-        let handleRect = handle.rect(for: rect)
-        context.setFillColor(NSColor.white.cgColor)
-        context.fill(handleRect)
-        context.setStrokeColor(NSColor.gray.withAlphaComponent(0.6).cgColor)
-        context.setLineWidth(1)
-        context.stroke(handleRect)
-      }
-
-      let w = Int(rect.width)
-      let h = Int(rect.height)
-      let label = "\(w) x \(h)"
-      let attrs: [NSAttributedString.Key: Any] = [
-        .font: NSFont.monospacedSystemFont(ofSize: 11, weight: .medium),
-        .foregroundColor: NSColor.white,
-      ]
-      let size = (label as NSString).size(withAttributes: attrs)
-      let labelRect = CGRect(
-        x: rect.midX - size.width / 2 - 6,
-        y: rect.minY - size.height - 8,
-        width: size.width + 12,
-        height: size.height + 4
-      )
-      context.setFillColor(NSColor.black.withAlphaComponent(0.7).cgColor)
-      let path = CGPath(roundedRect: labelRect, cornerWidth: 4, cornerHeight: 4, transform: nil)
-      context.addPath(path)
-      context.fillPath()
-      (label as NSString).draw(
-        at: CGPoint(x: labelRect.origin.x + 6, y: labelRect.origin.y + 2),
-        withAttributes: attrs
-      )
+      drawGrid(context: context, rect: rect)
+      drawCircularHandles(context: context, rect: rect)
     } else {
-      let crossColor = NSColor.white.withAlphaComponent(0.5)
+      let crossColor = NSColor.white.withAlphaComponent(0.3)
       context.setStrokeColor(crossColor.cgColor)
       context.setLineWidth(0.5)
       context.setLineDash(phase: 0, lengths: [])
@@ -97,7 +74,103 @@ final class SelectionOverlayView: NSView {
     }
   }
 
-  // MARK: - Mouse Events
+  private func drawGrid(context: CGContext, rect: CGRect) {
+    let gridColor = NSColor(white: 0.55, alpha: 0.3)
+    context.setStrokeColor(gridColor.cgColor)
+    context.setLineWidth(0.5)
+    context.setLineDash(phase: 0, lengths: [4, 4])
+
+    let thirdW = rect.width / 3
+    for i in 1...2 {
+      let x = rect.minX + thirdW * CGFloat(i)
+      context.move(to: CGPoint(x: x, y: rect.minY))
+      context.addLine(to: CGPoint(x: x, y: rect.maxY))
+      context.strokePath()
+    }
+
+    let thirdH = rect.height / 3
+    for i in 1...2 {
+      let y = rect.minY + thirdH * CGFloat(i)
+      context.move(to: CGPoint(x: rect.minX, y: y))
+      context.addLine(to: CGPoint(x: rect.maxX, y: y))
+      context.strokePath()
+    }
+  }
+
+  private func drawCircularHandles(context: CGContext, rect: CGRect) {
+    context.setLineDash(phase: 0, lengths: [])
+
+    for handle in ResizeHandle.allCases {
+      let handleRect = handle.rect(for: rect)
+      let insetRect = handleRect.insetBy(dx: 1, dy: 1)
+
+      context.setFillColor(NSColor(white: 0.15, alpha: 0.9).cgColor)
+      context.fillEllipse(in: insetRect)
+
+      context.setStrokeColor(NSColor(white: 0.7, alpha: 0.8).cgColor)
+      context.setLineWidth(1.5)
+      context.strokeEllipse(in: insetRect)
+    }
+  }
+
+  func applyExternalRect(_ newRect: CGRect) {
+    selectionRect = newRect.clamped(to: bounds)
+    needsDisplay = true
+    updateControlsPanel()
+  }
+
+  func confirmSelection() {
+    guard let rect = selectionRect, rect.width >= 10, rect.height >= 10 else {
+      session.cancelSelection()
+      return
+    }
+
+    guard let window = self.window else {
+      session.cancelSelection()
+      return
+    }
+
+    let windowRect = convert(rect, to: nil)
+    let screenRect = window.convertToScreen(windowRect)
+    let displayID = NSScreen.displayID(for: CGPoint(x: screenRect.midX, y: screenRect.midY))
+
+    let selection = SelectionRect(rect: screenRect, displayID: displayID)
+    session.confirmSelection(selection)
+  }
+
+  private func updateControlsPanel() {
+    guard let rect = selectionRect else {
+      controlsHost?.isHidden = true
+      return
+    }
+
+    if controlsHost == nil {
+      let view = SelectionControlsView(session: session)
+      let hosting = NSHostingView(rootView: view)
+      addSubview(hosting)
+      controlsHost = hosting
+    }
+
+    guard let hosting = controlsHost else { return }
+
+    NotificationCenter.default.post(name: .selectionRectChanged, object: NSValue(rect: rect))
+
+    let panelSize = hosting.intrinsicContentSize
+    hosting.setFrameSize(panelSize)
+
+    var panelX = rect.midX - panelSize.width / 2
+    var panelY = rect.minY - panelSize.height - 16
+
+    if panelY < bounds.minY + 8 {
+      panelY = rect.maxY + 16
+    }
+
+    panelX = max(bounds.minX + 8, min(panelX, bounds.maxX - panelSize.width - 8))
+    panelY = max(bounds.minY + 8, min(panelY, bounds.maxY - panelSize.height - 8))
+
+    hosting.frame.origin = CGPoint(x: panelX, y: panelY)
+    hosting.isHidden = false
+  }
 
   override func mouseMoved(with event: NSEvent) {
     mouseLocation = convert(event.locationInWindow, from: nil)
@@ -107,7 +180,7 @@ final class SelectionOverlayView: NSView {
       for handle in ResizeHandle.allCases {
         let hitArea = handle.rect(for: rect).insetBy(dx: -4, dy: -4)
         if hitArea.contains(mouseLocation) {
-          NSCursor.crosshair.set()
+          handle.cursor.set()
           found = true
           break
         }
@@ -116,7 +189,7 @@ final class SelectionOverlayView: NSView {
         if rect.contains(mouseLocation) {
           NSCursor.openHand.set()
         } else {
-          NSCursor.crosshair.set()
+          NSCursor.arrow.set()
         }
       }
     } else {
@@ -129,7 +202,13 @@ final class SelectionOverlayView: NSView {
   override func mouseDown(with event: NSEvent) {
     let point = convert(event.locationInWindow, from: nil)
 
-    // Check resize handles first
+    if let hosting = controlsHost, !hosting.isHidden {
+      let panelPoint = hosting.convert(point, from: self)
+      if hosting.bounds.contains(panelPoint) {
+        return
+      }
+    }
+
     if let rect = selectionRect {
       for handle in ResizeHandle.allCases {
         let hitArea = handle.rect(for: rect).insetBy(dx: -4, dy: -4)
@@ -141,7 +220,6 @@ final class SelectionOverlayView: NSView {
         }
       }
 
-      // Check if clicking inside selection to move it
       if rect.contains(point) {
         activeHandle = nil
         handleDragStart = point
@@ -151,10 +229,10 @@ final class SelectionOverlayView: NSView {
       }
     }
 
-    // Start new selection
     dragOrigin = point
     selectionRect = nil
     isDragging = true
+    controlsHost?.isHidden = true
     needsDisplay = true
   }
 
@@ -162,12 +240,11 @@ final class SelectionOverlayView: NSView {
     let point = convert(event.locationInWindow, from: nil)
 
     if let handle = activeHandle, let start = handleDragStart, let original = originalRectBeforeResize {
-      // Resizing
       let delta = CGPoint(x: point.x - start.x, y: point.y - start.y)
       selectionRect = handle.resize(original: original, delta: delta).normalized
       needsDisplay = true
+      updateControlsPanel()
     } else if handleDragStart != nil, let original = originalRectBeforeResize {
-      // Moving
       let delta = CGPoint(x: point.x - handleDragStart!.x, y: point.y - handleDragStart!.y)
       selectionRect = CGRect(
         x: original.origin.x + delta.x,
@@ -176,8 +253,8 @@ final class SelectionOverlayView: NSView {
         height: original.height
       )
       needsDisplay = true
+      updateControlsPanel()
     } else if let origin = dragOrigin {
-      // New selection
       selectionRect = CGRect(
         x: min(origin.x, point.x),
         y: min(origin.y, point.y),
@@ -185,6 +262,7 @@ final class SelectionOverlayView: NSView {
         height: abs(point.y - origin.y)
       )
       needsDisplay = true
+      updateControlsPanel()
     }
   }
 
@@ -193,49 +271,34 @@ final class SelectionOverlayView: NSView {
       activeHandle = nil
       handleDragStart = nil
       originalRectBeforeResize = nil
+      updateControlsPanel()
       return
     }
 
     isDragging = false
     dragOrigin = nil
 
-    // If selection is too small, treat as click (clear)
     if let rect = selectionRect, rect.width < 10 || rect.height < 10 {
       selectionRect = nil
+      controlsHost?.isHidden = true
       needsDisplay = true
+    } else if selectionRect != nil {
+      updateControlsPanel()
     }
   }
 
   override func keyDown(with event: NSEvent) {
+    if let responder = window?.firstResponder, responder is NSTextView {
+      return
+    }
+
     switch event.keyCode {
-    case 53:  // ESC
-      onComplete?(nil)
-    case 36:  // Enter
+    case 53:
+      session.cancelSelection()
+    case 36:
       confirmSelection()
     default:
       super.keyDown(with: event)
     }
-  }
-
-  // MARK: - Confirm
-
-  private func confirmSelection() {
-    guard let rect = selectionRect, rect.width >= 10, rect.height >= 10 else {
-      onComplete?(nil)
-      return
-    }
-
-    guard let window = self.window else {
-      onComplete?(nil)
-      return
-    }
-
-    // Convert view rect to screen coordinates
-    let windowRect = convert(rect, to: nil)
-    let screenRect = window.convertToScreen(windowRect)
-    let displayID = NSScreen.displayID(for: CGPoint(x: screenRect.midX, y: screenRect.midY))
-
-    let selection = SelectionRect(rect: screenRect, displayID: displayID)
-    onComplete?(selection)
   }
 }

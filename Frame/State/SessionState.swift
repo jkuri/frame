@@ -1,33 +1,22 @@
+import AppKit
 import Foundation
 import Logging
 import SwiftUI
 
 @MainActor
 @Observable
-final class StateProjection {
+final class SessionState {
   var state: CaptureState = .idle
   var lastRecordingURL: URL?
-}
 
-actor CaptureCoordinator {
-  @MainActor let ui = StateProjection()
-
-  private let logger = Logger(label: "eu.jankuri.frame.coordinator")
-  private var state: CaptureState = .idle {
-    didSet {
-      let newState = state
-      logger.info("State: \(String(describing: newState))")
-      Task { @MainActor in ui.state = newState }
-    }
-  }
-
-  private var storedSelection: SelectionRect?
+  private let logger = Logger(label: "eu.jankuri.frame.session")
+  private var selectionCoordinator: SelectionCoordinator?
   private var recordingCoordinator: RecordingCoordinator?
-  private nonisolated(unsafe) var selectionCoordinator: SelectionCoordinator?
+  private var storedSelection: SelectionRect?
 
-  // MARK: - Selection
+  weak var overlayView: SelectionOverlayView?
 
-  func beginSelection() async throws {
+  func beginSelection() throws {
     guard case .idle = state else {
       throw CaptureError.invalidTransition(from: "\(state)", to: "selecting")
     }
@@ -40,40 +29,43 @@ actor CaptureCoordinator {
     state = .selecting
     storedSelection = nil
 
-    let result: SelectionRect? = await withCheckedContinuation { continuation in
-      Task { @MainActor in
-        let coordinator = SelectionCoordinator()
-        self.selectionCoordinator = coordinator
-        coordinator.beginSelection { rect in
-          continuation.resume(returning: rect)
-        }
-      }
-    }
+    let coordinator = SelectionCoordinator()
+    selectionCoordinator = coordinator
+    coordinator.beginSelection(session: self)
+  }
 
-    if let result {
-      await MainActor.run { selectionCoordinator?.showRecordingBorder(screenRect: result.rect) }
-      storedSelection = result
-      state = .idle
-      logger.info("Selection confirmed: \(result.rect)")
-      try await startRecording()
-    } else {
-      await MainActor.run { selectionCoordinator?.destroyAll() }
-      selectionCoordinator = nil
-      state = .idle
-      logger.info("Selection cancelled")
+  func confirmSelection(_ selection: SelectionRect) {
+    selectionCoordinator?.destroyOverlay()
+    selectionCoordinator?.showRecordingBorder(screenRect: selection.rect)
+    storedSelection = selection
+    logger.info("Selection confirmed: \(selection.rect)")
+
+    Task {
+      do {
+        try await startRecording()
+      } catch {
+        logger.error("Failed to start recording: \(error)")
+      }
     }
   }
 
   func cancelSelection() {
-    guard case .selecting = state else { return }
+    selectionCoordinator?.destroyAll()
+    selectionCoordinator = nil
+    overlayView = nil
     state = .idle
-    storedSelection = nil
+    logger.info("Selection cancelled")
   }
 
-  // MARK: - Recording
+  func updateOverlaySelection(_ rect: CGRect) {
+    overlayView?.applyExternalRect(rect)
+  }
 
   func startRecording() async throws {
-    guard case .idle = state else {
+    switch state {
+    case .selecting, .idle:
+      break
+    default:
       throw CaptureError.invalidTransition(from: "\(state)", to: "recording")
     }
     guard let selection = storedSelection else {
@@ -82,6 +74,7 @@ actor CaptureCoordinator {
 
     let coordinator = RecordingCoordinator()
     self.recordingCoordinator = coordinator
+    overlayView = nil
 
     let startedAt = try await coordinator.startRecording(selection: selection)
     state = .recording(startedAt: startedAt)
@@ -96,11 +89,11 @@ actor CaptureCoordinator {
     }
 
     state = .processing
-    await MainActor.run { selectionCoordinator?.destroyAll() }
+    selectionCoordinator?.destroyAll()
     selectionCoordinator = nil
 
     if let url = try await recordingCoordinator?.stopRecording() {
-      Task { @MainActor in ui.lastRecordingURL = url }
+      lastRecordingURL = url
       logger.info("Recording saved to \(url.path)")
     }
 

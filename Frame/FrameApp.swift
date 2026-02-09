@@ -5,7 +5,7 @@ import SwiftUI
 struct FrameApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
   @State private var isMenuPresented = false
-  @State private var coordinator = CaptureCoordinator()
+  @State private var session = SessionState()
 
   init() {
     LogBootstrap.configure()
@@ -13,9 +13,9 @@ struct FrameApp: App {
 
   var body: some Scene {
     MenuBarExtra {
-      MenuBarView(coordinator: coordinator, isMenuPresented: $isMenuPresented)
+      MenuBarView(session: session, isMenuPresented: $isMenuPresented)
     } label: {
-      MenuBarIconView(state: coordinator.ui.state)
+      MenuBarIconView(state: session.state)
     }
     .menuBarExtraStyle(.window)
     .menuBarExtraAccess(isPresented: $isMenuPresented)

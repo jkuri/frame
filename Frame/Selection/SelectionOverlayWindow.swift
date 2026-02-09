@@ -2,11 +2,7 @@ import AppKit
 
 @MainActor
 final class SelectionOverlayWindow: NSWindow {
-  var onComplete: ((SelectionRect?) -> Void)?
-
-  init(onComplete: @escaping (SelectionRect?) -> Void) {
-    self.onComplete = onComplete
-
+  init(session: SessionState) {
     let unionRect = NSScreen.unionFrame
 
     super.init(
@@ -25,10 +21,8 @@ final class SelectionOverlayWindow: NSWindow {
     hasShadow = false
     sharingType = .none
 
-    let overlayView = SelectionOverlayView(frame: unionRect)
-    overlayView.onComplete = { [weak self] rect in
-      self?.onComplete?(rect)
-    }
+    let overlayView = SelectionOverlayView(frame: unionRect, session: session)
+    session.overlayView = overlayView
     contentView = overlayView
   }
 

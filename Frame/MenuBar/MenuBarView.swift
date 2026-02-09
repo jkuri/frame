@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct MenuBarView: View {
-  let coordinator: CaptureCoordinator
+  let session: SessionState
   @Binding var isMenuPresented: Bool
 
   @State private var errorMessage: String?
 
   var body: some View {
     VStack(spacing: 12) {
-      switch coordinator.ui.state {
+      switch session.state {
       case .idle:
         idleView
       case .selecting:
@@ -34,8 +34,6 @@ struct MenuBarView: View {
     .frame(width: 240)
   }
 
-  // MARK: - State Views
-
   private var idleView: some View {
     VStack(spacing: 8) {
       Text("Frame")
@@ -43,18 +41,16 @@ struct MenuBarView: View {
 
       Button("New Recording") {
         isMenuPresented = false
-        Task {
-          do {
-            try await coordinator.beginSelection()
-          } catch {
-            errorMessage = error.localizedDescription
-          }
+        do {
+          try session.beginSelection()
+        } catch {
+          errorMessage = error.localizedDescription
         }
       }
       .buttonStyle(.borderedProminent)
       .controlSize(.large)
 
-      if let url = coordinator.ui.lastRecordingURL {
+      if let url = session.lastRecordingURL {
         Divider()
         HStack {
           Image(systemName: "film")
@@ -90,14 +86,14 @@ struct MenuBarView: View {
 
       HStack(spacing: 8) {
         Button("Pause") {
-          Task { await coordinator.pauseRecording() }
+          session.pauseRecording()
         }
         .buttonStyle(.bordered)
 
         Button("Stop") {
           Task {
             do {
-              try await coordinator.stopRecording()
+              try await session.stopRecording()
             } catch {
               errorMessage = error.localizedDescription
             }
@@ -121,14 +117,14 @@ struct MenuBarView: View {
 
       HStack(spacing: 8) {
         Button("Resume") {
-          Task { await coordinator.resumeRecording() }
+          session.resumeRecording()
         }
         .buttonStyle(.bordered)
 
         Button("Stop") {
           Task {
             do {
-              try await coordinator.stopRecording()
+              try await session.stopRecording()
             } catch {
               errorMessage = error.localizedDescription
             }

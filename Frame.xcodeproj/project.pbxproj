@@ -13,7 +13,7 @@
 		A10000000000000000000004 /* LogBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* LogBootstrap.swift */; };
 		A10000000000000000000005 /* RotatingFileLogHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* RotatingFileLogHandler.swift */; };
 		A10000000000000000000006 /* CaptureState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* CaptureState.swift */; };
-		A10000000000000000000007 /* CaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* CaptureCoordinator.swift */; };
+		A10000000000000000000007 /* SessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* SessionState.swift */; };
 		A10000000000000000000008 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* MenuBarView.swift */; };
 		A10000000000000000000009 /* MenuBarIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* MenuBarIconView.swift */; };
 		A1000000000000000000000A /* RecordingTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000A /* RecordingTimerView.swift */; };
@@ -35,6 +35,7 @@
 		A1000000000000000000001A /* MenuBarExtraAccess in Frameworks */ = {isa = PBXBuildFile; productRef = E10000000000000000000002 /* MenuBarExtraAccess */; };
 		A1000000000000000000001C /* VideoTranscoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001C /* VideoTranscoder.swift */; };
 		A1000000000000000000001D /* RecordingBorderWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001D /* RecordingBorderWindow.swift */; };
+		A1000000000000000000001E /* SelectionControlsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001E /* SelectionControlsPanel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,7 +45,7 @@
 		B10000000000000000000004 /* LogBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogBootstrap.swift; sourceTree = "<group>"; };
 		B10000000000000000000005 /* RotatingFileLogHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatingFileLogHandler.swift; sourceTree = "<group>"; };
 		B10000000000000000000006 /* CaptureState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureState.swift; sourceTree = "<group>"; };
-		B10000000000000000000007 /* CaptureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureCoordinator.swift; sourceTree = "<group>"; };
+		B10000000000000000000007 /* SessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionState.swift; sourceTree = "<group>"; };
 		B10000000000000000000008 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		B10000000000000000000009 /* MenuBarIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIconView.swift; sourceTree = "<group>"; };
 		B1000000000000000000000A /* RecordingTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingTimerView.swift; sourceTree = "<group>"; };
@@ -67,6 +68,7 @@
 		B1000000000000000000001B /* Frame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Frame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1000000000000000000001C /* VideoTranscoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTranscoder.swift; sourceTree = "<group>"; };
 		B1000000000000000000001D /* RecordingBorderWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingBorderWindow.swift; sourceTree = "<group>"; };
+		B1000000000000000000001E /* SelectionControlsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionControlsPanel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,7 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				B10000000000000000000006 /* CaptureState.swift */,
-				B10000000000000000000007 /* CaptureCoordinator.swift */,
+				B10000000000000000000007 /* SessionState.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -158,6 +160,7 @@
 				B1000000000000000000000E /* SelectionRect.swift */,
 				B1000000000000000000000F /* ResizeHandle.swift */,
 				B1000000000000000000001D /* RecordingBorderWindow.swift */,
+				B1000000000000000000001E /* SelectionControlsPanel.swift */,
 			);
 			path = Selection;
 			sourceTree = "<group>";
@@ -278,7 +281,7 @@
 				A10000000000000000000004 /* LogBootstrap.swift in Sources */,
 				A10000000000000000000005 /* RotatingFileLogHandler.swift in Sources */,
 				A10000000000000000000006 /* CaptureState.swift in Sources */,
-				A10000000000000000000007 /* CaptureCoordinator.swift in Sources */,
+				A10000000000000000000007 /* SessionState.swift in Sources */,
 				A10000000000000000000008 /* MenuBarView.swift in Sources */,
 				A10000000000000000000009 /* MenuBarIconView.swift in Sources */,
 				A1000000000000000000000A /* RecordingTimerView.swift in Sources */,
@@ -292,6 +295,7 @@
 				A10000000000000000000012 /* VideoWriter.swift in Sources */,
 				A1000000000000000000001C /* VideoTranscoder.swift in Sources */,
 				A1000000000000000000001D /* RecordingBorderWindow.swift in Sources */,
+				A1000000000000000000001E /* SelectionControlsPanel.swift in Sources */,
 				A10000000000000000000013 /* FileManager+Frame.swift in Sources */,
 				A10000000000000000000014 /* NSScreen+Extensions.swift in Sources */,
 				A10000000000000000000015 /* CGRect+Extensions.swift in Sources */,

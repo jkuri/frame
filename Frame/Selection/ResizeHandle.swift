@@ -5,7 +5,7 @@ enum ResizeHandle: CaseIterable {
   case left, right
   case bottomLeft, bottom, bottomRight
 
-  static let size: CGFloat = 8
+  static let size: CGFloat = 12
 
   func rect(for selectionRect: CGRect) -> CGRect {
     let s = Self.size
@@ -27,12 +27,30 @@ enum ResizeHandle: CaseIterable {
 
   var cursor: NSCursor {
     switch self {
-    case .topLeft, .bottomRight: return .crosshair
-    case .topRight, .bottomLeft: return .crosshair
-    case .top, .bottom: return .resizeUpDown
-    case .left, .right: return .resizeLeftRight
+    case .top, .bottom:
+      return .resizeUpDown
+    case .left, .right:
+      return .resizeLeftRight
+    case .topLeft, .bottomRight:
+      return Self.diagonalNWSECursor
+    case .topRight, .bottomLeft:
+      return Self.diagonalNESWCursor
     }
   }
+
+  nonisolated(unsafe) private static let diagonalNWSECursor: NSCursor = {
+    if let cursor = NSCursor.perform(NSSelectorFromString("_windowResizeNorthWestSouthEastCursor"))?.takeUnretainedValue() as? NSCursor {
+      return cursor
+    }
+    return .resizeUpDown
+  }()
+
+  nonisolated(unsafe) private static let diagonalNESWCursor: NSCursor = {
+    if let cursor = NSCursor.perform(NSSelectorFromString("_windowResizeNorthEastSouthWestCursor"))?.takeUnretainedValue() as? NSCursor {
+      return cursor
+    }
+    return .resizeUpDown
+  }()
 
   func resize(original: CGRect, delta: CGPoint) -> CGRect {
     var r = original

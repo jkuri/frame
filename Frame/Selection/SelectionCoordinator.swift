@@ -5,11 +5,8 @@ final class SelectionCoordinator {
   private var overlayWindow: SelectionOverlayWindow?
   private var borderWindow: RecordingBorderWindow?
 
-  func beginSelection(completion: @escaping (SelectionRect?) -> Void) {
-    let window = SelectionOverlayWindow { rect in
-      completion(rect)
-    }
-
+  func beginSelection(session: SessionState) {
+    let window = SelectionOverlayWindow(session: session)
     overlayWindow = window
     window.makeKeyAndOrderFront(nil)
     NSApp.activate(ignoringOtherApps: true)
