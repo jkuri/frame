@@ -5,8 +5,7 @@ final class SelectionCoordinator {
     private var overlayWindow: SelectionOverlayWindow?
 
     func beginSelection(completion: @escaping (SelectionRect?) -> Void) {
-        let window = SelectionOverlayWindow { [weak self] rect in
-            self?.dismiss()
+        let window = SelectionOverlayWindow { rect in
             completion(rect)
         }
 

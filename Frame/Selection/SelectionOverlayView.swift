@@ -215,6 +215,7 @@ final class SelectionOverlayView: NSView {
     override func keyDown(with event: NSEvent) {
         switch event.keyCode {
         case 53: // ESC
+            window?.orderOut(nil)
             onComplete?(nil)
         case 36: // Enter
             confirmSelection()
@@ -242,6 +243,7 @@ final class SelectionOverlayView: NSView {
         let displayID = NSScreen.displayID(for: CGPoint(x: screenRect.midX, y: screenRect.midY))
 
         let selection = SelectionRect(rect: screenRect, displayID: displayID)
+        window.orderOut(nil)
         onComplete?(selection)
     }
 }

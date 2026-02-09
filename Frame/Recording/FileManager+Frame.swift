@@ -11,8 +11,8 @@ extension FileManager {
     }
 
     func defaultSaveDirectory() -> URL {
-        let moviesDir = urls(for: .moviesDirectory, in: .userDomainMask).first!
-        let frameDir = moviesDir.appendingPathComponent("Frame", isDirectory: true)
+        let homeDir = homeDirectoryForCurrentUser
+        let frameDir = homeDir.appendingPathComponent("Frame", isDirectory: true)
         try? createDirectory(at: frameDir, withIntermediateDirectories: true)
         return frameDir
     }

@@ -83,7 +83,10 @@ actor CaptureCoordinator {
     }
 
     func stopRecording() async throws {
-        guard case .recording = state else {
+        switch state {
+        case .recording, .paused:
+            break
+        default:
             throw CaptureError.invalidTransition(from: "\(state)", to: "processing")
         }
 

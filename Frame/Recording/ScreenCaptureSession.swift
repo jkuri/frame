@@ -55,7 +55,8 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
         guard type == .screen, sampleBuffer.isValid else { return }
 
         guard let attachments = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, createIfNecessary: false) as? [[SCStreamFrameInfo: Any]],
-              let status = attachments.first?[.status] as? SCFrameStatus,
+              let statusValue = attachments.first?[.status] as? Int,
+              let status = SCFrameStatus(rawValue: statusValue),
               status == .complete else {
             return
         }
