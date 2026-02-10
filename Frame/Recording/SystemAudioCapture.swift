@@ -7,6 +7,7 @@ final class SystemAudioCapture: NSObject, SCStreamDelegate, SCStreamOutput, @unc
   private let audioWriter: AudioTrackWriter
   private let logger = Logger(label: "eu.jankuri.frame.system-audio-capture")
   private let discardQueue = DispatchQueue(label: "eu.jankuri.frame.system-audio-capture.discard", qos: .background)
+  private var isPaused = false
 
   init(audioWriter: AudioTrackWriter) {
     self.audioWriter = audioWriter
@@ -38,6 +39,18 @@ final class SystemAudioCapture: NSObject, SCStreamDelegate, SCStreamOutput, @unc
     logger.info("System audio capture started")
   }
 
+  func pause() {
+    audioWriter.queue.async {
+      self.isPaused = true
+    }
+  }
+
+  func resume() {
+    audioWriter.queue.async {
+      self.isPaused = false
+    }
+  }
+
   func stop() async throws {
     try await stream?.stopCapture()
     stream = nil
@@ -46,6 +59,7 @@ final class SystemAudioCapture: NSObject, SCStreamDelegate, SCStreamOutput, @unc
 
   func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
     guard sampleBuffer.isValid, type == .audio else { return }
+    if isPaused { return }
     audioWriter.appendSample(sampleBuffer)
   }
 

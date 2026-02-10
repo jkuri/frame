@@ -100,6 +100,8 @@ actor RecordingCoordinator {
   func pause() {
     pauseStartTime = CMClockGetTime(CMClockGetHostTimeClock())
     captureSession?.pause()
+    systemAudioCapture?.pause()
+    microphoneCapture?.pause()
     videoWriter?.pause()
     systemAudioWriter?.pause()
     micAudioWriter?.pause()
@@ -117,6 +119,8 @@ actor RecordingCoordinator {
     systemAudioWriter?.resume(withOffset: totalPauseOffset)
     micAudioWriter?.resume(withOffset: totalPauseOffset)
     captureSession?.resume()
+    systemAudioCapture?.resume()
+    microphoneCapture?.resume()
     logger.info("Recording resumed, total offset: \(CMTimeGetSeconds(totalPauseOffset))s")
   }
 

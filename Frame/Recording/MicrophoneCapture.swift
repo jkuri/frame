@@ -11,6 +11,7 @@ final class MicrophoneCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDel
   private var captureSession: AVCaptureSession?
   private let audioWriter: AudioTrackWriter
   private let logger = Logger(label: "eu.jankuri.frame.microphone-capture")
+  private var isPaused = false
 
   init(audioWriter: AudioTrackWriter) {
     self.audioWriter = audioWriter
@@ -89,6 +90,18 @@ final class MicrophoneCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDel
     logger.info("Microphone capture started: \(device.localizedName)")
   }
 
+  func pause() {
+    audioWriter.queue.async {
+      self.isPaused = true
+    }
+  }
+
+  func resume() {
+    audioWriter.queue.async {
+      self.isPaused = false
+    }
+  }
+
   func stop() {
     captureSession?.stopRunning()
     captureSession = nil
@@ -96,6 +109,7 @@ final class MicrophoneCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDel
   }
 
   func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    if isPaused { return }
     audioWriter.appendSample(sampleBuffer)
   }
 }
