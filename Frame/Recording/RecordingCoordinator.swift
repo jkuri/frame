@@ -11,6 +11,7 @@ actor RecordingCoordinator {
   private var videoWriter: VideoTrackWriter?
   private var systemAudioWriter: AudioTrackWriter?
   private var micAudioWriter: AudioTrackWriter?
+  private var recordingClock: SharedRecordingClock?
   private let logger = Logger(label: "eu.jankuri.frame.recording-coordinator")
   private var pauseStartTime: CMTime = .invalid
   private var totalPauseOffset: CMTime = .zero
@@ -46,10 +47,18 @@ actor RecordingCoordinator {
     let pixelW = Int(round(sourceRect.width * displayScale)) & ~1
     let pixelH = Int(round(sourceRect.height * displayScale)) & ~1
 
+    var streamCount = 1
+    if microphoneDeviceId != nil { streamCount += 1 }
+    if captureSystemAudio { streamCount += 1 }
+
+    let clock = SharedRecordingClock(streamCount: streamCount)
+    self.recordingClock = clock
+
     let vidWriter = try VideoTrackWriter(
       outputURL: FileManager.default.tempVideoURL(),
       width: pixelW,
-      height: pixelH
+      height: pixelH,
+      clock: clock
     )
     self.videoWriter = vidWriter
 
@@ -63,7 +72,8 @@ actor RecordingCoordinator {
         outputURL: FileManager.default.tempAudioURL(label: "mic"),
         label: "mic",
         sampleRate: micFmt?.sampleRate ?? 48000,
-        channelCount: micFmt?.channelCount ?? 1
+        channelCount: micFmt?.channelCount ?? 1,
+        clock: clock
       )
       self.micAudioWriter = micWriter
 
@@ -77,7 +87,8 @@ actor RecordingCoordinator {
         outputURL: FileManager.default.tempAudioURL(label: "sysaudio"),
         label: "sysaudio",
         sampleRate: 48000,
-        channelCount: 2
+        channelCount: 2,
+        clock: clock
       )
       self.systemAudioWriter = sysWriter
 
@@ -145,6 +156,7 @@ actor RecordingCoordinator {
     videoWriter = nil
     systemAudioWriter = nil
     micAudioWriter = nil
+    recordingClock = nil
 
     guard let videoFile = videoURL else {
       logger.error("Video writer produced no output")
@@ -160,7 +172,11 @@ actor RecordingCoordinator {
       outputURL = videoFile
     } else {
       let mergedURL = FileManager.default.tempRecordingURL()
-      outputURL = try await VideoTranscoder.merge(videoFile: videoFile, audioFiles: audioFiles, to: mergedURL)
+      outputURL = try await VideoTranscoder.merge(
+        videoFile: videoFile,
+        audioFiles: audioFiles,
+        to: mergedURL
+      )
     }
 
     let destination = await MainActor.run { FileManager.default.defaultSaveURL(for: outputURL) }

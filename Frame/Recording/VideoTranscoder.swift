@@ -1,15 +1,28 @@
 import AVFoundation
+import CoreMedia
 import Logging
 
 enum VideoTranscoder {
   private static let logger = Logger(label: "eu.jankuri.frame.video-transcoder")
 
-  static func merge(videoFile: URL, audioFiles: [URL], to outputURL: URL) async throws -> URL {
+  static func merge(
+    videoFile: URL,
+    audioFiles: [URL],
+    to outputURL: URL
+  ) async throws -> URL {
     if FileManager.default.fileExists(atPath: outputURL.path) {
       try FileManager.default.removeItem(at: outputURL)
     }
 
+    let videoAsset = AVURLAsset(url: videoFile)
+    guard let sourceVideoTrack = try await videoAsset.loadTracks(withMediaType: .video).first else {
+      throw CaptureError.recordingFailed("No video track found")
+    }
+    let videoTimeRange = try await sourceVideoTrack.load(.timeRange)
+    let videoDuration = videoTimeRange.duration
+
     let mixedAudioURL: URL?
+    var isTempMix = false
 
     if audioFiles.count > 1 {
       let tempMixed = outputURL.deletingLastPathComponent().appendingPathComponent("mixed-audio.m4a")
@@ -17,33 +30,37 @@ enum VideoTranscoder {
         try FileManager.default.removeItem(at: tempMixed)
       }
       mixedAudioURL = try await mixAudioFiles(audioFiles, to: tempMixed)
+      isTempMix = true
     } else {
       mixedAudioURL = audioFiles.first
     }
 
     let composition = AVMutableComposition()
 
-    let videoAsset = AVURLAsset(url: videoFile)
-    let videoTracks = try await videoAsset.loadTracks(withMediaType: .video)
-    if let sourceVideoTrack = videoTracks.first {
-      let timeRange = try await sourceVideoTrack.load(.timeRange)
-      let compositionVideoTrack = composition.addMutableTrack(
-        withMediaType: .video,
-        preferredTrackID: kCMPersistentTrackID_Invalid
-      )
-      try compositionVideoTrack?.insertTimeRange(timeRange, of: sourceVideoTrack, at: .zero)
-    }
+    let compVideoTrack = composition.addMutableTrack(
+      withMediaType: .video,
+      preferredTrackID: kCMPersistentTrackID_Invalid
+    )
+    try compVideoTrack?.insertTimeRange(videoTimeRange, of: sourceVideoTrack, at: .zero)
 
     if let audioURL = mixedAudioURL {
       let audioAsset = AVURLAsset(url: audioURL)
-      let audioTracks = try await audioAsset.loadTracks(withMediaType: .audio)
-      if let sourceAudioTrack = audioTracks.first {
-        let timeRange = try await sourceAudioTrack.load(.timeRange)
-        let compositionAudioTrack = composition.addMutableTrack(
-          withMediaType: .audio,
-          preferredTrackID: kCMPersistentTrackID_Invalid
+      if let sourceAudioTrack = try await audioAsset.loadTracks(withMediaType: .audio).first {
+        let audioTimeRange = try await sourceAudioTrack.load(.timeRange)
+        let audioDuration = CMTimeMinimum(audioTimeRange.duration, videoDuration)
+
+        logger.info(
+          "A/V merge: videoDuration=\(String(format: "%.3f", CMTimeGetSeconds(videoDuration)))s, audioDuration=\(String(format: "%.3f", CMTimeGetSeconds(audioTimeRange.duration)))s"
         )
-        try compositionAudioTrack?.insertTimeRange(timeRange, of: sourceAudioTrack, at: .zero)
+
+        if CMTimeCompare(audioDuration, .zero) > 0 {
+          let compAudioTrack = composition.addMutableTrack(
+            withMediaType: .audio,
+            preferredTrackID: kCMPersistentTrackID_Invalid
+          )
+          let sourceRange = CMTimeRange(start: audioTimeRange.start, duration: audioDuration)
+          try compAudioTrack?.insertTimeRange(sourceRange, of: sourceAudioTrack, at: .zero)
+        }
       }
     }
 
@@ -51,13 +68,14 @@ enum VideoTranscoder {
       throw CaptureError.recordingFailed("Failed to create export session")
     }
 
+    exportSession.timeRange = CMTimeRange(start: .zero, duration: videoDuration)
     try await exportSession.export(to: outputURL, as: .mp4)
 
     try? FileManager.default.removeItem(at: videoFile)
-    for audioFile in audioFiles {
-      try? FileManager.default.removeItem(at: audioFile)
+    for file in audioFiles {
+      try? FileManager.default.removeItem(at: file)
     }
-    if audioFiles.count > 1, let mixed = mixedAudioURL {
+    if isTempMix, let mixed = mixedAudioURL {
       try? FileManager.default.removeItem(at: mixed)
     }
 
@@ -65,13 +83,12 @@ enum VideoTranscoder {
     return outputURL
   }
 
-  private static func mixAudioFiles(_ audioFiles: [URL], to outputURL: URL) async throws -> URL {
+  private static func mixAudioFiles(_ files: [URL], to outputURL: URL) async throws -> URL {
     let composition = AVMutableComposition()
 
-    for audioFile in audioFiles {
-      let asset = AVURLAsset(url: audioFile)
-      let tracks = try await asset.loadTracks(withMediaType: .audio)
-      if let sourceTrack = tracks.first {
+    for file in files {
+      let asset = AVURLAsset(url: file)
+      if let sourceTrack = try await asset.loadTracks(withMediaType: .audio).first {
         let timeRange = try await sourceTrack.load(.timeRange)
         let compTrack = composition.addMutableTrack(
           withMediaType: .audio,
@@ -95,7 +112,7 @@ enum VideoTranscoder {
     exportSession.audioMix = audioMix
     try await exportSession.export(to: outputURL, as: .m4a)
 
-    logger.info("Audio mix finished: \(audioFiles.count) tracks -> \(outputURL.lastPathComponent)")
+    logger.info("Audio mix finished: \(files.count) tracks -> \(outputURL.lastPathComponent)")
     return outputURL
   }
 

@@ -8,20 +8,24 @@ final class VideoTrackWriter: @unchecked Sendable {
   private var videoInput: AVAssetWriterInput?
   private var isStarted = false
   private let outputURL: URL
+  private let clock: SharedRecordingClock
   private let logger = Logger(label: "eu.jankuri.frame.video-track-writer")
   let queue = DispatchQueue(label: "eu.jankuri.frame.video-track-writer.queue", qos: .userInteractive)
   var writtenFrames = 0
   var droppedFrames = 0
+  private(set) var firstSamplePTS: CMTime = .invalid
   private var isPaused = false
-  private var timeOffset = CMTime.zero
+  private var pauseOffset = CMTime.zero
+  private var hasRegistered = false
 
   func resetStats() {
     writtenFrames = 0
     droppedFrames = 0
   }
 
-  init(outputURL: URL, width: Int, height: Int) throws {
+  init(outputURL: URL, width: Int, height: Int, clock: SharedRecordingClock) throws {
     self.outputURL = outputURL
+    self.clock = clock
 
     if FileManager.default.fileExists(atPath: outputURL.path) {
       try FileManager.default.removeItem(at: outputURL)
@@ -62,7 +66,7 @@ final class VideoTrackWriter: @unchecked Sendable {
   func resume(withOffset offset: CMTime) {
     queue.async {
       self.isPaused = false
-      self.timeOffset = offset
+      self.pauseOffset = offset
     }
   }
 
@@ -73,8 +77,14 @@ final class VideoTrackWriter: @unchecked Sendable {
 
     if isPaused { return }
 
-    let pts = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-    let adjustedPTS = CMTimeSubtract(pts, timeOffset)
+    let rawPTS = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+
+    if !hasRegistered {
+      clock.registerStream(firstPTS: rawPTS)
+      hasRegistered = true
+    }
+
+    guard let adjustedPTS = clock.adjustPTS(rawPTS, pauseOffset: pauseOffset) else { return }
 
     if !isStarted {
       guard assetWriter.startWriting() else {
@@ -82,8 +92,9 @@ final class VideoTrackWriter: @unchecked Sendable {
         return
       }
       assetWriter.startSession(atSourceTime: adjustedPTS)
+      firstSamplePTS = adjustedPTS
       isStarted = true
-      logger.info("Video writing started")
+      logger.info("Video writing started at PTS \(String(format: "%.3f", CMTimeGetSeconds(adjustedPTS)))s")
     }
 
     guard videoInput.isReadyForMoreMediaData else {
@@ -91,29 +102,25 @@ final class VideoTrackWriter: @unchecked Sendable {
       return
     }
 
-    if CMTimeCompare(timeOffset, .zero) > 0 {
-      var timingInfo = CMSampleTimingInfo(
-        duration: CMSampleBufferGetDuration(sampleBuffer),
-        presentationTimeStamp: adjustedPTS,
-        decodeTimeStamp: .invalid
-      )
-      var adjustedBuffer: CMSampleBuffer?
-      let status = CMSampleBufferCreateCopyWithNewTiming(
-        allocator: kCFAllocatorDefault,
-        sampleBuffer: sampleBuffer,
-        sampleTimingEntryCount: 1,
-        sampleTimingArray: &timingInfo,
-        sampleBufferOut: &adjustedBuffer
-      )
-      if status == noErr, let adjusted = adjustedBuffer {
-        videoInput.append(adjusted)
-        writtenFrames += 1
-        return
-      }
+    var timingInfo = CMSampleTimingInfo(
+      duration: CMSampleBufferGetDuration(sampleBuffer),
+      presentationTimeStamp: adjustedPTS,
+      decodeTimeStamp: .invalid
+    )
+    var adjustedBuffer: CMSampleBuffer?
+    let status = CMSampleBufferCreateCopyWithNewTiming(
+      allocator: kCFAllocatorDefault,
+      sampleBuffer: sampleBuffer,
+      sampleTimingEntryCount: 1,
+      sampleTimingArray: &timingInfo,
+      sampleBufferOut: &adjustedBuffer
+    )
+    if status == noErr, let adjusted = adjustedBuffer {
+      videoInput.append(adjusted)
+      writtenFrames += 1
+    } else {
+      droppedFrames += 1
     }
-
-    videoInput.append(sampleBuffer)
-    writtenFrames += 1
   }
 
   func finish() async -> URL? {

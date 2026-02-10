@@ -8,13 +8,17 @@ final class AudioTrackWriter: @unchecked Sendable {
   private var isStarted = false
   private let outputURL: URL
   private let outputSettings: [String: Any]
+  private let clock: SharedRecordingClock
   private let logger: Logger
   let queue: DispatchQueue
+  private(set) var firstSamplePTS: CMTime = .invalid
   private var isPaused = false
-  private var timeOffset = CMTime.zero
+  private var pauseOffset = CMTime.zero
+  private var hasRegistered = false
 
-  init(outputURL: URL, label: String, sampleRate: Double, channelCount: Int) throws {
+  init(outputURL: URL, label: String, sampleRate: Double, channelCount: Int, clock: SharedRecordingClock) throws {
     self.outputURL = outputURL
+    self.clock = clock
     self.logger = Logger(label: "eu.jankuri.frame.audio-track-writer.\(label)")
     self.queue = DispatchQueue(label: "eu.jankuri.frame.audio-track-writer.\(label).queue", qos: .userInteractive)
     self.outputSettings = [
@@ -40,7 +44,7 @@ final class AudioTrackWriter: @unchecked Sendable {
   func resume(withOffset offset: CMTime) {
     queue.async {
       self.isPaused = false
-      self.timeOffset = offset
+      self.pauseOffset = offset
     }
   }
 
@@ -51,8 +55,14 @@ final class AudioTrackWriter: @unchecked Sendable {
 
     if isPaused { return }
 
-    let pts = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-    let adjustedPTS = CMTimeSubtract(pts, timeOffset)
+    let rawPTS = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+
+    if !hasRegistered {
+      clock.registerStream(firstPTS: rawPTS)
+      hasRegistered = true
+    }
+
+    guard let adjustedPTS = clock.adjustPTS(rawPTS, pauseOffset: pauseOffset) else { return }
 
     if !isStarted {
       let formatHint = CMSampleBufferGetFormatDescription(sampleBuffer)
@@ -68,33 +78,29 @@ final class AudioTrackWriter: @unchecked Sendable {
         return
       }
       assetWriter.startSession(atSourceTime: adjustedPTS)
+      firstSamplePTS = adjustedPTS
       isStarted = true
-      logger.info("Audio writing started")
+      logger.info("Audio writing started at PTS \(String(format: "%.3f", CMTimeGetSeconds(adjustedPTS)))s")
     }
 
     guard let audioInput, audioInput.isReadyForMoreMediaData else { return }
 
-    if CMTimeCompare(timeOffset, .zero) > 0 {
-      var timingInfo = CMSampleTimingInfo(
-        duration: CMSampleBufferGetDuration(sampleBuffer),
-        presentationTimeStamp: adjustedPTS,
-        decodeTimeStamp: .invalid
-      )
-      var adjustedBuffer: CMSampleBuffer?
-      let status = CMSampleBufferCreateCopyWithNewTiming(
-        allocator: kCFAllocatorDefault,
-        sampleBuffer: sampleBuffer,
-        sampleTimingEntryCount: 1,
-        sampleTimingArray: &timingInfo,
-        sampleBufferOut: &adjustedBuffer
-      )
-      if status == noErr, let adjusted = adjustedBuffer {
-        audioInput.append(adjusted)
-        return
-      }
+    var timingInfo = CMSampleTimingInfo(
+      duration: CMSampleBufferGetDuration(sampleBuffer),
+      presentationTimeStamp: adjustedPTS,
+      decodeTimeStamp: .invalid
+    )
+    var adjustedBuffer: CMSampleBuffer?
+    let status = CMSampleBufferCreateCopyWithNewTiming(
+      allocator: kCFAllocatorDefault,
+      sampleBuffer: sampleBuffer,
+      sampleTimingEntryCount: 1,
+      sampleTimingArray: &timingInfo,
+      sampleBufferOut: &adjustedBuffer
+    )
+    if status == noErr, let adjusted = adjustedBuffer {
+      audioInput.append(adjusted)
     }
-
-    audioInput.append(sampleBuffer)
   }
 
   func finish() async -> URL? {
