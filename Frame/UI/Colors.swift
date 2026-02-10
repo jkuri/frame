@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 
+@MainActor
 enum FrameColors {
   static var isDark: Bool {
     NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua

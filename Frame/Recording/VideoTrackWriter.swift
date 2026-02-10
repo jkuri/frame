@@ -12,6 +12,8 @@ final class VideoTrackWriter: @unchecked Sendable {
   let queue = DispatchQueue(label: "eu.jankuri.frame.video-track-writer.queue", qos: .userInteractive)
   var writtenFrames = 0
   var droppedFrames = 0
+  private var isPaused = false
+  private var timeOffset = CMTime.zero
 
   func resetStats() {
     writtenFrames = 0
@@ -51,18 +53,35 @@ final class VideoTrackWriter: @unchecked Sendable {
     self.assetWriter = writer
   }
 
+  func pause() {
+    queue.async {
+      self.isPaused = true
+    }
+  }
+
+  func resume(withOffset offset: CMTime) {
+    queue.async {
+      self.isPaused = false
+      self.timeOffset = offset
+    }
+  }
+
   func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
     dispatchPrecondition(condition: .onQueue(queue))
 
     guard let assetWriter, let videoInput else { return }
+
+    if isPaused { return }
+
+    let pts = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+    let adjustedPTS = CMTimeSubtract(pts, timeOffset)
 
     if !isStarted {
       guard assetWriter.startWriting() else {
         logger.error("Failed to start writing: \(assetWriter.error?.localizedDescription ?? "unknown")")
         return
       }
-      let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-      assetWriter.startSession(atSourceTime: timestamp)
+      assetWriter.startSession(atSourceTime: adjustedPTS)
       isStarted = true
       logger.info("Video writing started")
     }
@@ -70,6 +89,27 @@ final class VideoTrackWriter: @unchecked Sendable {
     guard videoInput.isReadyForMoreMediaData else {
       droppedFrames += 1
       return
+    }
+
+    if CMTimeCompare(timeOffset, .zero) > 0 {
+      var timingInfo = CMSampleTimingInfo(
+        duration: CMSampleBufferGetDuration(sampleBuffer),
+        presentationTimeStamp: adjustedPTS,
+        decodeTimeStamp: .invalid
+      )
+      var adjustedBuffer: CMSampleBuffer?
+      let status = CMSampleBufferCreateCopyWithNewTiming(
+        allocator: kCFAllocatorDefault,
+        sampleBuffer: sampleBuffer,
+        sampleTimingEntryCount: 1,
+        sampleTimingArray: &timingInfo,
+        sampleBufferOut: &adjustedBuffer
+      )
+      if status == noErr, let adjusted = adjustedBuffer {
+        videoInput.append(adjusted)
+        writtenFrames += 1
+        return
+      }
     }
 
     videoInput.append(sampleBuffer)

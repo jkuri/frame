@@ -10,6 +10,8 @@ final class AudioTrackWriter: @unchecked Sendable {
   private let outputSettings: [String: Any]
   private let logger: Logger
   let queue: DispatchQueue
+  private var isPaused = false
+  private var timeOffset = CMTime.zero
 
   init(outputURL: URL, label: String, sampleRate: Double, channelCount: Int) throws {
     self.outputURL = outputURL
@@ -29,10 +31,28 @@ final class AudioTrackWriter: @unchecked Sendable {
     self.assetWriter = try AVAssetWriter(outputURL: outputURL, fileType: .m4a)
   }
 
+  func pause() {
+    queue.async {
+      self.isPaused = true
+    }
+  }
+
+  func resume(withOffset offset: CMTime) {
+    queue.async {
+      self.isPaused = false
+      self.timeOffset = offset
+    }
+  }
+
   func appendSample(_ sampleBuffer: CMSampleBuffer) {
     dispatchPrecondition(condition: .onQueue(queue))
 
     guard let assetWriter else { return }
+
+    if isPaused { return }
+
+    let pts = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+    let adjustedPTS = CMTimeSubtract(pts, timeOffset)
 
     if !isStarted {
       let formatHint = CMSampleBufferGetFormatDescription(sampleBuffer)
@@ -47,13 +67,33 @@ final class AudioTrackWriter: @unchecked Sendable {
         self.audioInput = nil
         return
       }
-      let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-      assetWriter.startSession(atSourceTime: timestamp)
+      assetWriter.startSession(atSourceTime: adjustedPTS)
       isStarted = true
       logger.info("Audio writing started")
     }
 
     guard let audioInput, audioInput.isReadyForMoreMediaData else { return }
+
+    if CMTimeCompare(timeOffset, .zero) > 0 {
+      var timingInfo = CMSampleTimingInfo(
+        duration: CMSampleBufferGetDuration(sampleBuffer),
+        presentationTimeStamp: adjustedPTS,
+        decodeTimeStamp: .invalid
+      )
+      var adjustedBuffer: CMSampleBuffer?
+      let status = CMSampleBufferCreateCopyWithNewTiming(
+        allocator: kCFAllocatorDefault,
+        sampleBuffer: sampleBuffer,
+        sampleTimingEntryCount: 1,
+        sampleTimingArray: &timingInfo,
+        sampleBufferOut: &adjustedBuffer
+      )
+      if status == noErr, let adjusted = adjustedBuffer {
+        audioInput.append(adjusted)
+        return
+      }
+    }
+
     audioInput.append(sampleBuffer)
   }
 

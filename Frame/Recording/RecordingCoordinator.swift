@@ -1,4 +1,5 @@
 import CoreGraphics
+import CoreMedia
 import Foundation
 import Logging
 @preconcurrency import ScreenCaptureKit
@@ -11,6 +12,8 @@ actor RecordingCoordinator {
   private var systemAudioWriter: AudioTrackWriter?
   private var micAudioWriter: AudioTrackWriter?
   private let logger = Logger(label: "eu.jankuri.frame.recording-coordinator")
+  private var pauseStartTime: CMTime = .invalid
+  private var totalPauseOffset: CMTime = .zero
 
   func startRecording(
     target: CaptureTarget,
@@ -92,6 +95,29 @@ actor RecordingCoordinator {
       ]
     )
     return startedAt
+  }
+
+  func pause() {
+    pauseStartTime = CMClockGetTime(CMClockGetHostTimeClock())
+    captureSession?.pause()
+    videoWriter?.pause()
+    systemAudioWriter?.pause()
+    micAudioWriter?.pause()
+    logger.info("Recording paused")
+  }
+
+  func resume() {
+    if pauseStartTime.isValid {
+      let now = CMClockGetTime(CMClockGetHostTimeClock())
+      let pauseDuration = CMTimeSubtract(now, pauseStartTime)
+      totalPauseOffset = CMTimeAdd(totalPauseOffset, pauseDuration)
+      pauseStartTime = .invalid
+    }
+    videoWriter?.resume(withOffset: totalPauseOffset)
+    systemAudioWriter?.resume(withOffset: totalPauseOffset)
+    micAudioWriter?.resume(withOffset: totalPauseOffset)
+    captureSession?.resume()
+    logger.info("Recording resumed, total offset: \(CMTimeGetSeconds(totalPauseOffset))s")
   }
 
   func stopRecording() async throws -> URL? {

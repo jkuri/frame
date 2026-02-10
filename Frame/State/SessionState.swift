@@ -264,12 +264,18 @@ final class SessionState {
   func pauseRecording() {
     guard case .recording(let startedAt) = state else { return }
     let elapsed = Date().timeIntervalSince(startedAt)
+    Task {
+      await recordingCoordinator?.pause()
+    }
     transition(to: .paused(elapsed: elapsed))
   }
 
   func resumeRecording() {
     guard case .paused(let elapsed) = state else { return }
     let resumedAt = Date().addingTimeInterval(-elapsed)
+    Task {
+      await recordingCoordinator?.resume()
+    }
     transition(to: .recording(startedAt: resumedAt))
   }
 

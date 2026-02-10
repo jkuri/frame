@@ -13,6 +13,7 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
   private var lastLogTime: CFAbsoluteTime = 0
   private var nextTargetPTS: CMTime = .invalid
   private var targetFrameInterval: CMTime = .invalid
+  private var isPaused = false
 
   init(videoWriter: VideoTrackWriter) {
     self.videoWriter = videoWriter
@@ -80,6 +81,19 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
     )
   }
 
+  func pause() {
+    videoWriter.queue.async {
+      self.isPaused = true
+    }
+  }
+
+  func resume() {
+    videoWriter.queue.async {
+      self.isPaused = false
+      self.nextTargetPTS = .invalid
+    }
+  }
+
   func stop() async throws {
     try await stream?.stopCapture()
     stream = nil
@@ -104,6 +118,8 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
     }
 
     completeFrames += 1
+
+    if isPaused { return }
 
     let pts = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
     if nextTargetPTS.isValid {
