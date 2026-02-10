@@ -1,5 +1,5 @@
-import ScreenCaptureKit
 import AppKit
+import ScreenCaptureKit
 
 enum CaptureTarget: @unchecked Sendable {
   case region(SelectionRect)

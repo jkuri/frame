@@ -1,6 +1,6 @@
 import AppKit
-import SwiftUI
 import ScreenCaptureKit
+import SwiftUI
 
 struct WindowSelectionView: View {
   let session: SessionState
@@ -46,7 +46,8 @@ struct WindowSelectionView: View {
 
           VStack(spacing: 12) {
             if let app = NSRunningApplication(processIdentifier: current.appPID),
-               let icon = app.icon {
+              let icon = app.icon
+            {
               Image(nsImage: icon)
                 .resizable()
                 .aspectRatio(contentMode: .fit)

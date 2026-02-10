@@ -1,8 +1,8 @@
 import AppKit
 import Foundation
 import Logging
-import SwiftUI
 import ScreenCaptureKit
+import SwiftUI
 
 @MainActor
 @Observable
@@ -10,6 +10,7 @@ final class SessionState {
   var state: CaptureState = .idle
   var lastRecordingURL: URL?
   var captureMode: CaptureMode = .none
+  var errorMessage: String?
   let options = RecordingOptions()
 
   weak var statusItemButton: NSStatusBarButton?
@@ -75,6 +76,7 @@ final class SessionState {
 
   func selectMode(_ mode: CaptureMode) {
     captureMode = mode
+    StateService.shared.lastCaptureMode = mode
     hideStartRecordingOverlay()
 
     switch mode {
@@ -126,12 +128,26 @@ final class SessionState {
     let coordinator = SelectionCoordinator()
     selectionCoordinator = coordinator
     coordinator.beginSelection(session: self)
+
+    if options.rememberLastSelection,
+      let savedRect = StateService.shared.lastSelectionRect
+    {
+      let displayID = StateService.shared.lastDisplayID
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+        MainActor.assumeIsolated {
+          self?.overlayView?.applyExternalRect(savedRect)
+          self?.captureTarget = .region(SelectionRect(rect: savedRect, displayID: displayID))
+        }
+      }
+    }
   }
 
   func confirmSelection(_ selection: SelectionRect) {
     selectionCoordinator?.destroyOverlay()
     selectionCoordinator?.showRecordingBorder(screenRect: selection.rect)
     captureTarget = .region(selection)
+    StateService.shared.lastSelectionRect = selection.rect
+    StateService.shared.lastDisplayID = selection.displayID
     logger.info("Selection confirmed: \(selection.rect)")
 
     Task {
@@ -139,6 +155,10 @@ final class SessionState {
         try await startRecording()
       } catch {
         logger.error("Failed to start recording: \(error)")
+        selectionCoordinator?.destroyAll()
+        selectionCoordinator = nil
+        transition(to: .idle)
+        showError(error.localizedDescription)
       }
     }
   }
@@ -157,6 +177,9 @@ final class SessionState {
         try await startRecording()
       } catch {
         logger.error("Failed to start recording: \(error)")
+        windowSelectionCoordinator = nil
+        transition(to: .idle)
+        showError(error.localizedDescription)
       }
     }
   }
@@ -194,7 +217,12 @@ final class SessionState {
     self.recordingCoordinator = coordinator
     overlayView = nil
 
-    let startedAt = try await coordinator.startRecording(target: target)
+    let startedAt = try await coordinator.startRecording(
+      target: target,
+      fps: options.fps,
+      captureSystemAudio: options.captureSystemAudio,
+      microphoneDeviceId: options.selectedMicrophone?.id
+    )
     transition(to: .recording(startedAt: startedAt))
   }
 
@@ -212,6 +240,7 @@ final class SessionState {
 
     if let url = try await recordingCoordinator?.stopRecording() {
       lastRecordingURL = url
+      StateService.shared.lastRecordingPath = url.path
       logger.info("Recording saved to \(url.path)")
     }
 
@@ -253,20 +282,30 @@ final class SessionState {
     }
   }
 
+  func showError(_ message: String) {
+    let alert = NSAlert()
+    alert.messageText = "Recording Error"
+    alert.informativeText = message
+    alert.alertStyle = .critical
+    alert.addButton(withTitle: "OK")
+    alert.runModal()
+  }
+
   private func transition(to newState: CaptureState) {
     state = newState
     updateStatusIcon()
   }
 
   private func updateStatusIcon() {
-    let iconName: String = switch state {
-    case .idle: "rectangle.dashed.badge.record"
-    case .selecting: "rectangle.dashed"
-    case .recording: "record.circle.fill"
-    case .paused: "pause.circle.fill"
-    case .processing: "gear"
-    case .editing: "film"
-    }
+    let iconName: String =
+      switch state {
+      case .idle: "rectangle.dashed.badge.record"
+      case .selecting: "rectangle.dashed"
+      case .recording: "record.circle.fill"
+      case .paused: "pause.circle.fill"
+      case .processing: "gear"
+      case .editing: "film"
+      }
     statusItemButton?.image = NSImage(
       systemSymbolName: iconName,
       accessibilityDescription: "Frame"
@@ -318,6 +357,10 @@ final class SessionState {
         try await startRecording()
       } catch {
         logger.error("Failed to start recording: \(error)")
+        selectionCoordinator?.destroyAll()
+        selectionCoordinator = nil
+        transition(to: .idle)
+        showError(error.localizedDescription)
       }
     }
   }

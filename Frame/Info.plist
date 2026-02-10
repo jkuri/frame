@@ -8,5 +8,7 @@
 	<false/>
 	<key>NSScreenCaptureUsageDescription</key>
 	<string>Frame needs screen recording access to capture your screen.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Frame needs microphone access to record audio with your screen capture.</string>
 </dict>
 </plist>

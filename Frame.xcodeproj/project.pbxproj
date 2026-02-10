@@ -25,6 +25,7 @@
 		A10000000000000000000011 /* ScreenCaptureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* ScreenCaptureSession.swift */; };
 		A10000000000000000000012 /* VideoWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* VideoWriter.swift */; };
 		A10000000000000000000013 /* FileManager+Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* FileManager+Frame.swift */; };
+		A10000000000000000000032 /* MicrophoneCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000032 /* MicrophoneCapture.swift */; };
 		A10000000000000000000014 /* NSScreen+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* NSScreen+Extensions.swift */; };
 		A10000000000000000000015 /* CGRect+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* CGRect+Extensions.swift */; };
 		A10000000000000000000017 /* ScreenCaptureKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* ScreenCaptureKit.framework */; };
@@ -41,6 +42,8 @@
 		A10000000000000000000023 /* CheckmarkRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000023 /* CheckmarkRow.swift */; };
 		A10000000000000000000024 /* OptionsPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000024 /* OptionsPopover.swift */; };
 		A10000000000000000000025 /* CaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000025 /* CaptureMode.swift */; };
+		A10000000000000000000030 /* ConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000030 /* ConfigService.swift */; };
+		A10000000000000000000031 /* StateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000031 /* StateService.swift */; };
 		A10000000000000000000026 /* ModeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000026 /* ModeButton.swift */; };
 		A10000000000000000000027 /* CaptureToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000027 /* CaptureToolbar.swift */; };
 		A10000000000000000000028 /* CaptureToolbarWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000028 /* CaptureToolbarWindow.swift */; };
@@ -76,6 +79,7 @@
 		B10000000000000000000011 /* ScreenCaptureSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureSession.swift; sourceTree = "<group>"; };
 		B10000000000000000000012 /* VideoWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoWriter.swift; sourceTree = "<group>"; };
 		B10000000000000000000013 /* FileManager+Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Frame.swift"; sourceTree = "<group>"; };
+		B10000000000000000000032 /* MicrophoneCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicrophoneCapture.swift; sourceTree = "<group>"; };
 		B10000000000000000000014 /* NSScreen+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSScreen+Extensions.swift"; sourceTree = "<group>"; };
 		B10000000000000000000015 /* CGRect+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extensions.swift"; sourceTree = "<group>"; };
 		B10000000000000000000017 /* ScreenCaptureKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenCaptureKit.framework; path = System/Library/Frameworks/ScreenCaptureKit.framework; sourceTree = SDKROOT; };
@@ -93,6 +97,8 @@
 		B10000000000000000000023 /* CheckmarkRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckmarkRow.swift; sourceTree = "<group>"; };
 		B10000000000000000000024 /* OptionsPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsPopover.swift; sourceTree = "<group>"; };
 		B10000000000000000000025 /* CaptureMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureMode.swift; sourceTree = "<group>"; };
+		B10000000000000000000030 /* ConfigService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigService.swift; sourceTree = "<group>"; };
+		B10000000000000000000031 /* StateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateService.swift; sourceTree = "<group>"; };
 		B10000000000000000000026 /* ModeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeButton.swift; sourceTree = "<group>"; };
 		B10000000000000000000027 /* CaptureToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbar.swift; sourceTree = "<group>"; };
 		B10000000000000000000028 /* CaptureToolbarWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbarWindow.swift; sourceTree = "<group>"; };
@@ -176,6 +182,8 @@
 				B10000000000000000000007 /* SessionState.swift */,
 				B10000000000000000000021 /* RecordingOptions.swift */,
 				B10000000000000000000025 /* CaptureMode.swift */,
+				B10000000000000000000030 /* ConfigService.swift */,
+				B10000000000000000000031 /* StateService.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -189,6 +197,7 @@
 				B10000000000000000000012 /* VideoWriter.swift */,
 				B1000000000000000000001C /* VideoTranscoder.swift */,
 				B10000000000000000000013 /* FileManager+Frame.swift */,
+				B10000000000000000000032 /* MicrophoneCapture.swift */,
 			);
 			path = Recording;
 			sourceTree = "<group>";
@@ -384,6 +393,7 @@
 				A1000000000000000000001D /* RecordingBorderWindow.swift in Sources */,
 				A1000000000000000000001E /* CaptureAreaView.swift in Sources */,
 				A10000000000000000000013 /* FileManager+Frame.swift in Sources */,
+				A10000000000000000000032 /* MicrophoneCapture.swift in Sources */,
 				A10000000000000000000014 /* NSScreen+Extensions.swift in Sources */,
 				A10000000000000000000015 /* CGRect+Extensions.swift in Sources */,
 				A1000000000000000000001F /* Colors.swift in Sources */,
@@ -393,6 +403,8 @@
 				A10000000000000000000023 /* CheckmarkRow.swift in Sources */,
 				A10000000000000000000024 /* OptionsPopover.swift in Sources */,
 				A10000000000000000000025 /* CaptureMode.swift in Sources */,
+				A10000000000000000000030 /* ConfigService.swift in Sources */,
+				A10000000000000000000031 /* StateService.swift in Sources */,
 				A10000000000000000000026 /* ModeButton.swift in Sources */,
 				A10000000000000000000027 /* CaptureToolbar.swift in Sources */,
 				A10000000000000000000028 /* CaptureToolbarWindow.swift in Sources */,
@@ -545,7 +557,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 5A5U3XX696;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
 				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
 				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
 				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
@@ -588,7 +600,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 5A5U3XX696;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
 				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
 				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
 				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;

@@ -13,9 +13,11 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
   private var lastLogTime: CFAbsoluteTime = 0
   private var nextTargetPTS: CMTime = .invalid
   private var targetFrameInterval: CMTime = .invalid
+  private let captureSystemAudio: Bool
 
-  init(videoWriter: VideoWriter) {
+  init(videoWriter: VideoWriter, captureSystemAudio: Bool = false) {
     self.videoWriter = videoWriter
+    self.captureSystemAudio = captureSystemAudio
     super.init()
   }
 
@@ -34,18 +36,13 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
 
     case .window(let window):
       filter = SCContentFilter(desktopIndependentWindow: window)
-      // For window capture, the source rect is the window's frame relative to the display,
-      // but SCStream with a window filter automatically handles coordinate mapping.
-      // We explicitly set the `sourceRect` to the window's frame for sizing the output,
-      // but we need to be careful with origin if it's on a different display.
-      // With `desktopIndependentWindow`, the stream outputs the window content directly.
       sourceRect = CGRect(origin: .zero, size: CGSize(width: CGFloat(window.frame.width), height: CGFloat(window.frame.height)))
 
     case .screen(let screen):
-       let selfApp = content.applications.first { $0.bundleIdentifier == Bundle.main.bundleIdentifier }
-       let excludedApps = [selfApp].compactMap { $0 }
-       filter = SCContentFilter(display: display, excludingApplications: excludedApps, exceptingWindows: [])
-       sourceRect = CGRect(origin: .zero, size: display.frame.size)
+      let selfApp = content.applications.first { $0.bundleIdentifier == Bundle.main.bundleIdentifier }
+      let excludedApps = [selfApp].compactMap { $0 }
+      filter = SCContentFilter(display: display, excludingApplications: excludedApps, exceptingWindows: [])
+      sourceRect = CGRect(origin: .zero, size: display.frame.size)
     }
     let pixelW = Int(sourceRect.width * displayScale) & ~1
     let pixelH = Int(sourceRect.height * displayScale) & ~1
@@ -61,13 +58,23 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
     config.minimumFrameInterval = CMTime(value: 1, timescale: CMTimeScale(captureFps))
     config.pixelFormat = kCVPixelFormatType_32BGRA
     config.showsCursor = true
-    config.capturesAudio = false
+    config.capturesAudio = captureSystemAudio
     config.queueDepth = 8
     config.scalesToFit = false
     config.colorSpaceName = CGColorSpace.sRGB as CFString
 
+    if captureSystemAudio {
+      config.sampleRate = 48000
+      config.channelCount = 2
+    }
+
     let stream = SCStream(filter: filter, configuration: config, delegate: self)
     try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: videoWriter.queue)
+
+    if captureSystemAudio {
+      try stream.addStreamOutput(self, type: .audio, sampleHandlerQueue: videoWriter.queue)
+    }
+
     try await stream.startCapture()
 
     self.stream = stream
@@ -80,6 +87,7 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
         "targetFps": "\(fps)",
         "captureFps": "\(captureFps)",
         "output_size": "\(config.width)x\(config.height)",
+        "systemAudio": "\(captureSystemAudio)",
       ]
     )
   }
@@ -92,8 +100,20 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
   }
 
   func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
+    guard sampleBuffer.isValid else { return }
+
+    switch type {
+    case .screen:
+      handleVideoSample(sampleBuffer)
+    case .audio:
+      videoWriter.appendSystemAudioSample(sampleBuffer)
+    @unknown default:
+      break
+    }
+  }
+
+  private func handleVideoSample(_ sampleBuffer: CMSampleBuffer) {
     totalCallbacks += 1
-    guard type == .screen, sampleBuffer.isValid else { return }
 
     guard let attachments = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, createIfNecessary: false) as? [[SCStreamFrameInfo: Any]],
       let statusValue = attachments.first?[.status] as? Int,
@@ -136,4 +156,3 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
     logger.error("Stream error: \(error.localizedDescription)")
   }
 }
-

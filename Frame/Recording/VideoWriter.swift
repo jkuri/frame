@@ -6,6 +6,8 @@ import Logging
 final class VideoWriter: @unchecked Sendable {
   private var assetWriter: AVAssetWriter?
   private var videoInput: AVAssetWriterInput?
+  private var systemAudioInput: AVAssetWriterInput?
+  private var microphoneAudioInput: AVAssetWriterInput?
   private var isStarted = false
   private let outputURL: URL
   private let logger = Logger(label: "eu.jankuri.frame.video-writer")
@@ -18,7 +20,7 @@ final class VideoWriter: @unchecked Sendable {
     droppedFrames = 0
   }
 
-  init(outputURL: URL, width: Int, height: Int) throws {
+  init(outputURL: URL, width: Int, height: Int, captureSystemAudio: Bool = false, microphoneFormat: MicrophoneFormat? = nil) throws {
     self.outputURL = outputURL
 
     if FileManager.default.fileExists(atPath: outputURL.path) {
@@ -46,11 +48,36 @@ final class VideoWriter: @unchecked Sendable {
 
     let input = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
     input.expectsMediaDataInRealTime = true
-
     writer.add(input)
+    self.videoInput = input
+
+    if captureSystemAudio {
+      let audioSettings: [String: Any] = [
+        AVFormatIDKey: kAudioFormatMPEG4AAC,
+        AVSampleRateKey: 48000,
+        AVNumberOfChannelsKey: 2,
+        AVEncoderBitRateKey: 128_000,
+      ]
+      let sysAudioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
+      sysAudioInput.expectsMediaDataInRealTime = true
+      writer.add(sysAudioInput)
+      self.systemAudioInput = sysAudioInput
+    }
+
+    if let micFmt = microphoneFormat {
+      let micSettings: [String: Any] = [
+        AVFormatIDKey: kAudioFormatMPEG4AAC,
+        AVSampleRateKey: micFmt.sampleRate,
+        AVNumberOfChannelsKey: micFmt.channelCount,
+        AVEncoderBitRateKey: 128_000,
+      ]
+      let micInput = AVAssetWriterInput(mediaType: .audio, outputSettings: micSettings)
+      micInput.expectsMediaDataInRealTime = true
+      writer.add(micInput)
+      self.microphoneAudioInput = micInput
+    }
 
     self.assetWriter = writer
-    self.videoInput = input
   }
 
   func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -78,6 +105,19 @@ final class VideoWriter: @unchecked Sendable {
     writtenFrames += 1
   }
 
+  func appendSystemAudioSample(_ sampleBuffer: CMSampleBuffer) {
+    dispatchPrecondition(condition: .onQueue(queue))
+    guard isStarted, let systemAudioInput, systemAudioInput.isReadyForMoreMediaData else { return }
+    systemAudioInput.append(sampleBuffer)
+  }
+
+  func appendMicrophoneAudioSample(_ sampleBuffer: CMSampleBuffer) {
+    queue.sync { [self] in
+      guard isStarted, let microphoneAudioInput, microphoneAudioInput.isReadyForMoreMediaData else { return }
+      microphoneAudioInput.append(sampleBuffer)
+    }
+  }
+
   func finish() async -> URL? {
     return await withCheckedContinuation { continuation in
       queue.async { [self] in
@@ -93,6 +133,8 @@ final class VideoWriter: @unchecked Sendable {
         }
 
         videoInput.markAsFinished()
+        systemAudioInput?.markAsFinished()
+        microphoneAudioInput?.markAsFinished()
 
         nonisolated(unsafe) let writer = assetWriter
         writer.finishWriting {

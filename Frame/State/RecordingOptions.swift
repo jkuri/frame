@@ -23,11 +23,33 @@ struct AudioDevice: Identifiable, Hashable, Sendable {
 @MainActor
 @Observable
 final class RecordingOptions {
-  var timerDelay: TimerDelay = .none
-  var selectedMicrophone: AudioDevice?
-  var showFloatingThumbnail: Bool = true
-  var rememberLastSelection: Bool = true
-  var showMouseClicks: Bool = false
+  var timerDelay: TimerDelay {
+    didSet { ConfigService.shared.timerDelay = timerDelay.rawValue }
+  }
+
+  var selectedMicrophone: AudioDevice? {
+    didSet { ConfigService.shared.audioDeviceId = selectedMicrophone?.id }
+  }
+
+  var showFloatingThumbnail: Bool {
+    didSet { ConfigService.shared.showFloatingThumbnail = showFloatingThumbnail }
+  }
+
+  var rememberLastSelection: Bool {
+    didSet { ConfigService.shared.rememberLastSelection = rememberLastSelection }
+  }
+
+  var showMouseClicks: Bool {
+    didSet { ConfigService.shared.showMouseClicks = showMouseClicks }
+  }
+
+  var fps: Int {
+    didSet { ConfigService.shared.fps = fps }
+  }
+
+  var captureSystemAudio: Bool {
+    didSet { ConfigService.shared.captureSystemAudio = captureSystemAudio }
+  }
 
   var availableMicrophones: [AudioDevice] {
     let discovery = AVCaptureDevice.DiscoverySession(
@@ -36,5 +58,29 @@ final class RecordingOptions {
       position: .unspecified
     )
     return discovery.devices.map { AudioDevice(id: $0.uniqueID, name: $0.localizedName) }
+  }
+
+  init() {
+    let config = ConfigService.shared
+    timerDelay = TimerDelay(rawValue: config.timerDelay) ?? .none
+    showFloatingThumbnail = config.showFloatingThumbnail
+    rememberLastSelection = config.rememberLastSelection
+    showMouseClicks = config.showMouseClicks
+    fps = config.fps
+    captureSystemAudio = config.captureSystemAudio
+
+    let savedDeviceId = config.audioDeviceId
+    if let deviceId = savedDeviceId {
+      let discovery = AVCaptureDevice.DiscoverySession(
+        deviceTypes: [.microphone],
+        mediaType: .audio,
+        position: .unspecified
+      )
+      selectedMicrophone = discovery.devices
+        .first { $0.uniqueID == deviceId }
+        .map { AudioDevice(id: $0.uniqueID, name: $0.localizedName) }
+    } else {
+      selectedMicrophone = nil
+    }
   }
 }

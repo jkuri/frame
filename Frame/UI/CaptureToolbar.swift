@@ -79,7 +79,9 @@ struct CaptureToolbar: View {
 
       ToolbarDivider()
 
-      Button { showOptions.toggle() } label: {
+      Button {
+        showOptions.toggle()
+      } label: {
         HStack(spacing: 4) {
           Text("Options")
             .font(.system(size: 13, weight: .medium))

@@ -20,6 +20,19 @@ struct OptionsPopover: View {
         .background(Color.white.opacity(0.15))
         .padding(.vertical, 4)
 
+      SectionHeader(title: "Audio")
+
+      CheckmarkRow(
+        title: "Capture System Audio",
+        isSelected: options.captureSystemAudio
+      ) {
+        options.captureSystemAudio.toggle()
+      }
+
+      Divider()
+        .background(Color.white.opacity(0.15))
+        .padding(.vertical, 4)
+
       SectionHeader(title: "Microphone")
 
       CheckmarkRow(

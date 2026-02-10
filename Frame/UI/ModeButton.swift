@@ -20,9 +20,7 @@ struct ModeButton: View {
       }
       .frame(width: 56, height: 52)
       .background(
-        isSelected ? Color.white.opacity(0.12) :
-        isHovered ? Color.white.opacity(0.06) :
-        Color.clear
+        isSelected ? Color.white.opacity(0.12) : isHovered ? Color.white.opacity(0.06) : Color.clear
       )
       .clipShape(RoundedRectangle(cornerRadius: 6))
     }

@@ -58,7 +58,7 @@ struct CaptureAreaView: View {
       .clipShape(RoundedRectangle(cornerRadius: 6))
 
       StartRecordingButton(action: { session.overlayView?.confirmSelection() })
-      .padding(.top, 8)
+        .padding(.top, 8)
     }
     .frame(width: 260)
     .onReceive(NotificationCenter.default.publisher(for: .selectionRectChanged)) { notification in

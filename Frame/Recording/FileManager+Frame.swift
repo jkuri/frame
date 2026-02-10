@@ -10,13 +10,16 @@ extension FileManager {
     return tempDir.appendingPathComponent(filename)
   }
 
+  @MainActor
   func defaultSaveDirectory() -> URL {
-    let homeDir = homeDirectoryForCurrentUser
-    let frameDir = homeDir.appendingPathComponent("Frame", isDirectory: true)
-    try? createDirectory(at: frameDir, withIntermediateDirectories: true)
-    return frameDir
+    let folderPath = ConfigService.shared.outputFolder
+    let expanded = NSString(string: folderPath).expandingTildeInPath
+    let url = URL(fileURLWithPath: expanded, isDirectory: true)
+    try? createDirectory(at: url, withIntermediateDirectories: true)
+    return url
   }
 
+  @MainActor
   func defaultSaveURL(for tempURL: URL) -> URL {
     defaultSaveDirectory().appendingPathComponent(tempURL.lastPathComponent)
   }

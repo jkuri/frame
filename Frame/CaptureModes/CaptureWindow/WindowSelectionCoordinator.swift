@@ -37,7 +37,7 @@ final class WindowSelectionCoordinator {
       highlightWindow.setFrame(rect.insetBy(dx: -2, dy: -2), display: true)
     } else {
       let hw = RecordingBorderWindow(screenRect: rect)
-      hw.level = .floating // Ensure it's above the overlay
+      hw.level = .floating  // Ensure it's above the overlay
       highlightWindow = hw
       hw.orderFrontRegardless()
     }

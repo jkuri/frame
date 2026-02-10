@@ -1,6 +1,6 @@
-enum CaptureMode: Sendable, Equatable {
-  case none
-  case entireScreen
-  case selectedWindow
-  case selectedArea
+enum CaptureMode: String, Sendable, Equatable, Codable {
+  case none = "none"
+  case entireScreen = "entireScreen"
+  case selectedWindow = "selectedWindow"
+  case selectedArea = "selectedArea"
 }
