@@ -39,15 +39,17 @@ final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendabl
     }
 
     let colorSpace = CGColorSpaceCreateDeviceRGB()
-    guard let context = CGContext(
-      data: CVPixelBufferGetBaseAddress(outputBuffer),
-      width: width,
-      height: height,
-      bitsPerComponent: 8,
-      bytesPerRow: CVPixelBufferGetBytesPerRow(outputBuffer),
-      space: colorSpace,
-      bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
-    ) else {
+    guard
+      let context = CGContext(
+        data: CVPixelBufferGetBaseAddress(outputBuffer),
+        width: width,
+        height: height,
+        bitsPerComponent: 8,
+        bytesPerRow: CVPixelBufferGetBytesPerRow(outputBuffer),
+        space: colorSpace,
+        bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
+      )
+    else {
       request.finish(with: NSError(domain: "PiPVideoCompositor", code: -4))
       return
     }
@@ -66,7 +68,12 @@ final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendabl
         let flippedY = CGFloat(height) - pipRect.origin.y - pipRect.height
         let drawRect = CGRect(x: pipRect.origin.x, y: flippedY, width: pipRect.width, height: pipRect.height)
 
-        let path = CGPath(roundedRect: drawRect, cornerWidth: instruction.cornerRadius, cornerHeight: instruction.cornerRadius, transform: nil)
+        let path = CGPath(
+          roundedRect: drawRect,
+          cornerWidth: instruction.cornerRadius,
+          cornerHeight: instruction.cornerRadius,
+          transform: nil
+        )
         context.saveGState()
         context.addPath(path)
         context.clip()
@@ -84,15 +91,17 @@ final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendabl
     let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
     guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else { return nil }
 
-    guard let ctx = CGContext(
-      data: baseAddress,
-      width: width,
-      height: height,
-      bitsPerComponent: 8,
-      bytesPerRow: bytesPerRow,
-      space: colorSpace,
-      bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
-    ) else { return nil }
+    guard
+      let ctx = CGContext(
+        data: baseAddress,
+        width: width,
+        height: height,
+        bitsPerComponent: 8,
+        bytesPerRow: bytesPerRow,
+        space: colorSpace,
+        bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
+      )
+    else { return nil }
 
     return ctx.makeImage()
   }

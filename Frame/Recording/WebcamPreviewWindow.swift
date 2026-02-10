@@ -1,5 +1,5 @@
-import AppKit
 import AVFoundation
+import AppKit
 
 @MainActor
 final class WebcamPreviewWindow {

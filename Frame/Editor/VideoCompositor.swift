@@ -73,10 +73,12 @@ enum VideoCompositor {
         try await addAudioTrack(to: composition, from: mixedAudioURL, trimRange: effectiveTrim)
 
         let outputURL = FileManager.default.tempRecordingURL()
-        guard let exportSession = AVAssetExportSession(
-          asset: composition,
-          presetName: AVAssetExportPresetHighestQuality
-        ) else {
+        guard
+          let exportSession = AVAssetExportSession(
+            asset: composition,
+            presetName: AVAssetExportPresetHighestQuality
+          )
+        else {
           throw CaptureError.recordingFailed("Failed to create export session")
         }
 
@@ -96,10 +98,12 @@ enum VideoCompositor {
     try await addAudioTrack(to: composition, from: mixedAudioURL, trimRange: effectiveTrim)
 
     let outputURL = FileManager.default.tempRecordingURL()
-    guard let exportSession = AVAssetExportSession(
-      asset: composition,
-      presetName: AVAssetExportPresetPassthrough
-    ) else {
+    guard
+      let exportSession = AVAssetExportSession(
+        asset: composition,
+        presetName: AVAssetExportPresetPassthrough
+      )
+    else {
       throw CaptureError.recordingFailed("Failed to create export session")
     }
 
@@ -165,10 +169,12 @@ enum VideoCompositor {
       try FileManager.default.removeItem(at: outputURL)
     }
 
-    guard let exportSession = AVAssetExportSession(
-      asset: composition,
-      presetName: AVAssetExportPresetAppleM4A
-    ) else {
+    guard
+      let exportSession = AVAssetExportSession(
+        asset: composition,
+        presetName: AVAssetExportPresetAppleM4A
+      )
+    else {
       throw CaptureError.recordingFailed("Failed to create audio mix session")
     }
 

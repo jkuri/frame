@@ -61,10 +61,15 @@ struct EditorToolbar: View {
         .font(.system(size: 11, weight: .medium))
         .foregroundStyle(FrameColors.dimLabel)
 
-      ForEach(Array(zip(
-        [PiPCorner.topLeft, .topRight, .bottomLeft, .bottomRight],
-        ["arrow.up.left", "arrow.up.right", "arrow.down.left", "arrow.down.right"]
-      )), id: \.1) { corner, icon in
+      ForEach(
+        Array(
+          zip(
+            [PiPCorner.topLeft, .topRight, .bottomLeft, .bottomRight],
+            ["arrow.up.left", "arrow.up.right", "arrow.down.left", "arrow.down.right"]
+          )
+        ),
+        id: \.1
+      ) { corner, icon in
         Button {
           editorState.setPipCorner(corner)
         } label: {
