@@ -143,7 +143,8 @@ final class SelectionOverlayView: NSView {
       return
     }
 
-    if controlsHost == nil {
+    let isFirstCreate = controlsHost == nil
+    if isFirstCreate {
       let view = CaptureAreaView(session: session)
       let hosting = NSHostingView(rootView: view)
       addSubview(hosting)
@@ -152,7 +153,13 @@ final class SelectionOverlayView: NSView {
 
     guard let hosting = controlsHost else { return }
 
-    NotificationCenter.default.post(name: .selectionRectChanged, object: NSValue(rect: rect))
+    if isFirstCreate {
+      DispatchQueue.main.async {
+        NotificationCenter.default.post(name: .selectionRectChanged, object: NSValue(rect: rect))
+      }
+    } else {
+      NotificationCenter.default.post(name: .selectionRectChanged, object: NSValue(rect: rect))
+    }
 
     let panelSize = hosting.intrinsicContentSize
     hosting.setFrameSize(panelSize)

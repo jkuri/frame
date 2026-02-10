@@ -123,6 +123,22 @@ struct CaptureToolbar: View {
       CompactTimerView(startedAt: startedAt, frozen: isPaused)
         .padding(.horizontal, 10)
 
+      if session.options.captureSystemAudio || session.options.selectedMicrophone != nil {
+        HStack(spacing: 6) {
+          if session.options.captureSystemAudio {
+            Image(systemName: "speaker.wave.2.fill")
+              .font(.system(size: 11))
+              .foregroundStyle(.white.opacity(0.5))
+          }
+          if session.options.selectedMicrophone != nil {
+            Image(systemName: "mic.fill")
+              .font(.system(size: 11))
+              .foregroundStyle(.white.opacity(0.5))
+          }
+        }
+        .padding(.trailing, 2)
+      }
+
       ToolbarDivider()
 
       if isPaused {

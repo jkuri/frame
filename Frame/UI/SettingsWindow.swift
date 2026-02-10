@@ -2,10 +2,11 @@ import AppKit
 import SwiftUI
 
 @MainActor
-final class SettingsWindow {
+final class SettingsWindow: NSObject, NSWindowDelegate {
   static let shared = SettingsWindow()
 
   private var window: NSWindow?
+  var onClose: (() -> Void)?
 
   func show() {
     if let window {
@@ -29,9 +30,15 @@ final class SettingsWindow {
     window.contentView = hostingView
     window.center()
     window.isReleasedWhenClosed = false
+    window.delegate = self
     window.makeKeyAndOrderFront(nil)
     NSApp.activate(ignoringOtherApps: true)
 
     self.window = window
+  }
+
+  func windowWillClose(_ notification: Notification) {
+    window = nil
+    onClose?()
   }
 }

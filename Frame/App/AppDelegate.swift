@@ -9,6 +9,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
   func applicationDidFinishLaunching(_ notification: Notification) {
     setupStatusItem()
+    if Permissions.allPermissionsGranted {
+      session.showToolbar()
+    }
   }
 
   private func setupStatusItem() {

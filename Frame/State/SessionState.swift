@@ -246,11 +246,18 @@ final class SessionState {
 
     recordingCoordinator = nil
     captureTarget = nil
+    captureMode = .none
     transition(to: .idle)
-    hideToolbar()
+    showToolbar()
   }
 
   func openSettings() {
+    hideToolbar()
+    SettingsWindow.shared.onClose = { [weak self] in
+      MainActor.assumeIsolated {
+        self?.showToolbar()
+      }
+    }
     SettingsWindow.shared.show()
   }
 
