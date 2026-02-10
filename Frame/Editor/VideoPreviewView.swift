@@ -49,8 +49,13 @@ final class VideoPreviewContainer: NSView {
   let screenPlayerLayer = AVPlayerLayer()
   let webcamPlayerLayer = AVPlayerLayer()
   private let webcamView = WebcamPiPView()
+  private let resizeGrip = ResizeGripView()
   var coordinator: VideoPreviewView.Coordinator?
-  private let resizeHandleSize: CGFloat = 12
+  private let handleSize: CGFloat = 20
+  private var currentLayout = PiPLayout()
+  private var currentWebcamSize: CGSize?
+  private var currentScreenSize: CGSize = .zero
+  private var trackingArea: NSTrackingArea?
 
   override init(frame: NSRect) {
     super.init(frame: frame)
@@ -69,32 +74,99 @@ final class VideoPreviewContainer: NSView {
     webcamView.layer?.addSublayer(webcamPlayerLayer)
     webcamPlayerLayer.isHidden = true
     addSubview(webcamView)
+    addSubview(resizeGrip)
   }
 
   required init?(coder: NSCoder) { nil }
 
+  override func hitTest(_ point: NSPoint) -> NSView? {
+    let loc = convert(point, from: superview)
+    if !webcamView.isHidden && (resizeGrip.frame.contains(loc) || webcamView.frame.contains(loc)) {
+      return self
+    }
+    return super.hitTest(point)
+  }
+
   override func layout() {
     super.layout()
     screenPlayerLayer.frame = bounds
-    webcamPlayerLayer.frame = webcamView.bounds
+    layoutWebcamView()
+  }
+
+  override func updateTrackingAreas() {
+    super.updateTrackingAreas()
+    if let existing = trackingArea {
+      removeTrackingArea(existing)
+    }
+    let area = NSTrackingArea(
+      rect: bounds,
+      options: [.mouseMoved, .mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
+      owner: self
+    )
+    addTrackingArea(area)
+    trackingArea = area
   }
 
   func updatePiPLayout(_ layout: PiPLayout, webcamSize: CGSize?, screenSize: CGSize) {
-    guard let ws = webcamSize, webcamPlayerLayer.player != nil else {
+    currentLayout = layout
+    currentWebcamSize = webcamSize
+    currentScreenSize = screenSize
+    layoutWebcamView()
+  }
+
+  private func layoutWebcamView() {
+    guard let ws = currentWebcamSize, webcamPlayerLayer.player != nil else {
       webcamView.isHidden = true
+      resizeGrip.isHidden = true
       return
     }
     webcamView.isHidden = false
 
-    let videoRect = AVMakeRect(aspectRatio: screenSize, insideRect: bounds)
+    let videoRect = AVMakeRect(aspectRatio: currentScreenSize, insideRect: bounds)
     let aspect = ws.height / max(ws.width, 1)
-    let w = videoRect.width * layout.relativeWidth
+    let w = videoRect.width * currentLayout.relativeWidth
     let h = w * aspect
-    let x = videoRect.origin.x + videoRect.width * layout.relativeX
-    let y = videoRect.origin.y + videoRect.height * layout.relativeY
+    let x = videoRect.origin.x + videoRect.width * currentLayout.relativeX
+    let y = videoRect.origin.y + videoRect.height * currentLayout.relativeY
 
     webcamView.frame = CGRect(x: x, y: bounds.height - y - h, width: w, height: h)
     webcamPlayerLayer.frame = webcamView.bounds
+
+    resizeGrip.frame = CGRect(
+      x: webcamView.frame.maxX - handleSize,
+      y: webcamView.frame.minY,
+      width: handleSize,
+      height: handleSize
+    )
+    resizeGrip.isHidden = false
+  }
+
+  private func resizeHandleRect() -> CGRect {
+    CGRect(
+      x: webcamView.frame.maxX - handleSize,
+      y: webcamView.frame.minY,
+      width: handleSize,
+      height: handleSize
+    )
+  }
+
+  override func mouseMoved(with event: NSEvent) {
+    guard !webcamView.isHidden else {
+      NSCursor.arrow.set()
+      return
+    }
+    let loc = convert(event.locationInWindow, from: nil)
+    if resizeHandleRect().contains(loc) {
+      NSCursor.resizeLeftRight.set()
+    } else if webcamView.frame.contains(loc) {
+      NSCursor.openHand.set()
+    } else {
+      NSCursor.arrow.set()
+    }
+  }
+
+  override func mouseExited(with event: NSEvent) {
+    NSCursor.arrow.set()
   }
 
   override func mouseDown(with event: NSEvent) {
@@ -102,16 +174,12 @@ final class VideoPreviewContainer: NSView {
     let loc = convert(event.locationInWindow, from: nil)
 
     if webcamView.frame.contains(loc) && !webcamView.isHidden {
-      let handleRect = CGRect(
-        x: webcamView.frame.maxX - resizeHandleSize,
-        y: webcamView.frame.minY,
-        width: resizeHandleSize,
-        height: resizeHandleSize
-      )
-      if handleRect.contains(loc) {
+      if resizeHandleRect().contains(loc) {
         coord.isResizing = true
+        NSCursor.resizeLeftRight.set()
       } else {
         coord.isDragging = true
+        NSCursor.closedHand.set()
       }
       coord.dragStart = loc
       coord.startLayout = coord.pipLayout.wrappedValue
@@ -160,12 +228,55 @@ final class VideoPreviewContainer: NSView {
   }
 
   override func mouseUp(with event: NSEvent) {
+    let wasInteracting = coordinator?.isDragging == true || coordinator?.isResizing == true
     coordinator?.isDragging = false
     coordinator?.isResizing = false
+    if wasInteracting {
+      let loc = convert(event.locationInWindow, from: nil)
+      if resizeHandleRect().contains(loc) {
+        NSCursor.resizeLeftRight.set()
+      } else if webcamView.frame.contains(loc) {
+        NSCursor.openHand.set()
+      } else {
+        NSCursor.arrow.set()
+      }
+    }
     super.mouseUp(with: event)
   }
 }
 
 private final class WebcamPiPView: NSView {
   override var isFlipped: Bool { true }
+}
+
+private final class ResizeGripView: NSView {
+  override init(frame: NSRect) {
+    super.init(frame: frame)
+    wantsLayer = true
+    layer?.backgroundColor = NSColor.clear.cgColor
+  }
+
+  required init?(coder: NSCoder) { nil }
+
+  override func draw(_ dirtyRect: NSRect) {
+    guard let ctx = NSGraphicsContext.current?.cgContext else { return }
+    let color = NSColor.white.withAlphaComponent(0.6).cgColor
+    ctx.setStrokeColor(color)
+    ctx.setLineWidth(1.5)
+    ctx.setLineCap(.round)
+
+    let inset: CGFloat = 4
+    let spacing: CGFloat = 4
+
+    for i in 0..<3 {
+      let offset = CGFloat(i) * spacing
+      let startX = bounds.maxX - inset - offset
+      let startY = bounds.minY + inset
+      let endX = bounds.maxX - inset
+      let endY = bounds.minY + inset + offset
+      ctx.move(to: CGPoint(x: startX, y: startY))
+      ctx.addLine(to: CGPoint(x: endX, y: endY))
+    }
+    ctx.strokePath()
+  }
 }

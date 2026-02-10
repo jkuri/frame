@@ -78,6 +78,7 @@
 		A2000000000000000000000F /* PiPVideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000F /* PiPVideoCompositor.swift */; };
 		A20000000000000000000010 /* VideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000010 /* VideoCompositor.swift */; };
 		A20000000000000000000011 /* SendableBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000011 /* SendableBox.swift */; };
+		A20000000000000000000012 /* CountdownOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000012 /* CountdownOverlayWindow.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -153,6 +154,7 @@
 		B2000000000000000000000F /* PiPVideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPVideoCompositor.swift; sourceTree = "<group>"; };
 		B20000000000000000000010 /* VideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCompositor.swift; sourceTree = "<group>"; };
 		B20000000000000000000011 /* SendableBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendableBox.swift; sourceTree = "<group>"; };
+		B20000000000000000000012 /* CountdownOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownOverlayWindow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -295,6 +297,7 @@
 				B1000000000000000000002C /* StartRecordingButton.swift */,
 				B1000000000000000000002D /* SettingsView.swift */,
 				B1000000000000000000002E /* SettingsWindow.swift */,
+				B20000000000000000000012 /* CountdownOverlayWindow.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -507,6 +510,7 @@
 				A2000000000000000000000F /* PiPVideoCompositor.swift in Sources */,
 				A20000000000000000000010 /* VideoCompositor.swift in Sources */,
 				A20000000000000000000011 /* SendableBox.swift in Sources */,
+				A20000000000000000000012 /* CountdownOverlayWindow.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

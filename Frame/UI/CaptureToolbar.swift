@@ -8,6 +8,8 @@ struct CaptureToolbar: View {
   var body: some View {
     HStack(spacing: 0) {
       switch session.state {
+      case .countdown(let remaining):
+        countdownContent(remaining: remaining)
       case .recording(let startedAt):
         recordingControls(startedAt: startedAt, isPaused: false)
       case .paused(let elapsed):
@@ -110,6 +112,27 @@ struct CaptureToolbar: View {
           .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
+    }
+  }
+
+  private func countdownContent(remaining: Int) -> some View {
+    Group {
+      Image(systemName: "timer")
+        .font(.system(size: 16))
+        .foregroundStyle(FrameColors.secondaryText)
+        .padding(.leading, 4)
+
+      Text("Recording in \(remaining)...")
+        .font(.system(size: 14, weight: .medium, design: .monospaced))
+        .foregroundStyle(FrameColors.primaryText)
+        .padding(.horizontal, 10)
+        .frame(height: 52)
+
+      ToolbarDivider()
+
+      ToolbarActionButton(icon: "xmark", tooltip: "Cancel") {
+        session.cancelCountdown()
+      }
     }
   }
 

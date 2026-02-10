@@ -3,12 +3,14 @@ import SwiftUI
 
 enum TimerDelay: Int, CaseIterable, Sendable {
   case none = 0
+  case threeSeconds = 3
   case fiveSeconds = 5
   case tenSeconds = 10
 
   var label: String {
     switch self {
     case .none: "None"
+    case .threeSeconds: "3 Seconds"
     case .fiveSeconds: "5 Seconds"
     case .tenSeconds: "10 Seconds"
     }

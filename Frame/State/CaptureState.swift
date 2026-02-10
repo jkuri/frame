@@ -3,6 +3,7 @@ import Foundation
 enum CaptureState: Sendable, Equatable {
   case idle
   case selecting
+  case countdown(remaining: Int)
   case recording(startedAt: Date)
   case paused(elapsed: TimeInterval)
   case processing

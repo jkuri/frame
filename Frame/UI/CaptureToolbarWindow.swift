@@ -67,6 +67,9 @@ final class CaptureToolbarWindow: NSPanel {
     switch session.state {
     case .recording, .paused, .processing:
       return
+    case .countdown:
+      session.cancelCountdown()
+      session.hideToolbar()
     case .selecting:
       session.cancelSelection()
     default:

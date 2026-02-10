@@ -25,6 +25,8 @@ final class SessionState {
   private var startRecordingWindow: StartRecordingWindow?
   private var editorWindow: EditorWindow?
   private var webcamPreviewWindow: WebcamPreviewWindow?
+  private var countdownOverlayWindow: CountdownOverlayWindow?
+  private var countdownTask: Task<Void, Never>?
 
   weak var overlayView: SelectionOverlayView?
 
@@ -43,7 +45,7 @@ final class SessionState {
       MainActor.assumeIsolated {
         guard let self else { return }
         switch self.state {
-        case .recording, .paused, .processing, .editing:
+        case .countdown, .recording, .paused, .processing, .editing:
           return
         default:
           self.hideToolbar()
@@ -152,17 +154,7 @@ final class SessionState {
     StateService.shared.lastDisplayID = selection.displayID
     logger.info("Selection confirmed: \(selection.rect)")
 
-    Task {
-      do {
-        try await startRecording()
-      } catch {
-        logger.error("Failed to start recording: \(error)")
-        selectionCoordinator?.destroyAll()
-        selectionCoordinator = nil
-        transition(to: .idle)
-        showError(error.localizedDescription)
-      }
-    }
+    beginRecordingWithCountdown()
   }
 
   func confirmWindowSelection(_ window: SCWindow) {
@@ -172,16 +164,7 @@ final class SessionState {
     captureTarget = .window(window)
     logger.info("Window selection confirmed: \(window.title ?? "Unknown")")
 
-    Task {
-      do {
-        try await startRecording()
-      } catch {
-        logger.error("Failed to start recording: \(error)")
-        windowSelectionCoordinator = nil
-        transition(to: .idle)
-        showError(error.localizedDescription)
-      }
-    }
+    beginRecordingWithCountdown()
   }
 
   func updateWindowHighlight(_ window: SCWindow?) {
@@ -202,9 +185,78 @@ final class SessionState {
     overlayView?.applyExternalRect(rect)
   }
 
+  private func beginRecordingWithCountdown() {
+    let delay = options.timerDelay.rawValue
+    guard delay > 0 else {
+      Task {
+        do {
+          try await startRecording()
+        } catch {
+          logger.error("Failed to start recording: \(error)")
+          cleanupAfterRecordingFailure()
+          showError(error.localizedDescription)
+        }
+      }
+      return
+    }
+
+    transition(to: .countdown(remaining: delay))
+
+    if let screen = NSScreen.main {
+      let overlay = CountdownOverlayWindow(screen: screen, remaining: delay)
+      overlay.orderFrontRegardless()
+      countdownOverlayWindow = overlay
+    }
+
+    countdownTask = Task {
+      var remaining = delay
+      while remaining > 0 {
+        try? await Task.sleep(for: .seconds(1))
+        if Task.isCancelled { return }
+        remaining -= 1
+        if remaining > 0 {
+          transition(to: .countdown(remaining: remaining))
+          countdownOverlayWindow?.updateCountdown(remaining)
+        }
+      }
+
+      dismissCountdownOverlay()
+
+      do {
+        try await startRecording()
+      } catch {
+        logger.error("Failed to start recording: \(error)")
+        cleanupAfterRecordingFailure()
+        showError(error.localizedDescription)
+      }
+    }
+  }
+
+  func cancelCountdown() {
+    countdownTask?.cancel()
+    countdownTask = nil
+    dismissCountdownOverlay()
+    cleanupAfterRecordingFailure()
+  }
+
+  private func dismissCountdownOverlay() {
+    countdownOverlayWindow?.orderOut(nil)
+    countdownOverlayWindow?.contentView = nil
+    countdownOverlayWindow = nil
+  }
+
+  private func cleanupAfterRecordingFailure() {
+    selectionCoordinator?.destroyAll()
+    selectionCoordinator = nil
+    windowSelectionCoordinator?.destroyOverlay()
+    windowSelectionCoordinator = nil
+    captureTarget = nil
+    transition(to: .idle)
+  }
+
   func startRecording() async throws {
     switch state {
-    case .selecting, .idle:
+    case .selecting, .idle, .countdown:
       break
     default:
       throw CaptureError.invalidTransition(from: "\(state)", to: "recording")
@@ -267,6 +319,7 @@ final class SessionState {
   }
 
   private func openEditor(result: RecordingResult) {
+    hideToolbar()
     transition(to: .editing)
 
     let editor = EditorWindow()
@@ -325,6 +378,10 @@ final class SessionState {
   }
 
   func restartRecording() {
+    countdownTask?.cancel()
+    countdownTask = nil
+    dismissCountdownOverlay()
+
     Task {
       selectionCoordinator?.destroyAll()
       selectionCoordinator = nil
@@ -364,6 +421,7 @@ final class SessionState {
       switch state {
       case .idle: "rectangle.dashed.badge.record"
       case .selecting: "rectangle.dashed"
+      case .countdown: "timer"
       case .recording: "record.circle.fill"
       case .paused: "pause.circle.fill"
       case .processing: "gear"
@@ -415,16 +473,6 @@ final class SessionState {
     selectionCoordinator = coordinator
     coordinator.showRecordingBorder(screenRect: screen.frame)
 
-    Task {
-      do {
-        try await startRecording()
-      } catch {
-        logger.error("Failed to start recording: \(error)")
-        selectionCoordinator?.destroyAll()
-        selectionCoordinator = nil
-        transition(to: .idle)
-        showError(error.localizedDescription)
-      }
-    }
+    beginRecordingWithCountdown()
   }
 }

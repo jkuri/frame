@@ -36,6 +36,7 @@ struct EditorToolbar: View {
         onCancel()
       }
       .buttonStyle(EditorButtonStyle(isPrimary: false))
+      .disabled(editorState.isExporting)
 
       Button("Save") {
         onSave()
@@ -95,6 +96,7 @@ struct EditorToolbar: View {
 
 private struct EditorButtonStyle: ButtonStyle {
   let isPrimary: Bool
+  @Environment(\.isEnabled) private var isEnabled
 
   func makeBody(configuration: Configuration) -> some View {
     configuration.label
@@ -108,5 +110,6 @@ private struct EditorButtonStyle: ButtonStyle {
           : (configuration.isPressed ? FrameColors.buttonPressed : FrameColors.buttonBackground)
       )
       .clipShape(RoundedRectangle(cornerRadius: 6))
+      .opacity(isEnabled ? 1.0 : 0.4)
   }
 }
