@@ -40,7 +40,7 @@ final class VideoWriter: @unchecked Sendable {
         AVVideoAverageBitRateKey: width * height * 12,
         AVVideoProfileLevelKey: AVVideoProfileLevelH264MainAutoLevel,
         AVVideoExpectedSourceFrameRateKey: 60,
-        AVVideoAllowFrameReorderingKey: true,
+        AVVideoAllowFrameReorderingKey: false,
       ] as [String: Any],
     ]
 

@@ -9,7 +9,10 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
   private let logger = Logger(label: "eu.jankuri.frame.capture-session")
   private var totalCallbacks = 0
   private var completeFrames = 0
+  private var acceptedFrames = 0
   private var lastLogTime: CFAbsoluteTime = 0
+  private var nextTargetPTS: CMTime = .invalid
+  private var targetFrameInterval: CMTime = .invalid
 
   init(videoWriter: VideoWriter) {
     self.videoWriter = videoWriter
@@ -27,15 +30,19 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
     let pixelW = Int(sourceRect.width * displayScale) & ~1
     let pixelH = Int(sourceRect.height * displayScale) & ~1
 
+    let captureFps = Int(round(Double(fps) * 1.2))
+    targetFrameInterval = CMTime(value: 1, timescale: CMTimeScale(fps))
+    nextTargetPTS = .invalid
+
     let config = SCStreamConfiguration()
     config.sourceRect = sourceRect
     config.width = pixelW
     config.height = pixelH
-    config.minimumFrameInterval = CMTime(value: 1, timescale: CMTimeScale(fps))
+    config.minimumFrameInterval = CMTime(value: 1, timescale: CMTimeScale(captureFps))
     config.pixelFormat = kCVPixelFormatType_32BGRA
     config.showsCursor = true
     config.capturesAudio = false
-    config.queueDepth = 3
+    config.queueDepth = 8
     config.scalesToFit = false
     config.colorSpaceName = CGColorSpace.sRGB as CFString
 
@@ -50,7 +57,8 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
       metadata: [
         "sourceRect": "\(sourceRect)",
         "displayScale": "\(displayScale)",
-        "fps": "\(fps)",
+        "targetFps": "\(fps)",
+        "captureFps": "\(captureFps)",
         "output_size": "\(config.width)x\(config.height)",
       ]
     )
@@ -59,6 +67,7 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
   func stop() async throws {
     try await stream?.stopCapture()
     stream = nil
+    nextTargetPTS = .invalid
     logger.info("Capture stopped")
   }
 
@@ -76,13 +85,26 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
 
     completeFrames += 1
 
+    let pts = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+    if nextTargetPTS.isValid {
+      if CMTimeCompare(pts, nextTargetPTS) < 0 {
+        return
+      }
+      nextTargetPTS = CMTimeAdd(nextTargetPTS, targetFrameInterval)
+    } else {
+      nextTargetPTS = CMTimeAdd(pts, targetFrameInterval)
+    }
+
+    acceptedFrames += 1
+
     let now = CFAbsoluteTimeGetCurrent()
     if now - lastLogTime >= 2.0 {
       logger.info(
-        "Frame stats: \(totalCallbacks) callbacks, \(completeFrames) complete, \(videoWriter.writtenFrames) written, \(videoWriter.droppedFrames) dropped"
+        "Frame stats: \(totalCallbacks) callbacks, \(completeFrames) complete, \(acceptedFrames) accepted, \(videoWriter.writtenFrames) written, \(videoWriter.droppedFrames) dropped"
       )
       totalCallbacks = 0
       completeFrames = 0
+      acceptedFrames = 0
       videoWriter.resetStats()
       lastLogTime = now
     }
@@ -94,3 +116,4 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
     logger.error("Stream error: \(error.localizedDescription)")
   }
 }
+
