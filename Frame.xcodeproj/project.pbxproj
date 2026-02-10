@@ -7,10 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C8CC4187964D4445B613AEEB /* WindowSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB41C1253D94BEF960FD7D2 /* WindowSelectionCoordinator.swift */; };
-		FE1324E865074398BCC4317D /* WindowSelectionOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A435021272D7425AB77F93DF /* WindowSelectionOverlay.swift */; };
-		F93F2FF47E12481595833E3E /* WindowSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */; };
 		0255AD69477B42D2B028628B /* CaptureTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFD921258364EA6A604537F /* CaptureTarget.swift */; };
+		3DCA03E12F3B511C003FE309 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DCA03E02F3B511C003FE309 /* Assets.xcassets */; };
 		A10000000000000000000001 /* FrameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* FrameApp.swift */; };
 		A10000000000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* AppDelegate.swift */; };
 		A10000000000000000000003 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* Permissions.swift */; };
@@ -18,9 +16,6 @@
 		A10000000000000000000005 /* RotatingFileLogHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* RotatingFileLogHandler.swift */; };
 		A10000000000000000000006 /* CaptureState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* CaptureState.swift */; };
 		A10000000000000000000007 /* SessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* SessionState.swift */; };
-		A10000000000000000000008 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* MenuBarView.swift */; };
-		A10000000000000000000009 /* MenuBarIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* MenuBarIconView.swift */; };
-		A1000000000000000000000A /* RecordingTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000A /* RecordingTimerView.swift */; };
 		A1000000000000000000000B /* SelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000B /* SelectionCoordinator.swift */; };
 		A1000000000000000000000C /* SelectionOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000C /* SelectionOverlayWindow.swift */; };
 		A1000000000000000000000D /* SelectionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000D /* SelectionOverlayView.swift */; };
@@ -32,7 +27,6 @@
 		A10000000000000000000013 /* FileManager+Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* FileManager+Frame.swift */; };
 		A10000000000000000000014 /* NSScreen+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* NSScreen+Extensions.swift */; };
 		A10000000000000000000015 /* CGRect+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* CGRect+Extensions.swift */; };
-		A10000000000000000000016 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* Assets.xcassets */; };
 		A10000000000000000000017 /* ScreenCaptureKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* ScreenCaptureKit.framework */; };
 		A10000000000000000000018 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* AVFoundation.framework */; };
 		A10000000000000000000019 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = E10000000000000000000001 /* Logging */; };
@@ -52,15 +46,20 @@
 		A10000000000000000000028 /* CaptureToolbarWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000028 /* CaptureToolbarWindow.swift */; };
 		A10000000000000000000029 /* ToolbarBackdropWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000029 /* ToolbarBackdropWindow.swift */; };
 		A1000000000000000000002A /* StartRecordingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002A /* StartRecordingOverlay.swift */; };
-		ED4608FB0AB34BC3B7BEDB94 /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC41BA6DF5654C57AC930549; };
 		A1000000000000000000002B /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002B /* PermissionsView.swift */; };
+		A1000000000000000000002C /* StartRecordingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002C /* StartRecordingButton.swift */; };
+		A1000000000000000000002D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002D /* SettingsView.swift */; };
+		A1000000000000000000002E /* SettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002E /* SettingsWindow.swift */; };
+		C8CC4187964D4445B613AEEB /* WindowSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB41C1253D94BEF960FD7D2 /* WindowSelectionCoordinator.swift */; };
+		ED4608FB0AB34BC3B7BEDB94 /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC41BA6DF5654C57AC930549 /* WindowController.swift */; };
+		F93F2FF47E12481595833E3E /* WindowSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */; };
+		FE1324E865074398BCC4317D /* WindowSelectionOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A435021272D7425AB77F93DF /* WindowSelectionOverlay.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BDB41C1253D94BEF960FD7D2 /* WindowSelectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionCoordinator.swift; sourceTree = "<group>"; };
-		A435021272D7425AB77F93DF /* WindowSelectionOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionOverlay.swift; sourceTree = "<group>"; };
-		C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionView.swift; sourceTree = "<group>"; };
 		3CFD921258364EA6A604537F /* CaptureTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTarget.swift; sourceTree = "<group>"; };
+		3DCA03E02F3B511C003FE309 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A435021272D7425AB77F93DF /* WindowSelectionOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionOverlay.swift; sourceTree = "<group>"; };
 		B10000000000000000000001 /* FrameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameApp.swift; sourceTree = "<group>"; };
 		B10000000000000000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B10000000000000000000003 /* Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
@@ -68,9 +67,6 @@
 		B10000000000000000000005 /* RotatingFileLogHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatingFileLogHandler.swift; sourceTree = "<group>"; };
 		B10000000000000000000006 /* CaptureState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureState.swift; sourceTree = "<group>"; };
 		B10000000000000000000007 /* SessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionState.swift; sourceTree = "<group>"; };
-		B10000000000000000000008 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
-		B10000000000000000000009 /* MenuBarIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIconView.swift; sourceTree = "<group>"; };
-		B1000000000000000000000A /* RecordingTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingTimerView.swift; sourceTree = "<group>"; };
 		B1000000000000000000000B /* SelectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionCoordinator.swift; sourceTree = "<group>"; };
 		B1000000000000000000000C /* SelectionOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionOverlayWindow.swift; sourceTree = "<group>"; };
 		B1000000000000000000000D /* SelectionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionOverlayView.swift; sourceTree = "<group>"; };
@@ -82,7 +78,6 @@
 		B10000000000000000000013 /* FileManager+Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Frame.swift"; sourceTree = "<group>"; };
 		B10000000000000000000014 /* NSScreen+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSScreen+Extensions.swift"; sourceTree = "<group>"; };
 		B10000000000000000000015 /* CGRect+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extensions.swift"; sourceTree = "<group>"; };
-		B10000000000000000000016 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B10000000000000000000017 /* ScreenCaptureKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenCaptureKit.framework; path = System/Library/Frameworks/ScreenCaptureKit.framework; sourceTree = SDKROOT; };
 		B10000000000000000000018 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B10000000000000000000019 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -103,8 +98,13 @@
 		B10000000000000000000028 /* CaptureToolbarWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbarWindow.swift; sourceTree = "<group>"; };
 		B10000000000000000000029 /* ToolbarBackdropWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarBackdropWindow.swift; sourceTree = "<group>"; };
 		B1000000000000000000002A /* StartRecordingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRecordingOverlay.swift; sourceTree = "<group>"; };
-		EC41BA6DF5654C57AC930549 /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 		B1000000000000000000002B /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
+		B1000000000000000000002C /* StartRecordingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRecordingButton.swift; sourceTree = "<group>"; };
+		B1000000000000000000002D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B1000000000000000000002E /* SettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindow.swift; sourceTree = "<group>"; };
+		BDB41C1253D94BEF960FD7D2 /* WindowSelectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionCoordinator.swift; sourceTree = "<group>"; };
+		C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionView.swift; sourceTree = "<group>"; };
+		EC41BA6DF5654C57AC930549 /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,34 +138,16 @@
 				B10000000000000000000001 /* FrameApp.swift */,
 				B10000000000000000000019 /* Info.plist */,
 				B1000000000000000000001A /* Frame.entitlements */,
-				B10000000000000000000016 /* Assets.xcassets */,
 				D10000000000000000000003 /* App */,
 				D10000000000000000000004 /* Logging */,
 				D10000000000000000000005 /* State */,
-				D10000000000000000000006 /* MenuBar */,
 				D1000000000000000000000D /* CaptureModes */,
 				D10000000000000000000008 /* Recording */,
 				D10000000000000000000009 /* Utilities */,
 				D1000000000000000000000C /* UI */,
+				3DCA03E02F3B511C003FE309 /* Assets.xcassets */,
 			);
 			path = Frame;
-			sourceTree = "<group>";
-		};
-		D1000000000000000000000C /* UI */ = {
-			isa = PBXGroup;
-			children = (
-				B1000000000000000000001F /* Colors.swift */,
-				B10000000000000000000020 /* NumberField.swift */,
-				B10000000000000000000022 /* SectionHeader.swift */,
-				B10000000000000000000023 /* CheckmarkRow.swift */,
-				B10000000000000000000024 /* OptionsPopover.swift */,
-				B10000000000000000000026 /* ModeButton.swift */,
-				B10000000000000000000027 /* CaptureToolbar.swift */,
-				B10000000000000000000028 /* CaptureToolbarWindow.swift */,
-				B10000000000000000000029 /* ToolbarBackdropWindow.swift */,
-			B1000000000000000000002B /* PermissionsView.swift */,
-			);
-			path = UI;
 			sourceTree = "<group>";
 		};
 		D10000000000000000000003 /* App */ = {
@@ -173,8 +155,8 @@
 			children = (
 				B10000000000000000000002 /* AppDelegate.swift */,
 				B10000000000000000000003 /* Permissions.swift */,
-							EC41BA6DF5654C57AC930549 /* WindowController.swift */,
-);
+				EC41BA6DF5654C57AC930549 /* WindowController.swift */,
+			);
 			path = App;
 			sourceTree = "<group>";
 		};
@@ -198,14 +180,63 @@
 			path = State;
 			sourceTree = "<group>";
 		};
-		D10000000000000000000006 /* MenuBar */ = {
+		D10000000000000000000008 /* Recording */ = {
 			isa = PBXGroup;
 			children = (
-				B10000000000000000000008 /* MenuBarView.swift */,
-				B10000000000000000000009 /* MenuBarIconView.swift */,
-				B1000000000000000000000A /* RecordingTimerView.swift */,
+				3CFD921258364EA6A604537F /* CaptureTarget.swift */,
+				B10000000000000000000010 /* RecordingCoordinator.swift */,
+				B10000000000000000000011 /* ScreenCaptureSession.swift */,
+				B10000000000000000000012 /* VideoWriter.swift */,
+				B1000000000000000000001C /* VideoTranscoder.swift */,
+				B10000000000000000000013 /* FileManager+Frame.swift */,
 			);
-			path = MenuBar;
+			path = Recording;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000009 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000014 /* NSScreen+Extensions.swift */,
+				B10000000000000000000015 /* CGRect+Extensions.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000017 /* ScreenCaptureKit.framework */,
+				B10000000000000000000018 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000001B /* Frame.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000C /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000001F /* Colors.swift */,
+				B10000000000000000000020 /* NumberField.swift */,
+				B10000000000000000000022 /* SectionHeader.swift */,
+				B10000000000000000000023 /* CheckmarkRow.swift */,
+				B10000000000000000000024 /* OptionsPopover.swift */,
+				B10000000000000000000026 /* ModeButton.swift */,
+				B10000000000000000000027 /* CaptureToolbar.swift */,
+				B10000000000000000000028 /* CaptureToolbarWindow.swift */,
+				B10000000000000000000029 /* ToolbarBackdropWindow.swift */,
+				B1000000000000000000002B /* PermissionsView.swift */,
+				B1000000000000000000002C /* StartRecordingButton.swift */,
+				B1000000000000000000002D /* SettingsView.swift */,
+				B1000000000000000000002E /* SettingsWindow.swift */,
+			);
+			path = UI;
 			sourceTree = "<group>";
 		};
 		D1000000000000000000000D /* CaptureModes */ = {
@@ -256,45 +287,6 @@
 				C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */,
 			);
 			path = CaptureWindow;
-			sourceTree = "<group>";
-		};
-		D10000000000000000000008 /* Recording */ = {
-			isa = PBXGroup;
-			children = (
-				3CFD921258364EA6A604537F /* CaptureTarget.swift */,
-				B10000000000000000000010 /* RecordingCoordinator.swift */,
-				B10000000000000000000011 /* ScreenCaptureSession.swift */,
-				B10000000000000000000012 /* VideoWriter.swift */,
-				B1000000000000000000001C /* VideoTranscoder.swift */,
-				B10000000000000000000013 /* FileManager+Frame.swift */,
-			);
-			path = Recording;
-			sourceTree = "<group>";
-		};
-		D10000000000000000000009 /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				B10000000000000000000014 /* NSScreen+Extensions.swift */,
-				B10000000000000000000015 /* CGRect+Extensions.swift */,
-			);
-			path = Utilities;
-			sourceTree = "<group>";
-		};
-		D1000000000000000000000A /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				B10000000000000000000017 /* ScreenCaptureKit.framework */,
-				B10000000000000000000018 /* AVFoundation.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		D1000000000000000000000B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				B1000000000000000000001B /* Frame.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -360,7 +352,7 @@
 		C10000000000000000000003 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
-				A10000000000000000000016 /* Assets.xcassets in Resources */,
+				3DCA03E12F3B511C003FE309 /* Assets.xcassets in Resources */,
 			);
 		};
 /* End PBXResourcesBuildPhase section */
@@ -380,9 +372,6 @@
 				A10000000000000000000005 /* RotatingFileLogHandler.swift in Sources */,
 				A10000000000000000000006 /* CaptureState.swift in Sources */,
 				A10000000000000000000007 /* SessionState.swift in Sources */,
-				A10000000000000000000008 /* MenuBarView.swift in Sources */,
-				A10000000000000000000009 /* MenuBarIconView.swift in Sources */,
-				A1000000000000000000000A /* RecordingTimerView.swift in Sources */,
 				A1000000000000000000000B /* SelectionCoordinator.swift in Sources */,
 				A1000000000000000000000C /* SelectionOverlayWindow.swift in Sources */,
 				A1000000000000000000000D /* SelectionOverlayView.swift in Sources */,
@@ -409,9 +398,12 @@
 				A10000000000000000000028 /* CaptureToolbarWindow.swift in Sources */,
 				A10000000000000000000029 /* ToolbarBackdropWindow.swift in Sources */,
 				A1000000000000000000002A /* StartRecordingOverlay.swift in Sources */,
-							ED4608FB0AB34BC3B7BEDB94 /* WindowController.swift in Sources */,
+				ED4608FB0AB34BC3B7BEDB94 /* WindowController.swift in Sources */,
 				A1000000000000000000002B /* PermissionsView.swift in Sources */,
-);
+				A1000000000000000000002C /* StartRecordingButton.swift in Sources */,
+				A1000000000000000000002D /* SettingsView.swift in Sources */,
+				A1000000000000000000002E /* SettingsWindow.swift in Sources */,
+			);
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -542,6 +534,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				AUTOMATION_APPLE_EVENTS = NO;
 				CODE_SIGN_ENTITLEMENTS = Frame/Frame.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -584,6 +577,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				AUTOMATION_APPLE_EVENTS = NO;
 				CODE_SIGN_ENTITLEMENTS = Frame/Frame.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";

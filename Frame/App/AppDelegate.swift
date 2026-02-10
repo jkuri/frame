@@ -5,15 +5,10 @@ import SwiftUI
 final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
   let session = SessionState()
   private var statusItem: NSStatusItem!
-  private var popover: NSPopover?
   private var permissionsWindow: NSWindow?
 
   func applicationDidFinishLaunching(_ notification: Notification) {
-    NSApp.setActivationPolicy(.accessory)
     setupStatusItem()
-    session.onBecomeIdle = { [weak self] in
-      self?.dismissPopover()
-    }
   }
 
   private func setupStatusItem() {
@@ -26,15 +21,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
   }
 
   @objc private func statusItemClicked() {
-    if session.state == .idle {
-      if Permissions.allPermissionsGranted {
-        session.toggleToolbar()
-      } else {
-        showPermissionsWindow()
-      }
+    if Permissions.allPermissionsGranted {
+      session.toggleToolbar()
     } else {
-      togglePopover()
+      showPermissionsWindow()
     }
+  }
+
+  func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+    if Permissions.allPermissionsGranted {
+      session.showToolbar()
+    } else {
+      showPermissionsWindow()
+    }
+    return false
   }
 
   private func showPermissionsWindow() {
@@ -85,26 +85,5 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
   private func dismissPermissionsWindow() {
     permissionsWindow?.close()
     permissionsWindow = nil
-  }
-
-  private func togglePopover() {
-    if let popover, popover.isShown {
-      dismissPopover()
-      return
-    }
-    let pop = NSPopover()
-    pop.behavior = .transient
-    pop.contentViewController = NSHostingController(
-      rootView: MenuBarView(session: session)
-    )
-    self.popover = pop
-    if let button = statusItem.button {
-      pop.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-    }
-  }
-
-  private func dismissPopover() {
-    popover?.performClose(nil)
-    popover = nil
   }
 }

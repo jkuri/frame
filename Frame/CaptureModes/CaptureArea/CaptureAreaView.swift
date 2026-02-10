@@ -57,20 +57,7 @@ struct CaptureAreaView: View {
       .background(FrameColors.panelBackground)
       .clipShape(RoundedRectangle(cornerRadius: 6))
 
-      Button(action: { session.overlayView?.confirmSelection() }) {
-        HStack(spacing: 6) {
-          Image(systemName: "record.circle")
-            .font(.system(size: 15, weight: .semibold))
-          Text("Start recording")
-            .font(.system(size: 15, weight: .semibold))
-        }
-        .foregroundStyle(.white)
-        .frame(width: 200)
-        .frame(height: 48)
-        .background(Color(nsColor: .controlAccentColor))
-        .clipShape(RoundedRectangle(cornerRadius: 6))
-      }
-      .buttonStyle(.plain)
+      StartRecordingButton(action: { session.overlayView?.confirmSelection() })
       .padding(.top, 8)
     }
     .frame(width: 260)

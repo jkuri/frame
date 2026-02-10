@@ -19,6 +19,7 @@ final class WindowSelectionOverlay: NSWindow {
     level = .screenSaver
     collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
     ignoresMouseEvents = false
+    acceptsMouseMovedEvents = true
     hasShadow = false
 
     let view = WindowSelectionView(session: session)

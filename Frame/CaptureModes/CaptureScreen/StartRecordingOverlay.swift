@@ -16,20 +16,7 @@ struct StartRecordingOverlayView: View {
         .font(.system(size: 12))
         .foregroundStyle(.white.opacity(0.6))
 
-      Button(action: onStart) {
-        HStack(spacing: 6) {
-          Image(systemName: "record.circle")
-            .font(.system(size: 15, weight: .semibold))
-          Text("Start recording")
-            .font(.system(size: 15, weight: .semibold))
-        }
-        .foregroundStyle(.white)
-        .padding(.horizontal, 24)
-        .frame(height: 48)
-        .background(Color(nsColor: .controlAccentColor))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-      }
-      .buttonStyle(.plain)
+      StartRecordingButton(action: onStart)
     }
     .padding(24)
     .background(.black.opacity(0.8))

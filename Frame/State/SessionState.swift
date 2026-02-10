@@ -13,7 +13,6 @@ final class SessionState {
   let options = RecordingOptions()
 
   weak var statusItemButton: NSStatusBarButton?
-  var onBecomeIdle: (() -> Void)?
 
   private let logger = Logger(label: "eu.jankuri.frame.session")
   private var selectionCoordinator: SelectionCoordinator?
@@ -39,7 +38,13 @@ final class SessionState {
 
     let backdrop = ToolbarBackdropWindow { [weak self] in
       MainActor.assumeIsolated {
-        self?.hideToolbar()
+        guard let self else { return }
+        switch self.state {
+        case .recording, .paused, .processing:
+          return
+        default:
+          self.hideToolbar()
+        }
       }
     }
     backdropWindow = backdrop
@@ -59,6 +64,10 @@ final class SessionState {
     toolbarWindow?.orderOut(nil)
     toolbarWindow?.contentView = nil
     toolbarWindow = nil
+    dismissBackdrop()
+  }
+
+  private func dismissBackdrop() {
     backdropWindow?.orderOut(nil)
     backdropWindow?.contentView = nil
     backdropWindow = nil
@@ -74,10 +83,10 @@ final class SessionState {
     case .entireScreen:
       showStartRecordingOverlay()
     case .selectedWindow:
-      hideToolbar()
+      dismissBackdrop()
       startWindowSelection()
     case .selectedArea:
-      hideToolbar()
+      dismissBackdrop()
       do {
         try beginSelection()
       } catch {
@@ -209,6 +218,11 @@ final class SessionState {
     recordingCoordinator = nil
     captureTarget = nil
     transition(to: .idle)
+    hideToolbar()
+  }
+
+  func openSettings() {
+    SettingsWindow.shared.show()
   }
 
   func pauseRecording() {
@@ -223,12 +237,25 @@ final class SessionState {
     transition(to: .recording(startedAt: resumedAt))
   }
 
+  func restartRecording() {
+    Task {
+      selectionCoordinator?.destroyAll()
+      selectionCoordinator = nil
+
+      if let url = try? await recordingCoordinator?.stopRecording() {
+        try? FileManager.default.removeItem(at: url)
+        logger.info("Discarded recording: \(url.path)")
+      }
+      recordingCoordinator = nil
+      captureTarget = nil
+      captureMode = .none
+      transition(to: .idle)
+    }
+  }
+
   private func transition(to newState: CaptureState) {
     state = newState
     updateStatusIcon()
-    if newState == .idle {
-      onBecomeIdle?()
-    }
   }
 
   private func updateStatusIcon() {
@@ -267,7 +294,8 @@ final class SessionState {
   }
 
   private func startRecordingFromOverlay() {
-    hideToolbar()
+    hideStartRecordingOverlay()
+    dismissBackdrop()
     recordEntireScreen()
   }
 

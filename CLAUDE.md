@@ -71,7 +71,7 @@ Uses `MenuBarExtra(.window)` + MenuBarExtraAccess (1.2.x) for the `isPresented` 
 ## Key constraints
 
 - Bundle ID: `eu.jkuri.frame`
-- `LSUIElement = true` (no Dock icon)
+- `LSUIElement = false` (app shows in Dock with icon)
 - App sandbox disabled (required for ScreenCaptureKit)
 - Use `CODE_SIGNING_ALLOWED=NO` for command-line builds without a signing team
 - SPM PBXBuildFile entries need `productRef` only (no `fileRef`)

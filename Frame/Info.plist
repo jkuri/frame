@@ -5,7 +5,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>LSUIElement</key>
-	<true/>
+	<false/>
 	<key>NSScreenCaptureUsageDescription</key>
 	<string>Frame needs screen recording access to capture your screen.</string>
 </dict>
