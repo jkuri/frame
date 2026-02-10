@@ -2,6 +2,7 @@ import AppKit
 import Foundation
 import Logging
 import SwiftUI
+import ScreenCaptureKit
 
 @MainActor
 @Observable
@@ -16,8 +17,9 @@ final class SessionState {
 
   private let logger = Logger(label: "eu.jankuri.frame.session")
   private var selectionCoordinator: SelectionCoordinator?
+  private var windowSelectionCoordinator: WindowSelectionCoordinator?
   private var recordingCoordinator: RecordingCoordinator?
-  private var storedSelection: SelectionRect?
+  private var captureTarget: CaptureTarget?
   private var toolbarWindow: CaptureToolbarWindow?
   private var backdropWindow: ToolbarBackdropWindow?
   private var startRecordingWindow: StartRecordingWindow?
@@ -69,8 +71,11 @@ final class SessionState {
     switch mode {
     case .none:
       break
-    case .entireScreen, .selectedWindow:
+    case .entireScreen:
       showStartRecordingOverlay()
+    case .selectedWindow:
+      hideToolbar()
+      startWindowSelection()
     case .selectedArea:
       hideToolbar()
       do {
@@ -79,6 +84,21 @@ final class SessionState {
         logger.error("Failed to begin selection: \(error)")
       }
     }
+  }
+
+  func startWindowSelection() {
+    guard case .idle = state else { return }
+    guard Permissions.hasScreenRecordingPermission else {
+      Permissions.requestScreenRecordingPermission()
+      return
+    }
+
+    transition(to: .selecting)
+    captureTarget = nil
+
+    let coordinator = WindowSelectionCoordinator()
+    windowSelectionCoordinator = coordinator
+    coordinator.beginSelection(session: self)
   }
 
   func beginSelection() throws {
@@ -92,7 +112,7 @@ final class SessionState {
     }
 
     transition(to: .selecting)
-    storedSelection = nil
+    captureTarget = nil
 
     let coordinator = SelectionCoordinator()
     selectionCoordinator = coordinator
@@ -102,7 +122,7 @@ final class SessionState {
   func confirmSelection(_ selection: SelectionRect) {
     selectionCoordinator?.destroyOverlay()
     selectionCoordinator?.showRecordingBorder(screenRect: selection.rect)
-    storedSelection = selection
+    captureTarget = .region(selection)
     logger.info("Selection confirmed: \(selection.rect)")
 
     Task {
@@ -114,9 +134,33 @@ final class SessionState {
     }
   }
 
+  func confirmWindowSelection(_ window: SCWindow) {
+    windowSelectionCoordinator?.destroyOverlay()
+    windowSelectionCoordinator = nil
+
+    // We could show a border around the window here if desired,
+    // but for now let's just start recording.
+    captureTarget = .window(window)
+    logger.info("Window selection confirmed: \(window.title ?? "Unknown")")
+
+    Task {
+      do {
+        try await startRecording()
+      } catch {
+        logger.error("Failed to start recording: \(error)")
+      }
+    }
+  }
+
+  func updateWindowHighlight(_ window: SCWindow?) {
+    windowSelectionCoordinator?.highlight(window: window)
+  }
+
   func cancelSelection() {
     selectionCoordinator?.destroyAll()
     selectionCoordinator = nil
+    windowSelectionCoordinator?.destroyOverlay()
+    windowSelectionCoordinator = nil
     overlayView = nil
     transition(to: .idle)
     logger.info("Selection cancelled")
@@ -133,7 +177,7 @@ final class SessionState {
     default:
       throw CaptureError.invalidTransition(from: "\(state)", to: "recording")
     }
-    guard let selection = storedSelection else {
+    guard let target = captureTarget else {
       throw CaptureError.noSelectionStored
     }
 
@@ -141,7 +185,7 @@ final class SessionState {
     self.recordingCoordinator = coordinator
     overlayView = nil
 
-    let startedAt = try await coordinator.startRecording(selection: selection)
+    let startedAt = try await coordinator.startRecording(target: target)
     transition(to: .recording(startedAt: startedAt))
   }
 
@@ -163,7 +207,7 @@ final class SessionState {
     }
 
     recordingCoordinator = nil
-    storedSelection = nil
+    captureTarget = nil
     transition(to: .idle)
   }
 
@@ -204,7 +248,9 @@ final class SessionState {
 
   private func showStartRecordingOverlay() {
     guard startRecordingWindow == nil else { return }
-    let window = StartRecordingWindow { [weak self] in
+    guard let screen = NSScreen.main else { return }
+
+    let window = StartRecordingWindow(screen: screen) { [weak self] in
       MainActor.assumeIsolated {
         self?.startRecordingFromOverlay()
       }
@@ -233,7 +279,7 @@ final class SessionState {
 
     guard let screen = NSScreen.main else { return }
     let selection = SelectionRect(rect: screen.frame, displayID: screen.displayID)
-    storedSelection = selection
+    captureTarget = .region(selection)
 
     let coordinator = SelectionCoordinator()
     selectionCoordinator = coordinator

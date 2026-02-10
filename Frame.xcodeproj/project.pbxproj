@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C8CC4187964D4445B613AEEB /* WindowSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB41C1253D94BEF960FD7D2 /* WindowSelectionCoordinator.swift */; };
+		FE1324E865074398BCC4317D /* WindowSelectionOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A435021272D7425AB77F93DF /* WindowSelectionOverlay.swift */; };
+		F93F2FF47E12481595833E3E /* WindowSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */; };
+		0255AD69477B42D2B028628B /* CaptureTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFD921258364EA6A604537F /* CaptureTarget.swift */; };
 		A10000000000000000000001 /* FrameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* FrameApp.swift */; };
 		A10000000000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* AppDelegate.swift */; };
 		A10000000000000000000003 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* Permissions.swift */; };
@@ -48,9 +52,14 @@
 		A10000000000000000000028 /* CaptureToolbarWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000028 /* CaptureToolbarWindow.swift */; };
 		A10000000000000000000029 /* ToolbarBackdropWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000029 /* ToolbarBackdropWindow.swift */; };
 		A1000000000000000000002A /* StartRecordingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002A /* StartRecordingOverlay.swift */; };
+		ED4608FB0AB34BC3B7BEDB94 /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC41BA6DF5654C57AC930549; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BDB41C1253D94BEF960FD7D2 /* WindowSelectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionCoordinator.swift; sourceTree = "<group>"; };
+		A435021272D7425AB77F93DF /* WindowSelectionOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionOverlay.swift; sourceTree = "<group>"; };
+		C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionView.swift; sourceTree = "<group>"; };
+		3CFD921258364EA6A604537F /* CaptureTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTarget.swift; sourceTree = "<group>"; };
 		B10000000000000000000001 /* FrameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameApp.swift; sourceTree = "<group>"; };
 		B10000000000000000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B10000000000000000000003 /* Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
@@ -93,6 +102,7 @@
 		B10000000000000000000028 /* CaptureToolbarWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbarWindow.swift; sourceTree = "<group>"; };
 		B10000000000000000000029 /* ToolbarBackdropWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarBackdropWindow.swift; sourceTree = "<group>"; };
 		B1000000000000000000002A /* StartRecordingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRecordingOverlay.swift; sourceTree = "<group>"; };
+		EC41BA6DF5654C57AC930549 /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,7 +170,8 @@
 			children = (
 				B10000000000000000000002 /* AppDelegate.swift */,
 				B10000000000000000000003 /* Permissions.swift */,
-			);
+							EC41BA6DF5654C57AC930549 /* WindowController.swift */,
+);
 			path = App;
 			sourceTree = "<group>";
 		};
@@ -237,6 +248,9 @@
 		D10000000000000000000011 /* CaptureWindow */ = {
 			isa = PBXGroup;
 			children = (
+				BDB41C1253D94BEF960FD7D2 /* WindowSelectionCoordinator.swift */,
+				A435021272D7425AB77F93DF /* WindowSelectionOverlay.swift */,
+				C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */,
 			);
 			path = CaptureWindow;
 			sourceTree = "<group>";
@@ -244,6 +258,7 @@
 		D10000000000000000000008 /* Recording */ = {
 			isa = PBXGroup;
 			children = (
+				3CFD921258364EA6A604537F /* CaptureTarget.swift */,
 				B10000000000000000000010 /* RecordingCoordinator.swift */,
 				B10000000000000000000011 /* ScreenCaptureSession.swift */,
 				B10000000000000000000012 /* VideoWriter.swift */,
@@ -351,6 +366,10 @@
 		C10000000000000000000002 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
+				C8CC4187964D4445B613AEEB /* WindowSelectionCoordinator.swift in Sources */,
+				FE1324E865074398BCC4317D /* WindowSelectionOverlay.swift in Sources */,
+				F93F2FF47E12481595833E3E /* WindowSelectionView.swift in Sources */,
+				0255AD69477B42D2B028628B /* CaptureTarget.swift in Sources */,
 				A10000000000000000000001 /* FrameApp.swift in Sources */,
 				A10000000000000000000002 /* AppDelegate.swift in Sources */,
 				A10000000000000000000003 /* Permissions.swift in Sources */,
@@ -387,7 +406,8 @@
 				A10000000000000000000028 /* CaptureToolbarWindow.swift in Sources */,
 				A10000000000000000000029 /* ToolbarBackdropWindow.swift in Sources */,
 				A1000000000000000000002A /* StartRecordingOverlay.swift in Sources */,
-			);
+							ED4608FB0AB34BC3B7BEDB94 /* WindowController.swift in Sources */,
+);
 		};
 /* End PBXSourcesBuildPhase section */
 

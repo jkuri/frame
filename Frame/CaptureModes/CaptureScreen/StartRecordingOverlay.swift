@@ -3,6 +3,7 @@ import SwiftUI
 
 struct StartRecordingOverlayView: View {
   let displayName: String
+  let resolution: String
   let onStart: () -> Void
 
   var body: some View {
@@ -10,6 +11,10 @@ struct StartRecordingOverlayView: View {
       Text(displayName)
         .font(.system(size: 14, weight: .medium))
         .foregroundStyle(.white)
+
+      Text(resolution)
+        .font(.system(size: 12))
+        .foregroundStyle(.white.opacity(0.6))
 
       Button(action: onStart) {
         HStack(spacing: 6) {
@@ -26,14 +31,20 @@ struct StartRecordingOverlayView: View {
       }
       .buttonStyle(.plain)
     }
+    .padding(24)
+    .background(.black.opacity(0.8))
+    .clipShape(RoundedRectangle(cornerRadius: 16))
+    .shadow(radius: 20)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(.black.opacity(0.4))
   }
 }
 
 @MainActor
 final class StartRecordingWindow: NSPanel {
-  init(onStart: @escaping @MainActor () -> Void) {
+  init(screen: NSScreen, onStart: @escaping @MainActor () -> Void) {
     super.init(
-      contentRect: .zero,
+      contentRect: screen.frame,
       styleMask: [.borderless, .nonactivatingPanel],
       backing: .buffered,
       defer: false
@@ -42,22 +53,26 @@ final class StartRecordingWindow: NSPanel {
     isOpaque = false
     backgroundColor = .clear
     level = .screenSaver
+    collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
     hasShadow = true
     hidesOnDeactivate = false
     ignoresMouseEvents = false
 
-    let displayName = NSScreen.main?.localizedName ?? "Display"
-    let view = StartRecordingOverlayView(displayName: displayName, onStart: onStart)
+    let displayName = screen.localizedName
+    let width = Int(screen.frame.width * screen.backingScaleFactor)
+    let height = Int(screen.frame.height * screen.backingScaleFactor)
+    let resolution = "\(width) × \(height)"
+
+    let view = StartRecordingOverlayView(
+      displayName: displayName,
+      resolution: resolution,
+      onStart: onStart
+    )
     let hostingView = NSHostingView(rootView: view)
-    let size = hostingView.fittingSize
+    hostingView.sizingOptions = [.minSize, .maxSize]
     contentView = hostingView
 
-    guard let screen = NSScreen.main else { return }
-    let origin = NSPoint(
-      x: screen.frame.midX - size.width / 2,
-      y: screen.frame.midY - size.height / 2
-    )
-    setFrame(NSRect(origin: origin, size: size), display: true)
+    setFrame(screen.frame, display: true)
   }
 
   override var canBecomeKey: Bool { false }

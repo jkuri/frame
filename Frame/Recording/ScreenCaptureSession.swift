@@ -19,14 +19,34 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
     super.init()
   }
 
-  func start(selection: SelectionRect, display: SCDisplay, displayScale: CGFloat, fps: Int = 60) async throws {
+  func start(target: CaptureTarget, display: SCDisplay, displayScale: CGFloat, fps: Int = 60) async throws {
     let content = try await Permissions.fetchShareableContent()
 
-    let selfApp = content.applications.first { $0.bundleIdentifier == Bundle.main.bundleIdentifier }
-    let excludedApps = [selfApp].compactMap { $0 }
-    let filter = SCContentFilter(display: display, excludingApplications: excludedApps, exceptingWindows: [])
+    let filter: SCContentFilter
+    let sourceRect: CGRect
 
-    let sourceRect = selection.screenCaptureKitRect
+    switch target {
+    case .region(let selection):
+      let selfApp = content.applications.first { $0.bundleIdentifier == Bundle.main.bundleIdentifier }
+      let excludedApps = [selfApp].compactMap { $0 }
+      filter = SCContentFilter(display: display, excludingApplications: excludedApps, exceptingWindows: [])
+      sourceRect = selection.screenCaptureKitRect
+
+    case .window(let window):
+      filter = SCContentFilter(desktopIndependentWindow: window)
+      // For window capture, the source rect is the window's frame relative to the display,
+      // but SCStream with a window filter automatically handles coordinate mapping.
+      // We explicitly set the `sourceRect` to the window's frame for sizing the output,
+      // but we need to be careful with origin if it's on a different display.
+      // With `desktopIndependentWindow`, the stream outputs the window content directly.
+      sourceRect = CGRect(origin: .zero, size: CGSize(width: CGFloat(window.frame.width), height: CGFloat(window.frame.height)))
+
+    case .screen(let screen):
+       let selfApp = content.applications.first { $0.bundleIdentifier == Bundle.main.bundleIdentifier }
+       let excludedApps = [selfApp].compactMap { $0 }
+       filter = SCContentFilter(display: display, excludingApplications: excludedApps, exceptingWindows: [])
+       sourceRect = CGRect(origin: .zero, size: display.frame.size)
+    }
     let pixelW = Int(sourceRect.width * displayScale) & ~1
     let pixelH = Int(sourceRect.height * displayScale) & ~1
 
