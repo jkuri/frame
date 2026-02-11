@@ -1,10 +1,10 @@
-# Frame
+<p align="center">
+  <img width="164" height="164" src="https://github.com/user-attachments/assets/77f29f81-0d3c-41af-9e7f-dd67990ebc01" />
+</p>
+
+# frame
 
 A lightweight macOS screen recording app that lives in your menu bar. Record your entire screen, a specific window, or a selected region and export to MP4.
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/6e297b87-d349-4bf8-abd0-4e55649dd60f" />
-</p>
 
 ## Features
 
