@@ -18,6 +18,8 @@ enum CaptureError: LocalizedError {
   case recordingFailed(String)
   case microphoneNotFound
   case cameraNotFound
+  case cameraStreamFailed
+  case microphoneStreamFailed
 
   var errorDescription: String? {
     switch self {
@@ -35,6 +37,10 @@ enum CaptureError: LocalizedError {
       return "Could not find the selected microphone"
     case .cameraNotFound:
       return "Could not find the selected camera"
+    case .cameraStreamFailed:
+      return "Camera failed to start streaming. Make sure no other app is using the camera."
+    case .microphoneStreamFailed:
+      return "Microphone failed to start streaming. Make sure no other app is using the microphone."
     }
   }
 }

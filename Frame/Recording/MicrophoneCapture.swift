@@ -9,12 +9,13 @@ struct MicrophoneFormat: Sendable {
 
 final class MicrophoneCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, @unchecked Sendable {
   private var captureSession: AVCaptureSession?
-  private let audioWriter: AudioTrackWriter
+  private var audioWriter: AudioTrackWriter?
   private let logger = Logger(label: "eu.jankuri.frame.microphone-capture")
   private var isPaused = false
+  private let verifyQueue = DispatchQueue(label: "eu.jankuri.frame.mic-verify", qos: .userInteractive)
+  private var firstSampleContinuation: CheckedContinuation<Void, any Error>?
 
-  init(audioWriter: AudioTrackWriter) {
-    self.audioWriter = audioWriter
+  override init() {
     super.init()
   }
 
@@ -36,7 +37,7 @@ final class MicrophoneCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDel
     return MicrophoneFormat(sampleRate: targetRate, channelCount: nativeChannels)
   }
 
-  func start(deviceId: String) async throws {
+  func startAndVerify(deviceId: String) async throws {
     let granted = await AVCaptureDevice.requestAccess(for: .audio)
     guard granted else {
       logger.error("Microphone permission denied")
@@ -77,7 +78,7 @@ final class MicrophoneCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDel
       ]
       logger.info("Mic resampling \(nativeRate)Hz -> 48000Hz, \(nativeChannels)ch")
     }
-    output.setSampleBufferDelegate(self, queue: audioWriter.queue)
+    output.setSampleBufferDelegate(self, queue: verifyQueue)
     guard session.canAddOutput(output) else {
       throw CaptureError.microphoneNotFound
     }
@@ -87,17 +88,43 @@ final class MicrophoneCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDel
 
     session.startRunning()
     self.captureSession = session
-    logger.info("Microphone capture started: \(device.localizedName)")
+
+    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+      self.verifyQueue.async {
+        self.firstSampleContinuation = continuation
+      }
+      DispatchQueue.global().asyncAfter(deadline: .now() + 5.0) { [weak self] in
+        self?.verifyQueue.async {
+          if let cont = self?.firstSampleContinuation {
+            self?.firstSampleContinuation = nil
+            cont.resume(throwing: CaptureError.microphoneStreamFailed)
+          }
+        }
+      }
+    }
+
+    logger.info("Microphone verified: \(device.localizedName)")
+  }
+
+  func attachWriter(_ writer: AudioTrackWriter) {
+    verifyQueue.sync {
+      self.audioWriter = writer
+    }
+    if let output = captureSession?.outputs.first as? AVCaptureAudioDataOutput {
+      output.setSampleBufferDelegate(self, queue: writer.queue)
+    }
   }
 
   func pause() {
-    audioWriter.queue.async {
+    guard let writer = audioWriter else { return }
+    writer.queue.async {
       self.isPaused = true
     }
   }
 
   func resume() {
-    audioWriter.queue.async {
+    guard let writer = audioWriter else { return }
+    writer.queue.async {
       self.isPaused = false
     }
   }
@@ -109,7 +136,21 @@ final class MicrophoneCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDel
   }
 
   func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    if let cont = firstSampleContinuation {
+      firstSampleContinuation = nil
+      cont.resume()
+      return
+    }
     if isPaused { return }
-    audioWriter.appendSample(sampleBuffer)
+    audioWriter?.appendSample(sampleBuffer)
+  }
+
+  static func isDeviceAvailable(deviceId: String) -> Bool {
+    let discovery = AVCaptureDevice.DiscoverySession(
+      deviceTypes: [.microphone],
+      mediaType: .audio,
+      position: .unspecified
+    )
+    return discovery.devices.contains { $0.uniqueID == deviceId }
   }
 }

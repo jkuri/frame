@@ -4,6 +4,13 @@ import Logging
 import ScreenCaptureKit
 import SwiftUI
 
+enum CameraPreviewState {
+  case off
+  case starting
+  case previewing
+  case failed(String)
+}
+
 @MainActor
 @Observable
 final class SessionState {
@@ -11,6 +18,9 @@ final class SessionState {
   var lastRecordingURL: URL?
   var captureMode: CaptureMode = .none
   var errorMessage: String?
+  var cameraPreviewState: CameraPreviewState = .off
+  var isCameraOn = false
+  var isMicrophoneOn = false
   let options = RecordingOptions()
 
   weak var statusItemButton: NSStatusBarButton?
@@ -21,14 +31,91 @@ final class SessionState {
   private var recordingCoordinator: RecordingCoordinator?
   private var captureTarget: CaptureTarget?
   private var toolbarWindow: CaptureToolbarWindow?
-  private var backdropWindow: ToolbarBackdropWindow?
   private var startRecordingWindow: StartRecordingWindow?
   private var editorWindows: [EditorWindow] = []
   private var webcamPreviewWindow: WebcamPreviewWindow?
   private var countdownOverlayWindow: CountdownOverlayWindow?
   private var countdownTask: Task<Void, Never>?
+  private var persistentWebcam: WebcamCapture?
+  private var verifiedCameraInfo: VerifiedCamera?
 
   weak var overlayView: SelectionOverlayView?
+
+  func toggleCamera() {
+    guard options.selectedCamera != nil else { return }
+    isCameraOn.toggle()
+    if isCameraOn {
+      startCameraPreview()
+    } else {
+      stopCameraPreview()
+    }
+  }
+
+  func toggleMicrophone() {
+    guard options.selectedMicrophone != nil else { return }
+    isMicrophoneOn.toggle()
+  }
+
+  private func startCameraPreview() {
+    guard let cam = options.selectedCamera else { return }
+
+    stopCameraPreview()
+    cameraPreviewState = .starting
+
+    let previewWindow = WebcamPreviewWindow()
+    previewWindow.showLoading()
+    webcamPreviewWindow = previewWindow
+
+    Task {
+      do {
+        let (maxW, maxH) = Self.cameraMaxDimensions(for: ConfigService.shared.cameraMaximumResolution)
+        let webcam = WebcamCapture()
+        let info = try await webcam.startAndVerify(
+          deviceId: cam.id,
+          fps: options.fps,
+          maxWidth: maxW,
+          maxHeight: maxH
+        )
+        guard isCameraOn, options.selectedCamera?.id == cam.id else {
+          webcam.stop()
+          return
+        }
+        persistentWebcam = webcam
+        verifiedCameraInfo = info
+        cameraPreviewState = .previewing
+
+        if let session = webcam.captureSession {
+          previewWindow.show(captureSession: session)
+        }
+        logger.info("Camera preview started: \(info.width)x\(info.height)")
+      } catch {
+        guard isCameraOn, options.selectedCamera?.id == cam.id else { return }
+        cameraPreviewState = .failed(error.localizedDescription)
+        previewWindow.showError("Camera failed to start")
+        logger.error("Camera preview failed: \(error)")
+      }
+    }
+  }
+
+  private func stopCameraPreview() {
+    persistentWebcam?.stop()
+    persistentWebcam = nil
+    verifiedCameraInfo = nil
+    webcamPreviewWindow?.close()
+    webcamPreviewWindow = nil
+    cameraPreviewState = .off
+  }
+
+  private static func cameraMaxDimensions(for resolution: String) -> (Int, Int) {
+    switch resolution {
+    case "720p":
+      return (1280, 720)
+    case "4K":
+      return (3840, 2160)
+    default:
+      return (1920, 1080)
+    }
+  }
 
   func toggleToolbar() {
     if toolbarWindow != nil {
@@ -42,20 +129,6 @@ final class SessionState {
 
   func showToolbar() {
     guard toolbarWindow == nil else { return }
-
-    let backdrop = ToolbarBackdropWindow { [weak self] in
-      MainActor.assumeIsolated {
-        guard let self else { return }
-        switch self.state {
-        case .countdown, .recording, .paused, .processing, .editing:
-          return
-        default:
-          self.hideToolbar()
-        }
-      }
-    }
-    backdropWindow = backdrop
-    backdrop.orderFrontRegardless()
 
     let window = CaptureToolbarWindow(session: self) { [weak self] in
       MainActor.assumeIsolated {
@@ -71,13 +144,6 @@ final class SessionState {
     toolbarWindow?.orderOut(nil)
     toolbarWindow?.contentView = nil
     toolbarWindow = nil
-    dismissBackdrop()
-  }
-
-  private func dismissBackdrop() {
-    backdropWindow?.orderOut(nil)
-    backdropWindow?.contentView = nil
-    backdropWindow = nil
   }
 
   func selectMode(_ mode: CaptureMode) {
@@ -91,10 +157,10 @@ final class SessionState {
     case .entireScreen:
       showStartRecordingOverlay()
     case .selectedWindow:
-      dismissBackdrop()
+
       startWindowSelection()
     case .selectedArea:
-      dismissBackdrop()
+
       do {
         try beginSelection()
       } catch {
@@ -165,6 +231,20 @@ final class SessionState {
 
     captureTarget = .window(window)
     logger.info("Window selection confirmed: \(window.title ?? "Unknown")")
+
+    let scFrame = window.frame
+    if let screen = NSScreen.main {
+      let screenHeight = screen.frame.height
+      let appKitRect = CGRect(
+        x: scFrame.origin.x,
+        y: screenHeight - scFrame.origin.y - scFrame.height,
+        width: scFrame.width,
+        height: scFrame.height
+      )
+      let coordinator = SelectionCoordinator()
+      selectionCoordinator = coordinator
+      coordinator.showRecordingBorder(screenRect: appKitRect)
+    }
 
     beginRecordingWithCountdown()
   }
@@ -271,15 +351,25 @@ final class SessionState {
     self.recordingCoordinator = coordinator
     overlayView = nil
 
+    let useCam = isCameraOn && options.selectedCamera != nil
+    let useMic = isMicrophoneOn && options.selectedMicrophone != nil
+
+    var existingWebcam: (WebcamCapture, VerifiedCamera)?
+    if useCam, let webcam = persistentWebcam, let info = verifiedCameraInfo {
+      existingWebcam = (webcam, info)
+    }
+
     let startedAt = try await coordinator.startRecording(
       target: target,
       fps: options.fps,
       captureSystemAudio: options.captureSystemAudio,
-      microphoneDeviceId: options.selectedMicrophone?.id,
-      cameraDeviceId: options.selectedCamera?.id
+      microphoneDeviceId: useMic ? options.selectedMicrophone?.id : nil,
+      cameraDeviceId: useCam ? options.selectedCamera?.id : nil,
+      cameraResolution: ConfigService.shared.cameraMaximumResolution,
+      existingWebcam: existingWebcam
     )
 
-    if options.selectedCamera != nil {
+    if existingWebcam == nil, useCam {
       let box = await coordinator.getWebcamCaptureSessionBox()
       if let camSession = box?.session {
         let previewWindow = WebcamPreviewWindow()
@@ -302,10 +392,14 @@ final class SessionState {
     transition(to: .processing)
     selectionCoordinator?.destroyAll()
     selectionCoordinator = nil
-    webcamPreviewWindow?.close()
-    webcamPreviewWindow = nil
 
-    guard let result = try await recordingCoordinator?.stopRecordingRaw() else {
+    let keepWebcam = persistentWebcam != nil
+    if !keepWebcam {
+      webcamPreviewWindow?.close()
+      webcamPreviewWindow = nil
+    }
+
+    guard let result = try await recordingCoordinator?.stopRecordingRaw(keepWebcamAlive: keepWebcam) else {
       recordingCoordinator = nil
       captureTarget = nil
       captureMode = .none
@@ -416,15 +510,19 @@ final class SessionState {
     countdownTask = nil
     dismissCountdownOverlay()
 
+    let keepWebcam = persistentWebcam != nil
+
     Task {
       selectionCoordinator?.destroyAll()
       selectionCoordinator = nil
-      webcamPreviewWindow?.close()
-      webcamPreviewWindow = nil
+      if !keepWebcam {
+        webcamPreviewWindow?.close()
+        webcamPreviewWindow = nil
+      }
       for editor in editorWindows { editor.close() }
       editorWindows.removeAll()
 
-      if let url = try? await recordingCoordinator?.stopRecording() {
+      if let url = try? await recordingCoordinator?.stopRecording(keepWebcamAlive: keepWebcam) {
         try? FileManager.default.removeItem(at: url)
         logger.info("Discarded recording: \(url.path)")
       }
@@ -489,7 +587,6 @@ final class SessionState {
 
   private func startRecordingFromOverlay() {
     hideStartRecordingOverlay()
-    dismissBackdrop()
     recordEntireScreen()
   }
 

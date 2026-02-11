@@ -81,6 +81,40 @@ struct CaptureToolbar: View {
 
       ToolbarDivider()
 
+      HStack(spacing: 2) {
+        ToolbarToggleButton(
+          icon: "web.camera",
+          activeIcon: "web.camera.fill",
+          label: "Camera",
+          isOn: session.isCameraOn,
+          isAvailable: session.options.selectedCamera != nil,
+          tooltip: session.options.selectedCamera != nil ? "Camera" : "Select a camera in Options",
+          action: { session.toggleCamera() }
+        )
+
+        ToolbarToggleButton(
+          icon: "mic",
+          activeIcon: "mic.fill",
+          label: "Mic",
+          isOn: session.isMicrophoneOn,
+          isAvailable: session.options.selectedMicrophone != nil,
+          tooltip: session.options.selectedMicrophone != nil ? "Microphone" : "Select a microphone in Options",
+          action: { session.toggleMicrophone() }
+        )
+
+        ToolbarToggleButton(
+          icon: "speaker.wave.2",
+          activeIcon: "speaker.wave.2.fill",
+          label: "Audio",
+          isOn: session.options.captureSystemAudio,
+          isAvailable: true,
+          tooltip: "System Audio",
+          action: { session.options.captureSystemAudio.toggle() }
+        )
+      }
+
+      ToolbarDivider()
+
       Button {
         showOptions.toggle()
       } label: {
@@ -146,19 +180,19 @@ struct CaptureToolbar: View {
       CompactTimerView(startedAt: startedAt, frozen: isPaused)
         .padding(.horizontal, 10)
 
-      if session.options.captureSystemAudio || session.options.selectedMicrophone != nil || session.options.selectedCamera != nil {
+      if session.options.captureSystemAudio || session.isMicrophoneOn || session.isCameraOn {
         HStack(spacing: 6) {
           if session.options.captureSystemAudio {
             Image(systemName: "speaker.wave.2.fill")
               .font(.system(size: 11))
               .foregroundStyle(FrameColors.tertiaryText)
           }
-          if session.options.selectedMicrophone != nil {
+          if session.isMicrophoneOn {
             Image(systemName: "mic.fill")
               .font(.system(size: 11))
               .foregroundStyle(FrameColors.tertiaryText)
           }
-          if session.options.selectedCamera != nil {
+          if session.isCameraOn {
             Image(systemName: "web.camera.fill")
               .font(.system(size: 11))
               .foregroundStyle(FrameColors.tertiaryText)
@@ -258,6 +292,55 @@ private struct ToolbarActionButton: View {
     .buttonStyle(.plain)
     .onHover { isHovered = $0 }
     .help(tooltip)
+  }
+}
+
+private struct ToolbarToggleButton: View {
+  let icon: String
+  let activeIcon: String
+  let label: String
+  let isOn: Bool
+  let isAvailable: Bool
+  let tooltip: String
+  let action: () -> Void
+
+  @State private var isHovered = false
+
+  var body: some View {
+    Button(action: action) {
+      VStack(spacing: 3) {
+        Image(systemName: isOn ? activeIcon : icon)
+          .font(.system(size: 18))
+          .foregroundStyle(iconColor)
+        Text(label)
+          .font(.system(size: 10))
+          .foregroundStyle(labelColor)
+      }
+      .frame(width: 56, height: 52)
+      .background(background)
+      .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+    .buttonStyle(.plain)
+    .disabled(!isAvailable)
+    .onHover { isHovered = $0 }
+    .help(tooltip)
+  }
+
+  private var iconColor: Color {
+    if !isAvailable { return FrameColors.tertiaryText.opacity(0.4) }
+    return isOn ? FrameColors.primaryText : FrameColors.primaryText
+  }
+
+  private var labelColor: Color {
+    if !isAvailable { return FrameColors.tertiaryText.opacity(0.4) }
+    return isOn ? FrameColors.secondaryText : FrameColors.secondaryText
+  }
+
+  private var background: Color {
+    if !isAvailable { return Color.clear }
+    if isOn { return isHovered ? FrameColors.selectedActive : FrameColors.selectedBackground }
+    if isHovered { return FrameColors.subtleHover }
+    return Color.clear
   }
 }
 

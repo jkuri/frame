@@ -1,3 +1,4 @@
+import AVFoundation
 import CoreGraphics
 import CoreMedia
 import Foundation
@@ -28,10 +29,48 @@ actor RecordingCoordinator {
     fps: Int = 60,
     captureSystemAudio: Bool = false,
     microphoneDeviceId: String? = nil,
-    cameraDeviceId: String? = nil
+    cameraDeviceId: String? = nil,
+    cameraResolution: String = "1080p",
+    existingWebcam: (WebcamCapture, VerifiedCamera)? = nil
   ) async throws -> Date {
-    let content = try await Permissions.fetchShareableContent()
+    var verifiedCam: (capture: WebcamCapture, info: VerifiedCamera)?
+    var verifiedMic: MicrophoneCapture?
+
+    if let existing = existingWebcam {
+      verifiedCam = (existing.0, existing.1)
+      logger.info("Using pre-existing camera: \(existing.1.width)x\(existing.1.height)")
+    } else if let camId = cameraDeviceId {
+      let (maxW, maxH) = cameraMaxDimensions(for: cameraResolution)
+      let cam = WebcamCapture()
+      let info = try await cam.startAndVerify(deviceId: camId, fps: fps, maxWidth: maxW, maxHeight: maxH)
+      verifiedCam = (cam, info)
+      logger.info("Camera ready: \(info.width)x\(info.height)")
+    }
+
+    if let micId = microphoneDeviceId {
+      let mic = MicrophoneCapture()
+      do {
+        try await mic.startAndVerify(deviceId: micId)
+      } catch {
+        verifiedCam?.capture.stop()
+        throw error
+      }
+      verifiedMic = mic
+      logger.info("Microphone ready")
+    }
+
+    let content: SCShareableContent
+    do {
+      content = try await Permissions.fetchShareableContent()
+    } catch {
+      verifiedCam?.capture.stop()
+      verifiedMic?.stop()
+      throw error
+    }
+
     guard let display = content.displays.first(where: { $0.displayID == target.displayID }) else {
+      verifiedCam?.capture.stop()
+      verifiedMic?.stop()
       throw CaptureError.displayNotFound
     }
 
@@ -57,9 +96,9 @@ actor RecordingCoordinator {
     recordingFPS = fps
 
     var streamCount = 1
-    if microphoneDeviceId != nil { streamCount += 1 }
+    if verifiedMic != nil { streamCount += 1 }
     if captureSystemAudio { streamCount += 1 }
-    if cameraDeviceId != nil { streamCount += 1 }
+    if verifiedCam != nil { streamCount += 1 }
 
     let clock = SharedRecordingClock(streamCount: streamCount)
     self.recordingClock = clock
@@ -74,36 +113,34 @@ actor RecordingCoordinator {
     self.videoWriter = vidWriter
 
     let session = ScreenCaptureSession(videoWriter: vidWriter)
-    try await session.start(target: target, display: display, displayScale: displayScale, fps: fps)
+    do {
+      try await session.start(target: target, display: display, displayScale: displayScale, fps: fps)
+    } catch {
+      verifiedCam?.capture.stop()
+      verifiedMic?.stop()
+      throw error
+    }
     self.captureSession = session
 
-    if let camId = cameraDeviceId {
+    if let (cam, info) = verifiedCam {
+      let camW = info.width & ~1
+      let camH = info.height & ~1
+      webcamPixelW = camW
+      webcamPixelH = camH
+
       let camWriter = try VideoTrackWriter(
         outputURL: FileManager.default.tempWebcamURL(),
-        width: 1280,
-        height: 720,
+        width: camW,
+        height: camH,
         fps: fps,
         clock: clock
       )
       self.webcamWriter = camWriter
-
-      let cam = WebcamCapture(videoWriter: camWriter)
-      try await cam.start(deviceId: camId, fps: fps)
+      cam.attachWriter(camWriter)
       self.webcamCapture = cam
-
-      if let camSession = cam.captureSession,
-        let input = camSession.inputs.first as? AVCaptureDeviceInput
-      {
-        let dims = CMVideoFormatDescriptionGetDimensions(input.device.activeFormat.formatDescription)
-        webcamPixelW = Int(dims.width)
-        webcamPixelH = Int(dims.height)
-      } else {
-        webcamPixelW = 1280
-        webcamPixelH = 720
-      }
     }
 
-    if let micId = microphoneDeviceId {
+    if let mic = verifiedMic, let micId = microphoneDeviceId {
       let micFmt = MicrophoneCapture.targetFormat(deviceId: micId)
       let micWriter = try AudioTrackWriter(
         outputURL: FileManager.default.tempAudioURL(label: "mic"),
@@ -113,9 +150,7 @@ actor RecordingCoordinator {
         clock: clock
       )
       self.micAudioWriter = micWriter
-
-      let mic = MicrophoneCapture(audioWriter: micWriter)
-      try await mic.start(deviceId: micId)
+      mic.attachWriter(micWriter)
       self.microphoneCapture = mic
     }
 
@@ -177,12 +212,16 @@ actor RecordingCoordinator {
     logger.info("Recording resumed, total offset: \(CMTimeGetSeconds(totalPauseOffset))s")
   }
 
-  func stopRecordingRaw() async throws -> RecordingResult? {
+  func stopRecordingRaw(keepWebcamAlive: Bool = false) async throws -> RecordingResult? {
     microphoneCapture?.stop()
     microphoneCapture = nil
 
-    webcamCapture?.stop()
-    webcamCapture = nil
+    if keepWebcamAlive {
+      webcamCapture?.detachWriter()
+    } else {
+      webcamCapture?.stop()
+      webcamCapture = nil
+    }
 
     try await systemAudioCapture?.stop()
     systemAudioCapture = nil
@@ -228,12 +267,16 @@ actor RecordingCoordinator {
     )
   }
 
-  func stopRecording() async throws -> URL? {
+  func stopRecording(keepWebcamAlive: Bool = false) async throws -> URL? {
     microphoneCapture?.stop()
     microphoneCapture = nil
 
-    webcamCapture?.stop()
-    webcamCapture = nil
+    if keepWebcamAlive {
+      webcamCapture?.detachWriter()
+    } else {
+      webcamCapture?.stop()
+      webcamCapture = nil
+    }
 
     try await systemAudioCapture?.stop()
     systemAudioCapture = nil
@@ -289,5 +332,20 @@ actor RecordingCoordinator {
   func getWebcamCaptureSessionBox() -> SendableBox<AVCaptureSession>? {
     guard let session = webcamCapture?.captureSession else { return nil }
     return SendableBox(session)
+  }
+
+  func getWebcamCapture() -> WebcamCapture? {
+    webcamCapture
+  }
+
+  private func cameraMaxDimensions(for resolution: String) -> (Int, Int) {
+    switch resolution {
+    case "720p":
+      return (1280, 720)
+    case "4K":
+      return (3840, 2160)
+    default:
+      return (1920, 1080)
+    }
   }
 }

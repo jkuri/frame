@@ -11,8 +11,12 @@ struct SettingsView: View {
   @State private var showMouseClicks: Bool = ConfigService.shared.showMouseClicks
   @State private var captureSystemAudio: Bool = ConfigService.shared.captureSystemAudio
   @State private var cameraDeviceId: String? = ConfigService.shared.cameraDeviceId
+  @State private var cameraMaximumResolution: String = ConfigService.shared.cameraMaximumResolution
   @State private var projectFolder: String = ConfigService.shared.projectFolder
   @State private var appearance: String = ConfigService.shared.appearance
+  @State private var showMicPopover = false
+  @State private var showCameraPopover = false
+  @Environment(\.colorScheme) private var colorScheme
 
   private let fpsOptions = [24, 30, 40, 50, 60]
 
@@ -35,6 +39,7 @@ struct SettingsView: View {
   }
 
   var body: some View {
+    let _ = colorScheme
     VStack(spacing: 0) {
       header
       Divider().background(FrameColors.divider)
@@ -76,7 +81,7 @@ struct SettingsView: View {
             updateWindowBackgrounds()
           } label: {
             Text(mode.capitalized)
-              .font(.system(size: 12, weight: appearance == mode ? .semibold : .regular))
+              .font(.system(size: 12, weight: .medium))
               .foregroundStyle(FrameColors.primaryText)
               .padding(.horizontal, 14)
               .frame(height: 28)
@@ -151,7 +156,7 @@ struct SettingsView: View {
               ConfigService.shared.fps = option
             } label: {
               Text("\(option)")
-                .font(.system(size: 12, weight: fps == option ? .semibold : .regular))
+                .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(FrameColors.primaryText)
                 .frame(width: 44, height: 28)
                 .background(fps == option ? FrameColors.selectedActive : FrameColors.fieldBackground)
@@ -174,7 +179,7 @@ struct SettingsView: View {
               ConfigService.shared.timerDelay = delay.rawValue
             } label: {
               Text(delay.label)
-                .font(.system(size: 12, weight: timerDelay == delay.rawValue ? .semibold : .regular))
+                .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(FrameColors.primaryText)
                 .padding(.horizontal, 10)
                 .frame(height: 28)
@@ -188,6 +193,11 @@ struct SettingsView: View {
     }
   }
 
+  private var microphoneLabel: String {
+    guard let id = audioDeviceId else { return "None" }
+    return availableMicrophones.first { $0.id == id }?.name ?? "None"
+  }
+
   private var audioSection: some View {
     VStack(alignment: .leading, spacing: 8) {
       sectionLabel("Audio")
@@ -196,43 +206,97 @@ struct SettingsView: View {
         ConfigService.shared.captureSystemAudio = captureSystemAudio
       }
 
-      Divider().background(FrameColors.divider).padding(.vertical, 2)
-
-      sectionLabel("Microphone")
-
-      let mics = availableMicrophones
-      VStack(spacing: 2) {
-        settingsRow("None", isSelected: audioDeviceId == nil) {
-          audioDeviceId = nil
-          ConfigService.shared.audioDeviceId = nil
-        }
-        ForEach(mics) { mic in
-          settingsRow(mic.name, isSelected: audioDeviceId == mic.id) {
-            audioDeviceId = mic.id
-            ConfigService.shared.audioDeviceId = mic.id
+      HStack {
+        Text("Microphone")
+          .font(.system(size: 13))
+          .foregroundStyle(FrameColors.primaryText)
+        Spacer()
+        devicePickerButton(label: microphoneLabel, isActive: $showMicPopover)
+          .popover(isPresented: $showMicPopover, arrowEdge: .bottom) {
+            VStack(alignment: .leading, spacing: 0) {
+              CheckmarkRow(title: "None", isSelected: audioDeviceId == nil) {
+                audioDeviceId = nil
+                ConfigService.shared.audioDeviceId = nil
+                showMicPopover = false
+              }
+              ForEach(availableMicrophones) { mic in
+                CheckmarkRow(title: mic.name, isSelected: audioDeviceId == mic.id) {
+                  audioDeviceId = mic.id
+                  ConfigService.shared.audioDeviceId = mic.id
+                  showMicPopover = false
+                }
+              }
+            }
+            .padding(.vertical, 8)
+            .frame(width: 220)
+            .background(FrameColors.panelBackground)
           }
-        }
       }
+      .padding(.horizontal, 10)
     }
+  }
+
+  private var cameraLabel: String {
+    guard let id = cameraDeviceId else { return "None" }
+    return availableCameras.first { $0.id == id }?.name ?? "None"
   }
 
   private var cameraSection: some View {
     VStack(alignment: .leading, spacing: 8) {
       sectionLabel("Camera")
 
-      let cameras = availableCameras
-      VStack(spacing: 2) {
-        settingsRow("None", isSelected: cameraDeviceId == nil) {
-          cameraDeviceId = nil
-          ConfigService.shared.cameraDeviceId = nil
-        }
-        ForEach(cameras) { cam in
-          settingsRow(cam.name, isSelected: cameraDeviceId == cam.id) {
-            cameraDeviceId = cam.id
-            ConfigService.shared.cameraDeviceId = cam.id
+      HStack {
+        Text("Camera Device")
+          .font(.system(size: 13))
+          .foregroundStyle(FrameColors.primaryText)
+        Spacer()
+        devicePickerButton(label: cameraLabel, isActive: $showCameraPopover)
+          .popover(isPresented: $showCameraPopover, arrowEdge: .bottom) {
+            VStack(alignment: .leading, spacing: 0) {
+              CheckmarkRow(title: "None", isSelected: cameraDeviceId == nil) {
+                cameraDeviceId = nil
+                ConfigService.shared.cameraDeviceId = nil
+                showCameraPopover = false
+              }
+              ForEach(availableCameras) { cam in
+                CheckmarkRow(title: cam.name, isSelected: cameraDeviceId == cam.id) {
+                  cameraDeviceId = cam.id
+                  ConfigService.shared.cameraDeviceId = cam.id
+                  showCameraPopover = false
+                }
+              }
+            }
+            .padding(.vertical, 8)
+            .frame(width: 220)
+            .background(FrameColors.panelBackground)
+          }
+      }
+      .padding(.horizontal, 10)
+
+      HStack {
+        Text("Maximum Resolution")
+          .font(.system(size: 13))
+          .foregroundStyle(FrameColors.primaryText)
+        Spacer()
+        HStack(spacing: 4) {
+          ForEach(["720p", "1080p", "4K"], id: \.self) { res in
+            Button {
+              cameraMaximumResolution = res
+              ConfigService.shared.cameraMaximumResolution = res
+            } label: {
+              Text(res)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(FrameColors.primaryText)
+                .padding(.horizontal, 10)
+                .frame(height: 28)
+                .background(cameraMaximumResolution == res ? FrameColors.selectedActive : FrameColors.fieldBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+            }
+            .buttonStyle(.plain)
           }
         }
       }
+      .padding(.horizontal, 10)
     }
   }
 
@@ -254,30 +318,31 @@ struct SettingsView: View {
     }
   }
 
+  private func devicePickerButton(label: String, isActive: Binding<Bool>) -> some View {
+    Button {
+      isActive.wrappedValue.toggle()
+    } label: {
+      HStack(spacing: 4) {
+        Text(label)
+          .font(.system(size: 12, weight: .medium))
+          .foregroundStyle(FrameColors.primaryText)
+          .lineLimit(1)
+        Image(systemName: "chevron.up.chevron.down")
+          .font(.system(size: 9, weight: .semibold))
+          .foregroundStyle(FrameColors.dimLabel)
+      }
+      .padding(.horizontal, 10)
+      .frame(height: 28)
+      .background(FrameColors.fieldBackground)
+      .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+    .buttonStyle(.plain)
+  }
+
   private func sectionLabel(_ text: String) -> some View {
     Text(text)
       .font(.system(size: 11, weight: .medium))
       .foregroundStyle(FrameColors.dimLabel)
-  }
-
-  private func settingsRow(_ title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
-    Button(action: action) {
-      HStack(spacing: 8) {
-        Image(systemName: "checkmark")
-          .font(.system(size: 10, weight: .bold))
-          .frame(width: 14)
-          .opacity(isSelected ? 1 : 0)
-        Text(title)
-          .font(.system(size: 13))
-        Spacer()
-      }
-      .foregroundStyle(FrameColors.primaryText)
-      .padding(.horizontal, 10)
-      .padding(.vertical, 5)
-      .contentShape(Rectangle())
-    }
-    .buttonStyle(.plain)
-    .background(SettingsRowHover())
   }
 
   private func settingsToggle(_ title: String, isOn: Binding<Bool>, onChange: @escaping () -> Void) -> some View {
@@ -345,7 +410,10 @@ struct SettingsView: View {
 }
 
 private struct SettingsButtonStyle: ButtonStyle {
+  @Environment(\.colorScheme) private var colorScheme
+
   func makeBody(configuration: Configuration) -> some View {
+    let _ = colorScheme
     configuration.label
       .font(.system(size: 12, weight: .medium))
       .foregroundStyle(FrameColors.primaryText)
@@ -356,12 +424,3 @@ private struct SettingsButtonStyle: ButtonStyle {
   }
 }
 
-private struct SettingsRowHover: View {
-  @State private var isHovered = false
-
-  var body: some View {
-    RoundedRectangle(cornerRadius: 4)
-      .fill(isHovered ? FrameColors.hoverBackground : Color.clear)
-      .onHover { isHovered = $0 }
-  }
-}

@@ -55,6 +55,11 @@ final class ConfigService {
     set { data.cameraDeviceId = newValue; save() }
   }
 
+  var cameraMaximumResolution: String {
+    get { data.cameraMaximumResolution }
+    set { data.cameraMaximumResolution = newValue; save() }
+  }
+
   var projectFolder: String {
     get { data.projectFolder }
     set { data.projectFolder = newValue; save() }
@@ -112,6 +117,7 @@ private struct ConfigData: Codable {
   var fps: Int = 60
   var captureSystemAudio: Bool = false
   var cameraDeviceId: String? = nil
+  var cameraMaximumResolution: String = "1080p"
   var projectFolder: String = "~/Frame"
   var appearance: String = "system"
 }
