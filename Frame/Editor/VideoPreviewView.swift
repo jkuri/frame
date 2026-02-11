@@ -2,6 +2,11 @@ import AVFoundation
 import AppKit
 import SwiftUI
 
+enum ResizeDirection {
+  case left, right, top, bottom
+  case topLeft, topRight, bottomLeft, bottomRight
+}
+
 struct VideoPreviewView: NSViewRepresentable {
   let screenPlayer: AVPlayer
   let webcamPlayer: AVPlayer?
@@ -34,6 +39,7 @@ struct VideoPreviewView: NSViewRepresentable {
     let webcamSize: CGSize?
     var isDragging = false
     var isResizing = false
+    var resizeDirection: ResizeDirection = .right
     var dragStart: CGPoint = .zero
     var startLayout: PiPLayout = PiPLayout()
 
@@ -51,7 +57,7 @@ final class VideoPreviewContainer: NSView {
   private let webcamView = WebcamPiPView()
   private let resizeGrip = ResizeGripView()
   var coordinator: VideoPreviewView.Coordinator?
-  private let handleSize: CGFloat = 20
+  private let edgeMargin: CGFloat = 8
   private var currentLayout = PiPLayout()
   private var currentWebcamSize: CGSize?
   private var currentScreenSize: CGSize = .zero
@@ -81,8 +87,11 @@ final class VideoPreviewContainer: NSView {
 
   override func hitTest(_ point: NSPoint) -> NSView? {
     let loc = convert(point, from: superview)
-    if !webcamView.isHidden && (resizeGrip.frame.contains(loc) || webcamView.frame.contains(loc)) {
-      return self
+    if !webcamView.isHidden {
+      let expandedFrame = webcamView.frame.insetBy(dx: -edgeMargin, dy: -edgeMargin)
+      if expandedFrame.contains(loc) {
+        return self
+      }
     }
     return super.hitTest(point)
   }
@@ -132,22 +141,48 @@ final class VideoPreviewContainer: NSView {
     webcamView.frame = CGRect(x: x, y: bounds.height - y - h, width: w, height: h)
     webcamPlayerLayer.frame = webcamView.bounds
 
+    let gripSize: CGFloat = 16
     resizeGrip.frame = CGRect(
-      x: webcamView.frame.maxX - handleSize,
+      x: webcamView.frame.maxX - gripSize,
       y: webcamView.frame.minY,
-      width: handleSize,
-      height: handleSize
+      width: gripSize,
+      height: gripSize
     )
     resizeGrip.isHidden = false
   }
 
-  private func resizeHandleRect() -> CGRect {
-    CGRect(
-      x: webcamView.frame.maxX - handleSize,
-      y: webcamView.frame.minY,
-      width: handleSize,
-      height: handleSize
-    )
+  private func resizeZone(at point: CGPoint) -> ResizeDirection? {
+    let frame = webcamView.frame
+    guard !webcamView.isHidden, !frame.isEmpty else { return nil }
+
+    let m = edgeMargin
+    let outerFrame = frame.insetBy(dx: -m, dy: -m)
+    guard outerFrame.contains(point) else { return nil }
+
+    let nearLeft = point.x < frame.minX + m
+    let nearRight = point.x > frame.maxX - m
+    let nearBottom = point.y < frame.minY + m
+    let nearTop = point.y > frame.maxY - m
+
+    guard nearLeft || nearRight || nearBottom || nearTop else { return nil }
+
+    if nearTop && nearRight { return .topRight }
+    if nearTop && nearLeft { return .topLeft }
+    if nearBottom && nearRight { return .bottomRight }
+    if nearBottom && nearLeft { return .bottomLeft }
+    if nearRight { return .right }
+    if nearLeft { return .left }
+    if nearTop { return .top }
+    if nearBottom { return .bottom }
+
+    return nil
+  }
+
+  private func cursorForDirection(_ direction: ResizeDirection) -> NSCursor {
+    switch direction {
+    case .top, .bottom: return .resizeUpDown
+    default: return .resizeLeftRight
+    }
   }
 
   override func mouseMoved(with event: NSEvent) {
@@ -156,8 +191,8 @@ final class VideoPreviewContainer: NSView {
       return
     }
     let loc = convert(event.locationInWindow, from: nil)
-    if resizeHandleRect().contains(loc) {
-      NSCursor.resizeLeftRight.set()
+    if let direction = resizeZone(at: loc) {
+      cursorForDirection(direction).set()
     } else if webcamView.frame.contains(loc) {
       NSCursor.openHand.set()
     } else {
@@ -173,14 +208,15 @@ final class VideoPreviewContainer: NSView {
     guard let coord = coordinator else { return super.mouseDown(with: event) }
     let loc = convert(event.locationInWindow, from: nil)
 
-    if webcamView.frame.contains(loc) && !webcamView.isHidden {
-      if resizeHandleRect().contains(loc) {
-        coord.isResizing = true
-        NSCursor.resizeLeftRight.set()
-      } else {
-        coord.isDragging = true
-        NSCursor.closedHand.set()
-      }
+    if let direction = resizeZone(at: loc) {
+      coord.isResizing = true
+      coord.resizeDirection = direction
+      cursorForDirection(direction).set()
+      coord.dragStart = loc
+      coord.startLayout = coord.pipLayout.wrappedValue
+    } else if webcamView.frame.contains(loc) && !webcamView.isHidden {
+      coord.isDragging = true
+      NSCursor.closedHand.set()
       coord.dragStart = loc
       coord.startLayout = coord.pipLayout.wrappedValue
     } else {
@@ -220,10 +256,45 @@ final class VideoPreviewContainer: NSView {
       coord.pipLayout.wrappedValue.relativeX = newX
       coord.pipLayout.wrappedValue.relativeY = newY
     } else if coord.isResizing {
-      let dx = (loc.x - coord.dragStart.x) / videoRect.width
-      var newW = coord.startLayout.relativeWidth + dx
+      let direction = coord.resizeDirection
+      let dxRel = (loc.x - coord.dragStart.x) / videoRect.width
+      let dyRel = (loc.y - coord.dragStart.y) / videoRect.height
+
+      let webcamAspect = (coord.webcamSize?.height ?? 1) / max(coord.webcamSize?.width ?? 1, 1)
+      let K = webcamAspect * (coord.screenSize.width / max(coord.screenSize.height, 1))
+
+      let grabsLeft = direction == .left || direction == .topLeft || direction == .bottomLeft
+      let grabsRight = direction == .right || direction == .topRight || direction == .bottomRight
+      let grabsTop = direction == .top || direction == .topLeft || direction == .topRight
+
+      var newW: CGFloat
+      if grabsRight {
+        newW = coord.startLayout.relativeWidth + dxRel
+      } else if grabsLeft {
+        newW = coord.startLayout.relativeWidth - dxRel
+      } else if direction == .top {
+        newW = coord.startLayout.relativeWidth + dyRel / K
+      } else {
+        newW = coord.startLayout.relativeWidth - dyRel / K
+      }
       newW = max(0.1, min(0.5, newW))
+
+      let startRelH = coord.startLayout.relativeWidth * K
+      let newRelH = newW * K
+
+      var newX = coord.startLayout.relativeX
+      var newY = coord.startLayout.relativeY
+
+      if grabsLeft {
+        newX = coord.startLayout.relativeX + (coord.startLayout.relativeWidth - newW)
+      }
+      if grabsTop {
+        newY = coord.startLayout.relativeY + (startRelH - newRelH)
+      }
+
       coord.pipLayout.wrappedValue.relativeWidth = newW
+      coord.pipLayout.wrappedValue.relativeX = max(0, min(1 - newW, newX))
+      coord.pipLayout.wrappedValue.relativeY = max(0, min(1 - newRelH, newY))
     }
   }
 
@@ -233,8 +304,8 @@ final class VideoPreviewContainer: NSView {
     coordinator?.isResizing = false
     if wasInteracting {
       let loc = convert(event.locationInWindow, from: nil)
-      if resizeHandleRect().contains(loc) {
-        NSCursor.resizeLeftRight.set()
+      if let direction = resizeZone(at: loc) {
+        cursorForDirection(direction).set()
       } else if webcamView.frame.contains(loc) {
         NSCursor.openHand.set()
       } else {

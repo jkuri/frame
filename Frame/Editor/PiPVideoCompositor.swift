@@ -13,7 +13,7 @@ final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendabl
   func renderContextChanged(_ newRenderContext: AVVideoCompositionRenderContext) {}
 
   func startRequest(_ request: AVAsynchronousVideoCompositionRequest) {
-    guard let instruction = request.videoCompositionInstruction as? PiPCompositionInstruction else {
+    guard let instruction = request.videoCompositionInstruction as? CompositionInstruction else {
       request.finish(with: NSError(domain: "PiPVideoCompositor", code: -1))
       return
     }
@@ -54,24 +54,62 @@ final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendabl
       return
     }
 
+    let canvasRect = CGRect(x: 0, y: 0, width: width, height: height)
+
+    drawBackground(in: context, rect: canvasRect, instruction: instruction, colorSpace: colorSpace)
+
+    let videoRect = CGRect(
+      x: instruction.paddingH,
+      y: instruction.paddingV,
+      width: CGFloat(width) - 2 * instruction.paddingH,
+      height: CGFloat(height) - 2 * instruction.paddingV
+    )
+
     let screenImage = createImage(from: screenBuffer, colorSpace: colorSpace)
     if let img = screenImage {
-      context.draw(img, in: CGRect(x: 0, y: 0, width: width, height: height))
+      if instruction.videoCornerRadius > 0 {
+        let path = CGPath(
+          roundedRect: videoRect,
+          cornerWidth: instruction.videoCornerRadius,
+          cornerHeight: instruction.videoCornerRadius,
+          transform: nil
+        )
+        context.saveGState()
+        context.addPath(path)
+        context.clip()
+        context.draw(img, in: videoRect)
+        context.restoreGState()
+      } else {
+        context.draw(img, in: videoRect)
+      }
     }
 
-    if let webcamBuffer = request.sourceFrame(byTrackID: instruction.webcamTrackID) {
+    if let webcamTrackID = instruction.webcamTrackID,
+      let webcamBuffer = request.sourceFrame(byTrackID: webcamTrackID),
+      let pipRect = instruction.pipRect
+    {
       CVPixelBufferLockBaseAddress(webcamBuffer, .readOnly)
       defer { CVPixelBufferUnlockBaseAddress(webcamBuffer, .readOnly) }
 
       if let webcamImage = createImage(from: webcamBuffer, colorSpace: colorSpace) {
-        let pipRect = instruction.pipRect
-        let flippedY = CGFloat(height) - pipRect.origin.y - pipRect.height
-        let drawRect = CGRect(x: pipRect.origin.x, y: flippedY, width: pipRect.width, height: pipRect.height)
+        let adjustedPipRect = CGRect(
+          x: pipRect.origin.x + instruction.paddingH,
+          y: pipRect.origin.y + instruction.paddingV,
+          width: pipRect.width,
+          height: pipRect.height
+        )
+        let flippedY = CGFloat(height) - adjustedPipRect.origin.y - adjustedPipRect.height
+        let drawRect = CGRect(
+          x: adjustedPipRect.origin.x,
+          y: flippedY,
+          width: adjustedPipRect.width,
+          height: adjustedPipRect.height
+        )
 
         let path = CGPath(
           roundedRect: drawRect,
-          cornerWidth: instruction.cornerRadius,
-          cornerHeight: instruction.cornerRadius,
+          cornerWidth: instruction.pipCornerRadius,
+          cornerHeight: instruction.pipCornerRadius,
           transform: nil
         )
         context.saveGState()
@@ -83,6 +121,59 @@ final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendabl
     }
 
     request.finish(withComposedVideoFrame: outputBuffer)
+  }
+
+  private func drawBackground(
+    in context: CGContext,
+    rect: CGRect,
+    instruction: CompositionInstruction,
+    colorSpace: CGColorSpace
+  ) {
+    let colors = instruction.backgroundColors
+    guard !colors.isEmpty else {
+      context.setFillColor(CGColor(red: 0, green: 0, blue: 0, alpha: 1))
+      context.fill([rect])
+      return
+    }
+
+    if colors.count == 1 {
+      let c = colors[0]
+      context.setFillColor(CGColor(red: c.r, green: c.g, blue: c.b, alpha: c.a))
+      context.fill([rect])
+      return
+    }
+
+    let cgColors = colors.map { CGColor(red: $0.r, green: $0.g, blue: $0.b, alpha: $0.a) }
+    let locations: [CGFloat] = colors.enumerated().map { i, _ in
+      CGFloat(i) / CGFloat(max(colors.count - 1, 1))
+    }
+
+    guard
+      let gradient = CGGradient(
+        colorsSpace: colorSpace,
+        colors: cgColors as CFArray,
+        locations: locations
+      )
+    else {
+      context.setFillColor(CGColor(red: 0, green: 0, blue: 0, alpha: 1))
+      context.fill([rect])
+      return
+    }
+
+    let startPoint = CGPoint(
+      x: rect.width * instruction.backgroundStartPoint.x,
+      y: rect.height * instruction.backgroundStartPoint.y
+    )
+    let endPoint = CGPoint(
+      x: rect.width * instruction.backgroundEndPoint.x,
+      y: rect.height * instruction.backgroundEndPoint.y
+    )
+
+    context.saveGState()
+    context.addRect(rect)
+    context.clip()
+    context.drawLinearGradient(gradient, start: startPoint, end: endPoint, options: [])
+    context.restoreGState()
   }
 
   private func createImage(from pixelBuffer: CVPixelBuffer, colorSpace: CGColorSpace) -> CGImage? {

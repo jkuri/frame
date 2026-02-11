@@ -7,6 +7,7 @@ final class EditorWindow: NSObject, NSWindowDelegate {
   private var editorState: EditorState?
   var onSave: ((URL) -> Void)?
   var onCancel: (() -> Void)?
+  var onDelete: (() -> Void)?
 
   func show(result: RecordingResult) {
     let state = EditorState(result: result)
@@ -23,13 +24,18 @@ final class EditorWindow: NSObject, NSWindowDelegate {
         self?.editorState?.teardown()
         self?.window?.close()
         self?.onCancel?()
+      },
+      onDelete: { [weak self] in
+        self?.editorState?.teardown()
+        self?.window?.close()
+        self?.onDelete?()
       }
     )
 
     let hostingView = NSHostingView(rootView: editorView)
 
     let window = NSWindow(
-      contentRect: NSRect(x: 0, y: 0, width: 900, height: 640),
+      contentRect: NSRect(x: 0, y: 0, width: 1100, height: 700),
       styleMask: [.titled, .closable, .miniaturizable, .resizable],
       backing: .buffered,
       defer: false
@@ -38,7 +44,7 @@ final class EditorWindow: NSObject, NSWindowDelegate {
     window.titlebarAppearsTransparent = true
     window.backgroundColor = FrameColors.panelBackgroundNS
     window.contentView = hostingView
-    window.minSize = NSSize(width: 700, height: 500)
+    window.minSize = NSSize(width: 900, height: 550)
     window.center()
     window.isReleasedWhenClosed = false
     window.delegate = self

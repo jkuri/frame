@@ -9,7 +9,12 @@ enum VideoCompositor {
   static func export(
     result: RecordingResult,
     pipLayout: PiPLayout,
-    trimRange: CMTimeRange
+    trimRange: CMTimeRange,
+    backgroundStyle: BackgroundStyle = .none,
+    padding: CGFloat = 0,
+    videoCornerRadius: CGFloat = 0,
+    exportSettings: ExportSettings = ExportSettings(),
+    progressHandler: (@MainActor @Sendable (Double) -> Void)? = nil
   ) async throws -> URL {
     let composition = AVMutableComposition()
     let screenAsset = AVURLAsset(url: result.screenVideoURL)
@@ -45,54 +50,118 @@ enum VideoCompositor {
       mixedAudioURL = audioFiles.first
     }
 
-    if let webcamURL = result.webcamVideoURL, let webcamSize = result.webcamSize {
-      let webcamAsset = AVURLAsset(url: webcamURL)
-      if let webcamVideoTrack = try await webcamAsset.loadTracks(withMediaType: .video).first {
-        let wTrack = composition.addMutableTrack(
-          withMediaType: .video,
-          preferredTrackID: 2
-        )
-        try wTrack?.insertTimeRange(effectiveTrim, of: webcamVideoTrack, at: .zero)
-        let pipRect = pipLayout.pixelRect(screenSize: screenNaturalSize, webcamSize: webcamSize)
+    let hasVisualEffects = backgroundStyle != .none || padding > 0 || videoCornerRadius > 0
+    let hasWebcam = result.webcamVideoURL != nil
+    let needsReencode =
+      exportSettings.codec != .h264 || exportSettings.resolution != .original
+      || exportSettings.fps != .original
+    let needsCompositor = hasVisualEffects || hasWebcam || needsReencode
 
-        let instruction = PiPCompositionInstruction(
-          timeRange: CMTimeRange(start: .zero, duration: effectiveTrim.duration),
-          screenTrackID: 1,
-          webcamTrackID: 2,
-          pipRect: pipRect,
-          cornerRadius: 12,
-          outputSize: screenNaturalSize
-        )
+    let canvasSize: CGSize
+    if padding > 0 {
+      let scale = 1.0 + 2.0 * padding
+      canvasSize = CGSize(width: screenNaturalSize.width * scale, height: screenNaturalSize.height * scale)
+    } else {
+      canvasSize = screenNaturalSize
+    }
 
-        let videoComposition = AVMutableVideoComposition()
-        videoComposition.customVideoCompositorClass = PiPVideoCompositor.self
-        videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(result.fps))
-        videoComposition.renderSize = screenNaturalSize
-        videoComposition.instructions = [instruction]
+    let renderSize: CGSize
+    if let targetWidth = exportSettings.resolution.pixelWidth {
+      let aspect = canvasSize.height / max(canvasSize.width, 1)
+      renderSize = CGSize(width: targetWidth, height: round(targetWidth * aspect))
+    } else {
+      renderSize = canvasSize
+    }
 
-        try await addAudioTrack(to: composition, from: mixedAudioURL, trimRange: effectiveTrim)
+    let exportFPS = exportSettings.fps.value(fallback: result.fps)
 
-        let outputURL = FileManager.default.tempRecordingURL()
-        guard
-          let exportSession = AVAssetExportSession(
-            asset: composition,
-            presetName: AVAssetExportPresetHighestQuality
+    if needsCompositor {
+      var webcamTrackID: CMPersistentTrackID?
+      var pipRect: CGRect?
+
+      if let webcamURL = result.webcamVideoURL, let webcamSize = result.webcamSize {
+        let webcamAsset = AVURLAsset(url: webcamURL)
+        if let webcamVideoTrack = try await webcamAsset.loadTracks(withMediaType: .video).first {
+          let wTrack = composition.addMutableTrack(
+            withMediaType: .video,
+            preferredTrackID: 2
           )
-        else {
-          throw CaptureError.recordingFailed("Failed to create export session")
+          try wTrack?.insertTimeRange(effectiveTrim, of: webcamVideoTrack, at: .zero)
+          webcamTrackID = 2
+          pipRect = pipLayout.pixelRect(screenSize: screenNaturalSize, webcamSize: webcamSize)
         }
-
-        exportSession.videoComposition = videoComposition
-        exportSession.timeRange = CMTimeRange(start: .zero, duration: effectiveTrim.duration)
-        try await exportSession.export(to: outputURL, as: .mp4)
-
-        let destination = await MainActor.run { FileManager.default.defaultSaveURL(for: outputURL) }
-        try FileManager.default.moveToFinal(from: outputURL, to: destination)
-        FileManager.default.cleanupTempDir()
-
-        logger.info("Composited export saved: \(destination.path)")
-        return destination
       }
+
+      let bgColors = backgroundColorTuples(for: backgroundStyle)
+      let bgStartPoint: CGPoint
+      let bgEndPoint: CGPoint
+      if case .gradient(let id) = backgroundStyle, let preset = GradientPresets.preset(for: id) {
+        bgStartPoint = preset.cgStartPoint
+        bgEndPoint = preset.cgEndPoint
+      } else {
+        bgStartPoint = .zero
+        bgEndPoint = CGPoint(x: 0, y: 1)
+      }
+
+      let scaleX = renderSize.width / canvasSize.width
+      let scaleY = renderSize.height / canvasSize.height
+      let paddingHPx = padding * screenNaturalSize.width * scaleX
+      let paddingVPx = padding * screenNaturalSize.height * scaleY
+      let scaledCornerRadius = videoCornerRadius * scaleX
+
+      let instruction = CompositionInstruction(
+        timeRange: CMTimeRange(start: .zero, duration: effectiveTrim.duration),
+        screenTrackID: 1,
+        webcamTrackID: webcamTrackID,
+        pipRect: pipRect.map { rect in
+          let scaleX = renderSize.width / canvasSize.width
+          let scaleY = renderSize.height / canvasSize.height
+          return CGRect(
+            x: rect.origin.x * scaleX,
+            y: rect.origin.y * scaleY,
+            width: rect.width * scaleX,
+            height: rect.height * scaleY
+          )
+        },
+        pipCornerRadius: 12 * (renderSize.width / canvasSize.width),
+        outputSize: renderSize,
+        backgroundColors: bgColors,
+        backgroundStartPoint: bgStartPoint,
+        backgroundEndPoint: bgEndPoint,
+        paddingH: paddingHPx,
+        paddingV: paddingVPx,
+        videoCornerRadius: scaledCornerRadius,
+        canvasSize: renderSize
+      )
+
+      let videoComposition = AVMutableVideoComposition()
+      videoComposition.customVideoCompositorClass = PiPVideoCompositor.self
+      videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(exportFPS))
+      videoComposition.renderSize = renderSize
+      videoComposition.instructions = [instruction]
+
+      try await addAudioTrack(to: composition, from: mixedAudioURL, trimRange: effectiveTrim)
+
+      let outputURL = FileManager.default.tempRecordingURL()
+      guard
+        let exportSession = AVAssetExportSession(
+          asset: composition,
+          presetName: exportSettings.codec.exportPreset
+        )
+      else {
+        throw CaptureError.recordingFailed("Failed to create export session")
+      }
+
+      exportSession.videoComposition = videoComposition
+      exportSession.timeRange = CMTimeRange(start: .zero, duration: effectiveTrim.duration)
+      try await runExport(exportSession, to: outputURL, progressHandler: progressHandler)
+
+      let destination = await MainActor.run { FileManager.default.defaultSaveURL(for: outputURL) }
+      try FileManager.default.moveToFinal(from: outputURL, to: destination)
+      FileManager.default.cleanupTempDir()
+
+      logger.info("Composited export saved: \(destination.path)")
+      return destination
     }
 
     try await addAudioTrack(to: composition, from: mixedAudioURL, trimRange: effectiveTrim)
@@ -108,7 +177,7 @@ enum VideoCompositor {
     }
 
     exportSession.timeRange = CMTimeRange(start: .zero, duration: effectiveTrim.duration)
-    try await exportSession.export(to: outputURL, as: .mp4)
+    try await runExport(exportSession, to: outputURL, progressHandler: progressHandler)
 
     let destination = await MainActor.run { FileManager.default.defaultSaveURL(for: outputURL) }
     try FileManager.default.moveToFinal(from: outputURL, to: destination)
@@ -116,6 +185,55 @@ enum VideoCompositor {
 
     logger.info("Passthrough export saved: \(destination.path)")
     return destination
+  }
+
+  private final class ExportProgressPoller: @unchecked Sendable {
+    private let session: AVAssetExportSession
+    init(_ session: AVAssetExportSession) { self.session = session }
+    var progress: Double { Double(session.progress) }
+  }
+
+  private static func runExport(
+    _ session: AVAssetExportSession,
+    to url: URL,
+    progressHandler: (@MainActor @Sendable (Double) -> Void)?
+  ) async throws {
+    let progressTask: Task<Void, Never>?
+    if let progressHandler {
+      let poller = ExportProgressPoller(session)
+      progressTask = Task.detached {
+        while !Task.isCancelled {
+          await progressHandler(poller.progress)
+          try? await Task.sleep(nanoseconds: 200_000_000)
+        }
+      }
+    } else {
+      progressTask = nil
+    }
+    try await session.export(to: url, as: .mp4)
+    progressTask?.cancel()
+  }
+
+  private static func backgroundColorTuples(
+    for style: BackgroundStyle
+  ) -> [(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)] {
+    switch style {
+    case .none:
+      return []
+    case .gradient(let id):
+      guard let preset = GradientPresets.preset(for: id) else { return [] }
+      return preset.cgColors.map { color in
+        let components = color.components ?? [0, 0, 0, 1]
+        if components.count >= 4 {
+          return (r: components[0], g: components[1], b: components[2], a: components[3])
+        } else if components.count >= 2 {
+          return (r: components[0], g: components[0], b: components[0], a: components[1])
+        }
+        return (r: 0, g: 0, b: 0, a: 1)
+      }
+    case .solidColor(let color):
+      return [(r: color.r, g: color.g, b: color.b, a: color.a)]
+    }
   }
 
   private static func addAudioTrack(

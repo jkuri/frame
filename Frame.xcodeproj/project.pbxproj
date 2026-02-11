@@ -71,10 +71,16 @@
 		A20000000000000000000008 /* VideoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000008 /* VideoPreviewView.swift */; };
 		A20000000000000000000009 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000009 /* TimelineView.swift */; };
 		A2000000000000000000000A /* TrimHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000A /* TrimHandle.swift */; };
-		A2000000000000000000000B /* EditorToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000B /* EditorToolbar.swift */; };
+		A20000000000000000000013 /* BackgroundStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000013 /* BackgroundStyle.swift */; };
+		A20000000000000000000014 /* GradientPresets.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000014 /* GradientPresets.swift */; };
+		A20000000000000000000015 /* ExportSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000015 /* ExportSettings.swift */; };
+		A20000000000000000000016 /* EditorTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000016 /* EditorTopBar.swift */; };
+		A20000000000000000000017 /* ExportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000017 /* ExportSheet.swift */; };
+		A20000000000000000000018 /* PropertiesPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000018 /* PropertiesPanel.swift */; };
+		A20000000000000000000019 /* EditorBottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000019 /* EditorBottomBar.swift */; };
+		A2000000000000000000001A /* CompositionInstruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000001A /* CompositionInstruction.swift */; };
 		A2000000000000000000000C /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000C /* EditorView.swift */; };
 		A2000000000000000000000D /* EditorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000D /* EditorWindow.swift */; };
-		A2000000000000000000000E /* PiPCompositionInstruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000E /* PiPCompositionInstruction.swift */; };
 		A2000000000000000000000F /* PiPVideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000F /* PiPVideoCompositor.swift */; };
 		A20000000000000000000010 /* VideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000010 /* VideoCompositor.swift */; };
 		A20000000000000000000011 /* SendableBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000011 /* SendableBox.swift */; };
@@ -147,10 +153,16 @@
 		B20000000000000000000008 /* VideoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewView.swift; sourceTree = "<group>"; };
 		B20000000000000000000009 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		B2000000000000000000000A /* TrimHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrimHandle.swift; sourceTree = "<group>"; };
-		B2000000000000000000000B /* EditorToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorToolbar.swift; sourceTree = "<group>"; };
+		B20000000000000000000013 /* BackgroundStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundStyle.swift; sourceTree = "<group>"; };
+		B20000000000000000000014 /* GradientPresets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientPresets.swift; sourceTree = "<group>"; };
+		B20000000000000000000015 /* ExportSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettings.swift; sourceTree = "<group>"; };
+		B20000000000000000000016 /* EditorTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTopBar.swift; sourceTree = "<group>"; };
+		B20000000000000000000017 /* ExportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSheet.swift; sourceTree = "<group>"; };
+		B20000000000000000000018 /* PropertiesPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesPanel.swift; sourceTree = "<group>"; };
+		B20000000000000000000019 /* EditorBottomBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorBottomBar.swift; sourceTree = "<group>"; };
+		B2000000000000000000001A /* CompositionInstruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositionInstruction.swift; sourceTree = "<group>"; };
 		B2000000000000000000000C /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
 		B2000000000000000000000D /* EditorWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorWindow.swift; sourceTree = "<group>"; };
-		B2000000000000000000000E /* PiPCompositionInstruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPCompositionInstruction.swift; sourceTree = "<group>"; };
 		B2000000000000000000000F /* PiPVideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPVideoCompositor.swift; sourceTree = "<group>"; };
 		B20000000000000000000010 /* VideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCompositor.swift; sourceTree = "<group>"; };
 		B20000000000000000000011 /* SendableBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendableBox.swift; sourceTree = "<group>"; };
@@ -355,19 +367,25 @@
 		D20000000000000000000001 /* Editor */ = {
 			isa = PBXGroup;
 			children = (
-				B20000000000000000000004 /* PiPLayout.swift */,
-				B20000000000000000000005 /* SyncedPlayerController.swift */,
+				B20000000000000000000013 /* BackgroundStyle.swift */,
+				B2000000000000000000001A /* CompositionInstruction.swift */,
+				B20000000000000000000019 /* EditorBottomBar.swift */,
 				B20000000000000000000006 /* EditorState.swift */,
-				B20000000000000000000007 /* ThumbnailGenerator.swift */,
-				B20000000000000000000008 /* VideoPreviewView.swift */,
-				B20000000000000000000009 /* TimelineView.swift */,
-				B2000000000000000000000A /* TrimHandle.swift */,
-				B2000000000000000000000B /* EditorToolbar.swift */,
+				B20000000000000000000016 /* EditorTopBar.swift */,
 				B2000000000000000000000C /* EditorView.swift */,
 				B2000000000000000000000D /* EditorWindow.swift */,
-				B2000000000000000000000E /* PiPCompositionInstruction.swift */,
+				B20000000000000000000015 /* ExportSettings.swift */,
+				B20000000000000000000017 /* ExportSheet.swift */,
+				B20000000000000000000014 /* GradientPresets.swift */,
+				B20000000000000000000004 /* PiPLayout.swift */,
 				B2000000000000000000000F /* PiPVideoCompositor.swift */,
+				B20000000000000000000018 /* PropertiesPanel.swift */,
+				B20000000000000000000005 /* SyncedPlayerController.swift */,
+				B20000000000000000000007 /* ThumbnailGenerator.swift */,
+				B20000000000000000000009 /* TimelineView.swift */,
+				B2000000000000000000000A /* TrimHandle.swift */,
 				B20000000000000000000010 /* VideoCompositor.swift */,
+				B20000000000000000000008 /* VideoPreviewView.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -503,10 +521,16 @@
 				A20000000000000000000008 /* VideoPreviewView.swift in Sources */,
 				A20000000000000000000009 /* TimelineView.swift in Sources */,
 				A2000000000000000000000A /* TrimHandle.swift in Sources */,
-				A2000000000000000000000B /* EditorToolbar.swift in Sources */,
+				A20000000000000000000013 /* BackgroundStyle.swift in Sources */,
+				A20000000000000000000014 /* GradientPresets.swift in Sources */,
+				A20000000000000000000015 /* ExportSettings.swift in Sources */,
+				A20000000000000000000016 /* EditorTopBar.swift in Sources */,
+				A20000000000000000000017 /* ExportSheet.swift in Sources */,
+				A20000000000000000000018 /* PropertiesPanel.swift in Sources */,
+				A20000000000000000000019 /* EditorBottomBar.swift in Sources */,
+				A2000000000000000000001A /* CompositionInstruction.swift in Sources */,
 				A2000000000000000000000C /* EditorView.swift in Sources */,
 				A2000000000000000000000D /* EditorWindow.swift in Sources */,
-				A2000000000000000000000E /* PiPCompositionInstruction.swift in Sources */,
 				A2000000000000000000000F /* PiPVideoCompositor.swift in Sources */,
 				A20000000000000000000010 /* VideoCompositor.swift in Sources */,
 				A20000000000000000000011 /* SendableBox.swift in Sources */,

@@ -338,6 +338,12 @@ final class SessionState {
         FileManager.default.cleanupTempDir()
       }
     }
+    editor.onDelete = { [weak self] in
+      MainActor.assumeIsolated {
+        self?.closeEditor()
+        FileManager.default.cleanupTempDir()
+      }
+    }
     editor.show(result: result)
     self.editorWindow = editor
   }
