@@ -1,0 +1,853 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 90;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0255AD69477B42D2B028628B /* CaptureTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFD921258364EA6A604537F /* CaptureTarget.swift */; };
+		3DCA03E12F3B511C003FE309 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DCA03E02F3B511C003FE309 /* Assets.xcassets */; };
+		AA0000000000000000000001 /* Credits.html in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000002 /* Credits.html */; };
+		A10000000000000000000001 /* ReframedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* ReframedApp.swift */; };
+		A10000000000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* AppDelegate.swift */; };
+		A10000000000000000000003 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* Permissions.swift */; };
+		A10000000000000000000004 /* LogBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* LogBootstrap.swift */; };
+		A10000000000000000000005 /* RotatingFileLogHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* RotatingFileLogHandler.swift */; };
+		A10000000000000000000006 /* CaptureState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* CaptureState.swift */; };
+		A10000000000000000000007 /* SessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* SessionState.swift */; };
+		A1000000000000000000000B /* SelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000B /* SelectionCoordinator.swift */; };
+		A1000000000000000000000C /* SelectionOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000C /* SelectionOverlayWindow.swift */; };
+		A1000000000000000000000D /* SelectionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000D /* SelectionOverlayView.swift */; };
+		A1000000000000000000000E /* SelectionRect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000E /* SelectionRect.swift */; };
+		A1000000000000000000000F /* ResizeHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000F /* ResizeHandle.swift */; };
+		A10000000000000000000010 /* RecordingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* RecordingCoordinator.swift */; };
+		A10000000000000000000011 /* ScreenCaptureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* ScreenCaptureSession.swift */; };
+		A10000000000000000000012 /* VideoTrackWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* VideoTrackWriter.swift */; };
+		A10000000000000000000033 /* AudioTrackWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000033 /* AudioTrackWriter.swift */; };
+		A10000000000000000000013 /* FileManager+Reframed.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* FileManager+Reframed.swift */; };
+		A10000000000000000000032 /* MicrophoneCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000032 /* MicrophoneCapture.swift */; };
+		A10000000000000000000034 /* SystemAudioCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000034 /* SystemAudioCapture.swift */; };
+		A10000000000000000000035 /* SharedRecordingClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000035 /* SharedRecordingClock.swift */; };
+		A10000000000000000000014 /* NSScreen+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* NSScreen+Extensions.swift */; };
+		A10000000000000000000015 /* CGRect+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* CGRect+Extensions.swift */; };
+		A10000000000000000000017 /* ScreenCaptureKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* ScreenCaptureKit.framework */; };
+		A10000000000000000000018 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* AVFoundation.framework */; };
+		A10000000000000000000019 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = E10000000000000000000001 /* Logging */; };
+		A1000000000000000000001A /* MenuBarExtraAccess in Frameworks */ = {isa = PBXBuildFile; productRef = E10000000000000000000002 /* MenuBarExtraAccess */; };
+		A1000000000000000000001C /* VideoTranscoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001C /* VideoTranscoder.swift */; };
+		A1000000000000000000001D /* RecordingBorderWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001D /* RecordingBorderWindow.swift */; };
+		A1000000000000000000001E /* CaptureAreaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001E /* CaptureAreaView.swift */; };
+		A1000000000000000000001F /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001F /* Colors.swift */; };
+		A10000000000000000000020 /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* NumberField.swift */; };
+		A10000000000000000000021 /* RecordingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000021 /* RecordingOptions.swift */; };
+		A10000000000000000000022 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000022 /* SectionHeader.swift */; };
+		A10000000000000000000023 /* CheckmarkRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000023 /* CheckmarkRow.swift */; };
+		A10000000000000000000024 /* OptionsPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000024 /* OptionsPopover.swift */; };
+		A10000000000000000000025 /* CaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000025 /* CaptureMode.swift */; };
+		A10000000000000000000030 /* ConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000030 /* ConfigService.swift */; };
+		A10000000000000000000031 /* StateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000031 /* StateService.swift */; };
+		A10000000000000000000026 /* ModeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000026 /* ModeButton.swift */; };
+		A10000000000000000000027 /* CaptureToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000027 /* CaptureToolbar.swift */; };
+		A10000000000000000000028 /* CaptureToolbarWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000028 /* CaptureToolbarWindow.swift */; };
+		A10000000000000000000029 /* ToolbarBackdropWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000029 /* ToolbarBackdropWindow.swift */; };
+		A1000000000000000000002A /* StartRecordingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002A /* StartRecordingOverlay.swift */; };
+		A1000000000000000000002B /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002B /* PermissionsView.swift */; };
+		A1000000000000000000002C /* StartRecordingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002C /* StartRecordingButton.swift */; };
+		A1000000000000000000002D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002D /* SettingsView.swift */; };
+		C8CC4187964D4445B613AEEB /* WindowSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB41C1253D94BEF960FD7D2 /* WindowSelectionCoordinator.swift */; };
+		ED4608FB0AB34BC3B7BEDB94 /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC41BA6DF5654C57AC930549 /* WindowController.swift */; };
+		F93F2FF47E12481595833E3E /* WindowSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */; };
+		FE1324E865074398BCC4317D /* WindowSelectionOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A435021272D7425AB77F93DF /* WindowSelectionOverlay.swift */; };
+		A20000000000000000000001 /* WebcamCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* WebcamCapture.swift */; };
+		A20000000000000000000002 /* WebcamPreviewWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* WebcamPreviewWindow.swift */; };
+		A20000000000000000000003 /* RecordingResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000003 /* RecordingResult.swift */; };
+		A20000000000000000000004 /* PiPLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000004 /* PiPLayout.swift */; };
+		A20000000000000000000005 /* SyncedPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000005 /* SyncedPlayerController.swift */; };
+		A20000000000000000000006 /* EditorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000006 /* EditorState.swift */; };
+		A20000000000000000000007 /* ThumbnailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000007 /* ThumbnailGenerator.swift */; };
+		A20000000000000000000008 /* VideoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000008 /* VideoPreviewView.swift */; };
+		A20000000000000000000009 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000009 /* TimelineView.swift */; };
+		A2000000000000000000000A /* TrimHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000A /* TrimHandle.swift */; };
+		A20000000000000000000013 /* BackgroundStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000013 /* BackgroundStyle.swift */; };
+		A60000000000000000000001 /* CodableColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60000000000000000000001 /* CodableColor.swift */; };
+		A20000000000000000000014 /* GradientPresets.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000014 /* GradientPresets.swift */; };
+		A20000000000000000000015 /* ExportSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000015 /* ExportSettings.swift */; };
+		A20000000000000000000016 /* EditorTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000016 /* EditorTopBar.swift */; };
+		A20000000000000000000017 /* ExportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000017 /* ExportSheet.swift */; };
+		A20000000000000000000018 /* PropertiesPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000018 /* PropertiesPanel.swift */; };
+		A20000000000000000000019 /* EditorBottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000019 /* EditorBottomBar.swift */; };
+		A2000000000000000000001A /* CompositionInstruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000001A /* CompositionInstruction.swift */; };
+		A2000000000000000000000C /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000C /* EditorView.swift */; };
+		A2000000000000000000000D /* EditorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000D /* EditorWindow.swift */; };
+		A2000000000000000000000F /* PiPVideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000F /* PiPVideoCompositor.swift */; };
+		A20000000000000000000010 /* VideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000010 /* VideoCompositor.swift */; };
+		A20000000000000000000011 /* SendableBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000011 /* SendableBox.swift */; };
+		A20000000000000000000012 /* CountdownOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000012 /* CountdownOverlayWindow.swift */; };
+		A3000000000000000000001B /* ReframedProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3000000000000000000001B /* ReframedProject.swift */; };
+		A3000000000000000000001C /* ProjectMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3000000000000000000001C /* ProjectMetadata.swift */; };
+		A40000000000000000000001 /* SoundEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000001 /* SoundEffect.swift */; };
+		A40000000000000000000002 /* TimeFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000002 /* TimeFormatting.swift */; };
+		A50000000000000000000001 /* MouseClickMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50000000000000000000001 /* MouseClickMonitor.swift */; };
+		A50000000000000000000002 /* MouseClickWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50000000000000000000002 /* MouseClickWindow.swift */; };
+		A70000000000000000000001 /* DeviceDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70000000000000000000001 /* DeviceDiscovery.swift */; };
+		A70000000000000000000002 /* DeviceCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70000000000000000000002 /* DeviceCapture.swift */; };
+		A70000000000000000000003 /* DevicePreviewWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70000000000000000000003 /* DevicePreviewWindow.swift */; };
+		A70000000000000000000004 /* DevicePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70000000000000000000004 /* DevicePopover.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		CC0000000000000000000001 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		3CFD921258364EA6A604537F /* CaptureTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTarget.swift; sourceTree = "<group>"; };
+		3DCA03E02F3B511C003FE309 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA0000000000000000000002 /* Credits.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = Credits.html; sourceTree = "<group>"; };
+		A435021272D7425AB77F93DF /* WindowSelectionOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionOverlay.swift; sourceTree = "<group>"; };
+		B10000000000000000000001 /* ReframedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReframedApp.swift; sourceTree = "<group>"; };
+		B10000000000000000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
+		B10000000000000000000004 /* LogBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogBootstrap.swift; sourceTree = "<group>"; };
+		B10000000000000000000005 /* RotatingFileLogHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatingFileLogHandler.swift; sourceTree = "<group>"; };
+		B10000000000000000000006 /* CaptureState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureState.swift; sourceTree = "<group>"; };
+		B10000000000000000000007 /* SessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionState.swift; sourceTree = "<group>"; };
+		B1000000000000000000000B /* SelectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionCoordinator.swift; sourceTree = "<group>"; };
+		B1000000000000000000000C /* SelectionOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionOverlayWindow.swift; sourceTree = "<group>"; };
+		B1000000000000000000000D /* SelectionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionOverlayView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000E /* SelectionRect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionRect.swift; sourceTree = "<group>"; };
+		B1000000000000000000000F /* ResizeHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizeHandle.swift; sourceTree = "<group>"; };
+		B10000000000000000000010 /* RecordingCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingCoordinator.swift; sourceTree = "<group>"; };
+		B10000000000000000000011 /* ScreenCaptureSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureSession.swift; sourceTree = "<group>"; };
+		B10000000000000000000012 /* VideoTrackWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTrackWriter.swift; sourceTree = "<group>"; };
+		B10000000000000000000033 /* AudioTrackWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTrackWriter.swift; sourceTree = "<group>"; };
+		B10000000000000000000013 /* FileManager+Reframed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Reframed.swift"; sourceTree = "<group>"; };
+		B10000000000000000000032 /* MicrophoneCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicrophoneCapture.swift; sourceTree = "<group>"; };
+		B10000000000000000000034 /* SystemAudioCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemAudioCapture.swift; sourceTree = "<group>"; };
+		B10000000000000000000035 /* SharedRecordingClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedRecordingClock.swift; sourceTree = "<group>"; };
+		B10000000000000000000014 /* NSScreen+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSScreen+Extensions.swift"; sourceTree = "<group>"; };
+		B10000000000000000000015 /* CGRect+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extensions.swift"; sourceTree = "<group>"; };
+		B10000000000000000000017 /* ScreenCaptureKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenCaptureKit.framework; path = System/Library/Frameworks/ScreenCaptureKit.framework; sourceTree = SDKROOT; };
+		B10000000000000000000018 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		B10000000000000000000019 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B1000000000000000000001A /* Reframed.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Reframed.entitlements; sourceTree = "<group>"; };
+		B1000000000000000000001B /* Reframed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Reframed.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1000000000000000000001C /* VideoTranscoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTranscoder.swift; sourceTree = "<group>"; };
+		B1000000000000000000001D /* RecordingBorderWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingBorderWindow.swift; sourceTree = "<group>"; };
+		B1000000000000000000001E /* CaptureAreaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureAreaView.swift; sourceTree = "<group>"; };
+		B1000000000000000000001F /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		B10000000000000000000020 /* NumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
+		B10000000000000000000021 /* RecordingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingOptions.swift; sourceTree = "<group>"; };
+		B10000000000000000000022 /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
+		B10000000000000000000023 /* CheckmarkRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckmarkRow.swift; sourceTree = "<group>"; };
+		B10000000000000000000024 /* OptionsPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsPopover.swift; sourceTree = "<group>"; };
+		B10000000000000000000025 /* CaptureMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureMode.swift; sourceTree = "<group>"; };
+		B10000000000000000000030 /* ConfigService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigService.swift; sourceTree = "<group>"; };
+		B10000000000000000000031 /* StateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateService.swift; sourceTree = "<group>"; };
+		B10000000000000000000026 /* ModeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeButton.swift; sourceTree = "<group>"; };
+		B10000000000000000000027 /* CaptureToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbar.swift; sourceTree = "<group>"; };
+		B10000000000000000000028 /* CaptureToolbarWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbarWindow.swift; sourceTree = "<group>"; };
+		B10000000000000000000029 /* ToolbarBackdropWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarBackdropWindow.swift; sourceTree = "<group>"; };
+		B1000000000000000000002A /* StartRecordingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRecordingOverlay.swift; sourceTree = "<group>"; };
+		B1000000000000000000002B /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
+		B1000000000000000000002C /* StartRecordingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRecordingButton.swift; sourceTree = "<group>"; };
+		B1000000000000000000002D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		BDB41C1253D94BEF960FD7D2 /* WindowSelectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionCoordinator.swift; sourceTree = "<group>"; };
+		C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSelectionView.swift; sourceTree = "<group>"; };
+		EC41BA6DF5654C57AC930549 /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
+		B20000000000000000000001 /* WebcamCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebcamCapture.swift; sourceTree = "<group>"; };
+		B20000000000000000000002 /* WebcamPreviewWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebcamPreviewWindow.swift; sourceTree = "<group>"; };
+		B20000000000000000000003 /* RecordingResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingResult.swift; sourceTree = "<group>"; };
+		B20000000000000000000004 /* PiPLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPLayout.swift; sourceTree = "<group>"; };
+		B20000000000000000000005 /* SyncedPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncedPlayerController.swift; sourceTree = "<group>"; };
+		B20000000000000000000006 /* EditorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorState.swift; sourceTree = "<group>"; };
+		B20000000000000000000007 /* ThumbnailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailGenerator.swift; sourceTree = "<group>"; };
+		B20000000000000000000008 /* VideoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewView.swift; sourceTree = "<group>"; };
+		B20000000000000000000009 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
+		B2000000000000000000000A /* TrimHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrimHandle.swift; sourceTree = "<group>"; };
+		B20000000000000000000013 /* BackgroundStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundStyle.swift; sourceTree = "<group>"; };
+		B60000000000000000000001 /* CodableColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableColor.swift; sourceTree = "<group>"; };
+		B20000000000000000000014 /* GradientPresets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientPresets.swift; sourceTree = "<group>"; };
+		B20000000000000000000015 /* ExportSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettings.swift; sourceTree = "<group>"; };
+		B20000000000000000000016 /* EditorTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTopBar.swift; sourceTree = "<group>"; };
+		B20000000000000000000017 /* ExportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSheet.swift; sourceTree = "<group>"; };
+		B20000000000000000000018 /* PropertiesPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesPanel.swift; sourceTree = "<group>"; };
+		B20000000000000000000019 /* EditorBottomBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorBottomBar.swift; sourceTree = "<group>"; };
+		B2000000000000000000001A /* CompositionInstruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositionInstruction.swift; sourceTree = "<group>"; };
+		B2000000000000000000000C /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
+		B2000000000000000000000D /* EditorWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorWindow.swift; sourceTree = "<group>"; };
+		B2000000000000000000000F /* PiPVideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPVideoCompositor.swift; sourceTree = "<group>"; };
+		B20000000000000000000010 /* VideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCompositor.swift; sourceTree = "<group>"; };
+		B20000000000000000000011 /* SendableBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendableBox.swift; sourceTree = "<group>"; };
+		B20000000000000000000012 /* CountdownOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownOverlayWindow.swift; sourceTree = "<group>"; };
+		B3000000000000000000001B /* ReframedProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReframedProject.swift; sourceTree = "<group>"; };
+		B3000000000000000000001C /* ProjectMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectMetadata.swift; sourceTree = "<group>"; };
+		B40000000000000000000001 /* SoundEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEffect.swift; sourceTree = "<group>"; };
+		B40000000000000000000002 /* TimeFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatting.swift; sourceTree = "<group>"; };
+		B50000000000000000000001 /* MouseClickMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseClickMonitor.swift; sourceTree = "<group>"; };
+		B50000000000000000000002 /* MouseClickWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseClickWindow.swift; sourceTree = "<group>"; };
+		B70000000000000000000001 /* DeviceDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDiscovery.swift; sourceTree = "<group>"; };
+		B70000000000000000000002 /* DeviceCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCapture.swift; sourceTree = "<group>"; };
+		B70000000000000000000003 /* DevicePreviewWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicePreviewWindow.swift; sourceTree = "<group>"; };
+		B70000000000000000000004 /* DevicePopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicePopover.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C10000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				A10000000000000000000017 /* ScreenCaptureKit.framework in Frameworks */,
+				A10000000000000000000018 /* AVFoundation.framework in Frameworks */,
+				A10000000000000000000019 /* Logging in Frameworks */,
+				A1000000000000000000001A /* MenuBarExtraAccess in Frameworks */,
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D10000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				CC0000000000000000000001 /* Config.xcconfig */,
+				D10000000000000000000002 /* Reframed */,
+				D1000000000000000000000A /* Frameworks */,
+				D1000000000000000000000B /* Products */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 1;
+			usesTabs = 0;
+		};
+		D10000000000000000000002 /* Reframed */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000001 /* ReframedApp.swift */,
+				B10000000000000000000019 /* Info.plist */,
+				B1000000000000000000001A /* Reframed.entitlements */,
+				D10000000000000000000003 /* App */,
+				D10000000000000000000004 /* Logging */,
+				D10000000000000000000005 /* State */,
+				D1000000000000000000000D /* CaptureModes */,
+				D10000000000000000000008 /* Recording */,
+				D20000000000000000000001 /* Editor */,
+				D30000000000000000000001 /* Project */,
+				D10000000000000000000009 /* Utilities */,
+				D1000000000000000000000C /* UI */,
+				3DCA03E02F3B511C003FE309 /* Assets.xcassets */,
+				AA0000000000000000000002 /* Credits.html */,
+			);
+			path = Reframed;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000003 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000002 /* AppDelegate.swift */,
+				B10000000000000000000003 /* Permissions.swift */,
+				EC41BA6DF5654C57AC930549 /* WindowController.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000004 /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000004 /* LogBootstrap.swift */,
+				B10000000000000000000005 /* RotatingFileLogHandler.swift */,
+			);
+			path = Logging;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000005 /* State */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000006 /* CaptureState.swift */,
+				B10000000000000000000007 /* SessionState.swift */,
+				B10000000000000000000021 /* RecordingOptions.swift */,
+				B10000000000000000000025 /* CaptureMode.swift */,
+				B10000000000000000000030 /* ConfigService.swift */,
+				B10000000000000000000031 /* StateService.swift */,
+			);
+			path = State;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000008 /* Recording */ = {
+			isa = PBXGroup;
+			children = (
+				3CFD921258364EA6A604537F /* CaptureTarget.swift */,
+				B10000000000000000000010 /* RecordingCoordinator.swift */,
+				B10000000000000000000011 /* ScreenCaptureSession.swift */,
+				B10000000000000000000012 /* VideoTrackWriter.swift */,
+				B10000000000000000000033 /* AudioTrackWriter.swift */,
+				B1000000000000000000001C /* VideoTranscoder.swift */,
+				B10000000000000000000013 /* FileManager+Reframed.swift */,
+				B10000000000000000000032 /* MicrophoneCapture.swift */,
+				B10000000000000000000034 /* SystemAudioCapture.swift */,
+				B10000000000000000000035 /* SharedRecordingClock.swift */,
+				B50000000000000000000001 /* MouseClickMonitor.swift */,
+				B50000000000000000000002 /* MouseClickWindow.swift */,
+				B20000000000000000000001 /* WebcamCapture.swift */,
+				B20000000000000000000002 /* WebcamPreviewWindow.swift */,
+				B20000000000000000000003 /* RecordingResult.swift */,
+				B70000000000000000000001 /* DeviceDiscovery.swift */,
+				B70000000000000000000002 /* DeviceCapture.swift */,
+				B70000000000000000000003 /* DevicePreviewWindow.swift */,
+			);
+			path = Recording;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000009 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000014 /* NSScreen+Extensions.swift */,
+				B10000000000000000000015 /* CGRect+Extensions.swift */,
+				B20000000000000000000011 /* SendableBox.swift */,
+				B40000000000000000000001 /* SoundEffect.swift */,
+				B40000000000000000000002 /* TimeFormatting.swift */,
+				B60000000000000000000001 /* CodableColor.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000017 /* ScreenCaptureKit.framework */,
+				B10000000000000000000018 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000001B /* Reframed.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000C /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000001F /* Colors.swift */,
+				B10000000000000000000020 /* NumberField.swift */,
+				B10000000000000000000022 /* SectionHeader.swift */,
+				B10000000000000000000023 /* CheckmarkRow.swift */,
+				B10000000000000000000024 /* OptionsPopover.swift */,
+				B10000000000000000000026 /* ModeButton.swift */,
+				B10000000000000000000027 /* CaptureToolbar.swift */,
+				B10000000000000000000028 /* CaptureToolbarWindow.swift */,
+				B10000000000000000000029 /* ToolbarBackdropWindow.swift */,
+				B1000000000000000000002B /* PermissionsView.swift */,
+				B1000000000000000000002C /* StartRecordingButton.swift */,
+				B1000000000000000000002D /* SettingsView.swift */,
+				B20000000000000000000012 /* CountdownOverlayWindow.swift */,
+				B70000000000000000000004 /* DevicePopover.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000D /* CaptureModes */ = {
+			isa = PBXGroup;
+			children = (
+				D1000000000000000000000E /* Common */,
+				D1000000000000000000000F /* CaptureArea */,
+				D10000000000000000000010 /* CaptureScreen */,
+				D10000000000000000000011 /* CaptureWindow */,
+			);
+			path = CaptureModes;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000000E /* SelectionRect.swift */,
+				B1000000000000000000001D /* RecordingBorderWindow.swift */,
+				B1000000000000000000000B /* SelectionCoordinator.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000F /* CaptureArea */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000000C /* SelectionOverlayWindow.swift */,
+				B1000000000000000000000D /* SelectionOverlayView.swift */,
+				B1000000000000000000000F /* ResizeHandle.swift */,
+				B1000000000000000000001E /* CaptureAreaView.swift */,
+			);
+			path = CaptureArea;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000010 /* CaptureScreen */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000002A /* StartRecordingOverlay.swift */,
+			);
+			path = CaptureScreen;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000011 /* CaptureWindow */ = {
+			isa = PBXGroup;
+			children = (
+				BDB41C1253D94BEF960FD7D2 /* WindowSelectionCoordinator.swift */,
+				A435021272D7425AB77F93DF /* WindowSelectionOverlay.swift */,
+				C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */,
+			);
+			path = CaptureWindow;
+			sourceTree = "<group>";
+		};
+		D30000000000000000000001 /* Project */ = {
+			isa = PBXGroup;
+			children = (
+				B3000000000000000000001B /* ReframedProject.swift */,
+				B3000000000000000000001C /* ProjectMetadata.swift */,
+			);
+			path = Project;
+			sourceTree = "<group>";
+		};
+		D20000000000000000000001 /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000013 /* BackgroundStyle.swift */,
+				B2000000000000000000001A /* CompositionInstruction.swift */,
+				B20000000000000000000019 /* EditorBottomBar.swift */,
+				B20000000000000000000006 /* EditorState.swift */,
+				B20000000000000000000016 /* EditorTopBar.swift */,
+				B2000000000000000000000C /* EditorView.swift */,
+				B2000000000000000000000D /* EditorWindow.swift */,
+				B20000000000000000000015 /* ExportSettings.swift */,
+				B20000000000000000000017 /* ExportSheet.swift */,
+				B20000000000000000000014 /* GradientPresets.swift */,
+				B20000000000000000000004 /* PiPLayout.swift */,
+				B2000000000000000000000F /* PiPVideoCompositor.swift */,
+				B20000000000000000000018 /* PropertiesPanel.swift */,
+				B20000000000000000000005 /* SyncedPlayerController.swift */,
+				B20000000000000000000007 /* ThumbnailGenerator.swift */,
+				B20000000000000000000009 /* TimelineView.swift */,
+				B2000000000000000000000A /* TrimHandle.swift */,
+				B20000000000000000000010 /* VideoCompositor.swift */,
+				B20000000000000000000008 /* VideoPreviewView.swift */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F10000000000000000000001 /* Reframed */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F10000000000000000000004 /* Build configuration list for PBXNativeTarget "Reframed" */;
+			buildPhases = (
+				C10000000000000000000002 /* Sources */,
+				C10000000000000000000001 /* Frameworks */,
+				C10000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			name = Reframed;
+			packageProductDependencies = (
+				E10000000000000000000001 /* Logging */,
+				E10000000000000000000002 /* MenuBarExtraAccess */,
+			);
+			productName = Reframed;
+			productReference = B1000000000000000000001B /* Reframed.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F10000000000000000000002 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					F10000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = F10000000000000000000003 /* Build configuration list for PBXProject "Reframed" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D10000000000000000000001;
+			packageReferences = (
+				E10000000000000000000003 /* XCRemoteSwiftPackageReference "swift-log" */,
+				E10000000000000000000004 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */,
+			);
+			preferredProjectObjectVersion = 90;
+			productRefGroup = D1000000000000000000000B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F10000000000000000000001 /* Reframed */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C10000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				3DCA03E12F3B511C003FE309 /* Assets.xcassets in Resources */,
+				AA0000000000000000000001 /* Credits.html in Resources */,
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C10000000000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				C8CC4187964D4445B613AEEB /* WindowSelectionCoordinator.swift in Sources */,
+				FE1324E865074398BCC4317D /* WindowSelectionOverlay.swift in Sources */,
+				F93F2FF47E12481595833E3E /* WindowSelectionView.swift in Sources */,
+				0255AD69477B42D2B028628B /* CaptureTarget.swift in Sources */,
+				A10000000000000000000001 /* ReframedApp.swift in Sources */,
+				A10000000000000000000002 /* AppDelegate.swift in Sources */,
+				A10000000000000000000003 /* Permissions.swift in Sources */,
+				A10000000000000000000004 /* LogBootstrap.swift in Sources */,
+				A10000000000000000000005 /* RotatingFileLogHandler.swift in Sources */,
+				A10000000000000000000006 /* CaptureState.swift in Sources */,
+				A10000000000000000000007 /* SessionState.swift in Sources */,
+				A1000000000000000000000B /* SelectionCoordinator.swift in Sources */,
+				A1000000000000000000000C /* SelectionOverlayWindow.swift in Sources */,
+				A1000000000000000000000D /* SelectionOverlayView.swift in Sources */,
+				A1000000000000000000000E /* SelectionRect.swift in Sources */,
+				A1000000000000000000000F /* ResizeHandle.swift in Sources */,
+				A10000000000000000000010 /* RecordingCoordinator.swift in Sources */,
+				A10000000000000000000011 /* ScreenCaptureSession.swift in Sources */,
+				A10000000000000000000012 /* VideoTrackWriter.swift in Sources */,
+				A10000000000000000000033 /* AudioTrackWriter.swift in Sources */,
+				A1000000000000000000001C /* VideoTranscoder.swift in Sources */,
+				A1000000000000000000001D /* RecordingBorderWindow.swift in Sources */,
+				A1000000000000000000001E /* CaptureAreaView.swift in Sources */,
+				A10000000000000000000013 /* FileManager+Reframed.swift in Sources */,
+				A10000000000000000000032 /* MicrophoneCapture.swift in Sources */,
+				A10000000000000000000034 /* SystemAudioCapture.swift in Sources */,
+				A10000000000000000000035 /* SharedRecordingClock.swift in Sources */,
+				A10000000000000000000014 /* NSScreen+Extensions.swift in Sources */,
+				A10000000000000000000015 /* CGRect+Extensions.swift in Sources */,
+				A1000000000000000000001F /* Colors.swift in Sources */,
+				A10000000000000000000020 /* NumberField.swift in Sources */,
+				A10000000000000000000021 /* RecordingOptions.swift in Sources */,
+				A10000000000000000000022 /* SectionHeader.swift in Sources */,
+				A10000000000000000000023 /* CheckmarkRow.swift in Sources */,
+				A10000000000000000000024 /* OptionsPopover.swift in Sources */,
+				A10000000000000000000025 /* CaptureMode.swift in Sources */,
+				A10000000000000000000030 /* ConfigService.swift in Sources */,
+				A10000000000000000000031 /* StateService.swift in Sources */,
+				A10000000000000000000026 /* ModeButton.swift in Sources */,
+				A10000000000000000000027 /* CaptureToolbar.swift in Sources */,
+				A10000000000000000000028 /* CaptureToolbarWindow.swift in Sources */,
+				A10000000000000000000029 /* ToolbarBackdropWindow.swift in Sources */,
+				A1000000000000000000002A /* StartRecordingOverlay.swift in Sources */,
+				ED4608FB0AB34BC3B7BEDB94 /* WindowController.swift in Sources */,
+				A1000000000000000000002B /* PermissionsView.swift in Sources */,
+				A1000000000000000000002C /* StartRecordingButton.swift in Sources */,
+				A1000000000000000000002D /* SettingsView.swift in Sources */,
+				A20000000000000000000001 /* WebcamCapture.swift in Sources */,
+				A20000000000000000000002 /* WebcamPreviewWindow.swift in Sources */,
+				A20000000000000000000003 /* RecordingResult.swift in Sources */,
+				A20000000000000000000004 /* PiPLayout.swift in Sources */,
+				A20000000000000000000005 /* SyncedPlayerController.swift in Sources */,
+				A20000000000000000000006 /* EditorState.swift in Sources */,
+				A20000000000000000000007 /* ThumbnailGenerator.swift in Sources */,
+				A20000000000000000000008 /* VideoPreviewView.swift in Sources */,
+				A20000000000000000000009 /* TimelineView.swift in Sources */,
+				A2000000000000000000000A /* TrimHandle.swift in Sources */,
+				A20000000000000000000013 /* BackgroundStyle.swift in Sources */,
+				A20000000000000000000014 /* GradientPresets.swift in Sources */,
+				A20000000000000000000015 /* ExportSettings.swift in Sources */,
+				A20000000000000000000016 /* EditorTopBar.swift in Sources */,
+				A20000000000000000000017 /* ExportSheet.swift in Sources */,
+				A20000000000000000000018 /* PropertiesPanel.swift in Sources */,
+				A20000000000000000000019 /* EditorBottomBar.swift in Sources */,
+				A2000000000000000000001A /* CompositionInstruction.swift in Sources */,
+				A2000000000000000000000C /* EditorView.swift in Sources */,
+				A2000000000000000000000D /* EditorWindow.swift in Sources */,
+				A2000000000000000000000F /* PiPVideoCompositor.swift in Sources */,
+				A20000000000000000000010 /* VideoCompositor.swift in Sources */,
+				A20000000000000000000011 /* SendableBox.swift in Sources */,
+				A20000000000000000000012 /* CountdownOverlayWindow.swift in Sources */,
+				A3000000000000000000001B /* ReframedProject.swift in Sources */,
+				A3000000000000000000001C /* ProjectMetadata.swift in Sources */,
+				A40000000000000000000001 /* SoundEffect.swift in Sources */,
+				A40000000000000000000002 /* TimeFormatting.swift in Sources */,
+				A50000000000000000000001 /* MouseClickMonitor.swift in Sources */,
+				A50000000000000000000002 /* MouseClickWindow.swift in Sources */,
+				A60000000000000000000001 /* CodableColor.swift in Sources */,
+				A70000000000000000000001 /* DeviceDiscovery.swift in Sources */,
+				A70000000000000000000002 /* DeviceCapture.swift in Sources */,
+				A70000000000000000000003 /* DevicePreviewWindow.swift in Sources */,
+				A70000000000000000000004 /* DevicePopover.swift in Sources */,
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F10000000000000000000005 /* Debug configuration for PBXProject "Reframed" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 5A5U3XX696;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F10000000000000000000006 /* Release configuration for PBXProject "Reframed" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5A5U3XX696;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		F10000000000000000000007 /* Debug configuration for PBXNativeTarget "Reframed" */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000001 /* Config.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_ENTITLEMENTS = Reframed/Reframed.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 5A5U3XX696;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Reframed/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Reframed;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Jan Kuri <jkuri88@gmail.com>";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = eu.jkuri.reframed;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = YES;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		F10000000000000000000008 /* Release configuration for PBXNativeTarget "Reframed" */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000001 /* Config.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_ENTITLEMENTS = Reframed/Reframed.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 5A5U3XX696;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Reframed/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Reframed;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Jan Kuri <jkuri88@gmail.com>";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = eu.jkuri.reframed;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = YES;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F10000000000000000000003 /* Build configuration list for PBXProject "Reframed" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F10000000000000000000005 /* Debug configuration for PBXProject "Reframed" */,
+				F10000000000000000000006 /* Release configuration for PBXProject "Reframed" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		F10000000000000000000004 /* Build configuration list for PBXNativeTarget "Reframed" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F10000000000000000000007 /* Debug configuration for PBXNativeTarget "Reframed" */,
+				F10000000000000000000008 /* Release configuration for PBXNativeTarget "Reframed" */,
+			);
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E10000000000000000000003 /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.0;
+			};
+		};
+		E10000000000000000000004 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/orchetect/MenuBarExtraAccess";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E10000000000000000000001 /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E10000000000000000000003 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
+		E10000000000000000000002 /* MenuBarExtraAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E10000000000000000000004 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */;
+			productName = MenuBarExtraAccess;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F10000000000000000000002 /* Project object */;
+}

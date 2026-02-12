@@ -2,13 +2,13 @@
   <img width="128" height="128" src="https://github.com/user-attachments/assets/77f29f81-0d3c-41af-9e7f-dd67990ebc01" />
 </p>
 
-# frame
+# Reframed
 
-A lightweight macOS screen recording app that lives in your menu bar. Record your entire screen, a specific window, or a selected region — then edit and export with a built-in video editor.
+A powerful macOS screen recorder with built-in video editor. Capture your screen, windows, regions, or iOS devices over USB with webcam overlay — then trim, style, and export.
 
 ## Download
 
-Grab the latest `.dmg` from the [Releases](https://github.com/jkuri/frame/releases) page.
+Grab the latest `.dmg` from the [Releases](https://github.com/jkuri/reframed/releases) page.
 
 ## Features
 

@@ -22,7 +22,7 @@ No test target exists yet. No linter is configured.
 
 ## Architecture
 
-Frame is a macOS screen recording app with a menu bar interface, floating capture toolbar, built-in video editor, and `.frm` project management (macOS 15+, Swift 6 strict concurrency).
+Reframed is a macOS screen recording app with a menu bar interface, floating capture toolbar, built-in video editor, and `.frm` project management (macOS 15+, Swift 6 strict concurrency).
 
 ### Concurrency model
 
@@ -44,7 +44,7 @@ idle → selecting → recording ⇄ paused → processing → idle
 
 ### Recording flow
 
-Frame offers three recording options:
+Reframed offers three recording options:
 
 - **Record entire screen** — captures the full display
 - **Record specific window** — captures a single application window
@@ -60,7 +60,7 @@ Built-in editor with timeline trimming, background styles (solid color, gradient
 
 ### Project management
 
-Recordings are saved as `.frm` bundles (UTI: `eu.jankuri.frame.project`) containing source video, webcam video, and metadata JSON. Projects can be reopened and re-edited.
+Recordings are saved as `.frm` bundles (UTI: `eu.jankuri.reframed.project`) containing source video, webcam video, and metadata JSON. Projects can be reopened and re-edited.
 
 ### Coordinate system
 
@@ -87,7 +87,7 @@ Uses `MenuBarExtra(.window)` + MenuBarExtraAccess (1.2.x) for the `isPresented` 
 
 ## Key constraints
 
-- Bundle ID: `eu.jkuri.frame`
+- Bundle ID: `eu.jkuri.reframed`
 - `LSUIElement = false` (app shows in Dock with icon)
 - App sandbox disabled (required for ScreenCaptureKit)
 - Version is managed in `Config.xcconfig` (`MARKETING_VERSION` + `CURRENT_PROJECT_VERSION`)

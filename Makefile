@@ -1,5 +1,5 @@
-APP_NAME = Frame
-SCHEME = Frame
+APP_NAME = Reframed
+SCHEME = Reframed
 ARCH = $(shell uname -m)
 DESTINATION = platform=macOS,arch=$(ARCH)
 BUILD_DIR = .build
@@ -11,10 +11,10 @@ DEBUG_DIR = $(BUILD_DIR)/Build/Products/Debug
 all: help
 
 build:
-	@xcodebuild -scheme $(SCHEME) -configuration Debug build -quiet -derivedDataPath $(BUILD_DIR) -destination '$(DESTINATION)'
+	@xcodebuild -project Reframed.xcodeproj -scheme $(SCHEME) -configuration Debug build -quiet -derivedDataPath $(BUILD_DIR) -destination '$(DESTINATION)'
 
 release:
-	@xcodebuild -scheme $(SCHEME) -configuration Release build -quiet -derivedDataPath $(BUILD_DIR) -destination '$(DESTINATION)'
+	@xcodebuild -project Reframed.xcodeproj -scheme $(SCHEME) -configuration Release build -quiet -derivedDataPath $(BUILD_DIR) -destination '$(DESTINATION)'
 
 run: release
 	@open $(RELEASE_DIR)/$(APP_NAME).app
@@ -32,13 +32,13 @@ uninstall:
 	@rm -rf /Applications/$(APP_NAME).app
 
 format:
-	@swift format -i -r Frame/
+	@swift format -i -r Reframed/
 
 clean:
 	@rm -rf $(BUILD_DIR) dist
 
 help:
-	@echo "Frame Build System"
+	@echo "Reframed Build System"
 	@echo ""
 	@echo "Usage: make [target]"
 	@echo ""

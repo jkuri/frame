@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-APP_NAME="Frame"
+APP_NAME="Reframed"
 BUILD_DIR=".build/Build/Products/Release"
 VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "${BUILD_DIR}/${APP_NAME}.app/Contents/Info.plist" 2>/dev/null || echo "0.0.0")
 DMG_NAME="${APP_NAME}-${VERSION}.dmg"
