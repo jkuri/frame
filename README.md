@@ -1,7 +1,3 @@
-<p align="center">
-  <img width="128" height="128" src="https://github.com/user-attachments/assets/77f29f81-0d3c-41af-9e7f-dd67990ebc01" />
-</p>
-
 # Reframed
 
 A powerful macOS screen recorder with built-in video editor. Capture your screen, windows, regions, or iOS devices over USB with webcam overlay — then trim, style, and export.
