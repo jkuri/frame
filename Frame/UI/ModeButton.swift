@@ -6,8 +6,6 @@ struct ModeButton: View {
   let isSelected: Bool
   let action: () -> Void
 
-  @State private var isHovered = false
-
   var body: some View {
     Button(action: action) {
       VStack(spacing: 3) {
@@ -19,12 +17,9 @@ struct ModeButton: View {
           .foregroundStyle(FrameColors.secondaryText)
       }
       .frame(width: 56, height: 52)
-      .background(
-        isSelected ? FrameColors.selectedBackground : isHovered ? FrameColors.subtleHover : Color.clear
-      )
+      .background(isSelected ? FrameColors.selectedBackground : Color.clear)
       .clipShape(RoundedRectangle(cornerRadius: 6))
     }
     .buttonStyle(.plain)
-    .onHover { isHovered = $0 }
   }
 }

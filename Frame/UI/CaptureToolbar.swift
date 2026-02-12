@@ -1,5 +1,78 @@
 import SwiftUI
 
+struct HoverEffectScope<Content: View>: View {
+  @ViewBuilder let content: Content
+  @Namespace private var hoverNamespace
+  @State private var hoveredID: String?
+
+  var body: some View {
+    ZStack {
+      if let hoveredID {
+        RoundedRectangle(cornerRadius: 8)
+          .fill(FrameColors.hoverBackground)
+          .matchedGeometryEffect(id: hoveredID, in: hoverNamespace, isSource: false)
+          .animation(.spring(response: 0.3, dampingFraction: 0.75), value: hoveredID)
+          .transition(.opacity.animation(.easeInOut(duration: 0.2)))
+      }
+
+      content
+        .environment(\.hoverNamespace, hoverNamespace)
+        .environment(\.hoverID, $hoveredID)
+    }
+  }
+}
+
+private struct HoverNamespaceKey: EnvironmentKey {
+  static let defaultValue: Namespace.ID? = nil
+}
+
+private struct HoverIDKey: EnvironmentKey {
+  static let defaultValue: Binding<String?>? = nil
+}
+
+extension EnvironmentValues {
+  var hoverNamespace: Namespace.ID? {
+    get { self[HoverNamespaceKey.self] }
+    set { self[HoverNamespaceKey.self] = newValue }
+  }
+  var hoverID: Binding<String?>? {
+    get { self[HoverIDKey.self] }
+    set { self[HoverIDKey.self] = newValue }
+  }
+}
+
+private struct HoverEffectModifier: ViewModifier {
+  let id: String
+  @Environment(\.hoverNamespace) var namespace
+  @Environment(\.hoverID) var hoverID
+
+  func body(content: Content) -> some View {
+    if let namespace, let hoverID {
+      content
+        .matchedGeometryEffect(id: id, in: namespace, isSource: true)
+        .onHover { hovering in
+          if hovering {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+              hoverID.wrappedValue = id
+            }
+          } else if hoverID.wrappedValue == id {
+            withAnimation(.easeInOut(duration: 0.2)) {
+              hoverID.wrappedValue = nil
+            }
+          }
+        }
+    } else {
+      content
+    }
+  }
+}
+
+extension View {
+  func hoverEffect(id: String) -> some View {
+    modifier(HoverEffectModifier(id: id))
+  }
+}
+
 struct CaptureToolbar: View {
   let session: SessionState
   @State private var showOptions = false
@@ -44,116 +117,147 @@ struct CaptureToolbar: View {
   }
 
   private var modeSelectionContent: some View {
-    Group {
-      Button {
-        session.hideToolbar()
-      } label: {
-        Image(systemName: "xmark.circle.fill")
-          .font(.system(size: 20))
-          .foregroundStyle(FrameColors.primaryText)
-          .frame(width: 36, height: 52)
-      }
-      .buttonStyle(.plain)
-
-      ToolbarDivider()
-
-      HStack(spacing: 2) {
-        ModeButton(
-          icon: "rectangle.inset.filled",
-          label: "Display",
-          isSelected: session.captureMode == .entireScreen
-        ) {
-          session.selectMode(.entireScreen)
-        }
-
-        ModeButton(
-          icon: "macwindow",
-          label: "Window",
-          isSelected: session.captureMode == .selectedWindow
-        ) {
-          session.selectMode(.selectedWindow)
-        }
-
-        ModeButton(
-          icon: "rectangle.dashed",
-          label: "Area",
-          isSelected: session.captureMode == .selectedArea
-        ) {
-          session.selectMode(.selectedArea)
-        }
-      }
-
-      ToolbarDivider()
-
-      HStack(spacing: 2) {
-        ToolbarToggleButton(
-          icon: "web.camera",
-          activeIcon: "web.camera.fill",
-          label: "Camera",
-          isOn: session.isCameraOn,
-          isAvailable: session.options.selectedCamera != nil,
-          tooltip: session.options.selectedCamera != nil ? "Camera" : "Select a camera in Options",
-          action: { session.toggleCamera() }
-        )
-
-        ToolbarToggleButton(
-          icon: "mic",
-          activeIcon: "mic.fill",
-          label: "Mic",
-          isOn: session.isMicrophoneOn,
-          isAvailable: session.options.selectedMicrophone != nil,
-          tooltip: session.options.selectedMicrophone != nil ? "Microphone" : "Select a microphone in Options",
-          action: { session.toggleMicrophone() }
-        )
-
-        ToolbarToggleButton(
-          icon: "speaker.wave.2",
-          activeIcon: "speaker.wave.2.fill",
-          label: "Audio",
-          isOn: session.options.captureSystemAudio,
-          isAvailable: true,
-          tooltip: "System Audio",
-          action: { session.options.captureSystemAudio.toggle() }
-        )
-      }
-
-      ToolbarDivider()
-
-      Button {
-        showOptions.toggle()
-      } label: {
-        HStack(spacing: 4) {
-          Text("Options")
-            .font(.system(size: 13, weight: .medium))
-          Image(systemName: "chevron.down")
-            .font(.system(size: 9, weight: .semibold))
-        }
-        .foregroundStyle(FrameColors.primaryText)
-        .padding(.horizontal, 14)
-        .frame(height: 52)
-        .contentShape(Rectangle())
-      }
-      .buttonStyle(.plain)
-      .popover(isPresented: $showOptions, arrowEdge: .bottom) {
-        OptionsPopover(options: session.options)
-          .presentationBackground(FrameColors.panelBackground)
-      }
-
-      ToolbarDivider()
-
-      Button {
-        showSettings.toggle()
-      } label: {
-        Image(systemName: "gearshape")
-          .font(.system(size: 16))
-          .foregroundStyle(FrameColors.primaryText)
-          .frame(width: 36, height: 52)
+    HoverEffectScope {
+      HStack(spacing: 0) {
+        Button {
+          session.hideToolbar()
+        } label: {
+          VStack(spacing: 3) {
+            Image(systemName: "xmark.circle.fill")
+              .font(.system(size: 18))
+              .foregroundStyle(FrameColors.primaryText)
+            Text("Close")
+              .font(.system(size: 10))
+              .foregroundStyle(FrameColors.secondaryText)
+          }
+          .frame(width: 56, height: 52)
           .contentShape(Rectangle())
-      }
-      .buttonStyle(.plain)
-      .popover(isPresented: $showSettings, arrowEdge: .bottom) {
-        SettingsView(options: session.options)
-          .presentationBackground(FrameColors.panelBackground)
+        }
+        .buttonStyle(.plain)
+        .hoverEffect(id: "close")
+
+        ToolbarDivider()
+
+        HStack(spacing: 2) {
+          ModeButton(
+            icon: "rectangle.inset.filled",
+            label: "Display",
+            isSelected: session.captureMode == .entireScreen
+          ) {
+            session.selectMode(.entireScreen)
+          }
+          .hoverEffect(id: "mode.display")
+
+          ModeButton(
+            icon: "macwindow",
+            label: "Window",
+            isSelected: session.captureMode == .selectedWindow
+          ) {
+            session.selectMode(.selectedWindow)
+          }
+          .hoverEffect(id: "mode.window")
+
+          ModeButton(
+            icon: "rectangle.dashed",
+            label: "Area",
+            isSelected: session.captureMode == .selectedArea
+          ) {
+            session.selectMode(.selectedArea)
+          }
+          .hoverEffect(id: "mode.area")
+
+          ModeButton(
+            icon: "iphone",
+            label: "Device",
+            isSelected: session.captureMode == .device
+          ) {
+            session.selectMode(.device)
+          }
+          .hoverEffect(id: "mode.device")
+        }
+
+        ToolbarDivider()
+
+        HStack(spacing: 2) {
+          ToolbarToggleButton(
+            icon: "web.camera",
+            activeIcon: "web.camera.fill",
+            label: "Camera",
+            isOn: session.isCameraOn,
+            isAvailable: session.options.selectedCamera != nil,
+            tooltip: session.options.selectedCamera != nil ? "Camera" : "Select a camera in Options",
+            action: { session.toggleCamera() }
+          )
+          .hoverEffect(id: "toggle.camera")
+
+          ToolbarToggleButton(
+            icon: "mic",
+            activeIcon: "mic.fill",
+            label: "Mic",
+            isOn: session.isMicrophoneOn,
+            isAvailable: session.options.selectedMicrophone != nil,
+            tooltip: session.options.selectedMicrophone != nil ? "Microphone" : "Select a microphone in Options",
+            action: { session.toggleMicrophone() }
+          )
+          .hoverEffect(id: "toggle.mic")
+
+          ToolbarToggleButton(
+            icon: "speaker.wave.2",
+            activeIcon: "speaker.wave.2.fill",
+            label: "Audio",
+            isOn: session.options.captureSystemAudio,
+            isAvailable: true,
+            tooltip: "System Audio",
+            action: { session.options.captureSystemAudio.toggle() }
+          )
+          .hoverEffect(id: "toggle.audio")
+        }
+
+        ToolbarDivider()
+
+        Button {
+          showOptions.toggle()
+        } label: {
+          HStack(spacing: 4) {
+            Text("Options")
+              .font(.system(size: 13, weight: .medium))
+            Image(systemName: "chevron.down")
+              .font(.system(size: 9, weight: .semibold))
+          }
+          .foregroundStyle(FrameColors.primaryText)
+          .padding(.horizontal, 14)
+          .frame(height: 52)
+          .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .hoverEffect(id: "btn.options")
+        .popover(isPresented: $showOptions, arrowEdge: .bottom) {
+          OptionsPopover(options: session.options)
+            .presentationBackground(FrameColors.panelBackground)
+        }
+
+        ToolbarDivider()
+
+        Button {
+          showSettings.toggle()
+        } label: {
+          VStack(spacing: 3) {
+            Image(systemName: "gearshape")
+              .font(.system(size: 18))
+              .foregroundStyle(FrameColors.primaryText)
+            Text("Settings")
+              .font(.system(size: 10))
+              .foregroundStyle(FrameColors.secondaryText)
+          }
+          .frame(width: 56, height: 52)
+          .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .hoverEffect(id: "btn.settings")
+        .popover(isPresented: $showSettings, arrowEdge: .bottom) {
+          SettingsView(options: session.options)
+            .presentationBackground(FrameColors.panelBackground)
+        }
       }
     }
   }
@@ -307,8 +411,6 @@ private struct ToolbarToggleButton: View {
   let tooltip: String
   let action: () -> Void
 
-  @State private var isHovered = false
-
   var body: some View {
     Button(action: action) {
       VStack(spacing: 3) {
@@ -325,7 +427,6 @@ private struct ToolbarToggleButton: View {
     }
     .buttonStyle(.plain)
     .disabled(!isAvailable)
-    .onHover { isHovered = $0 }
     .help(tooltip)
   }
 
@@ -341,14 +442,17 @@ private struct ToolbarToggleButton: View {
 
   private var background: Color {
     if !isAvailable { return Color.clear }
-    if isOn { return isHovered ? FrameColors.selectedActive : FrameColors.selectedBackground }
-    if isHovered { return FrameColors.subtleHover }
+    if isOn { return FrameColors.selectedBackground }
     return Color.clear
   }
 }
 
 private struct ToolbarDivider: View {
+  @Environment(\.colorScheme) private var colorScheme
+
   var body: some View {
+    let _ = colorScheme
+
     Rectangle()
       .fill(FrameColors.divider)
       .frame(width: 1, height: 32)
