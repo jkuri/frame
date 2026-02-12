@@ -14,15 +14,19 @@ Grab the latest `.dmg` from the [Releases](https://github.com/jkuri/frame/releas
 
 ### Recording
 
-- Menu bar interface with floating toolbar
+- Menu bar interface with floating capture toolbar
 - Record full screen, single window, or custom region
+- Record iOS devices (iPhone/iPad) connected via USB
 - Region selection with resizable drag handles
 - System audio and microphone capture
-- Webcam overlay (Picture-in-Picture) during recording
+- Webcam overlay (Picture-in-Picture) during recording, including device mode
+- Mouse click visualization with configurable color and size
 - Configurable countdown timer before recording
 - Pause and resume recordings
 - Configurable FPS (24, 30, 40, 50, 60)
-- Light and dark mode support
+- Sound effects for recording actions (start, stop, pause, resume)
+- Remember last selection area between recordings
+- Light and dark mode support with appearance settings
 
 ### Video Editor
 
@@ -48,6 +52,14 @@ Grab the latest `.dmg` from the [Releases](https://github.com/jkuri/frame/releas
 - Reopen and re-edit previous recordings
 - Rename projects from the properties panel
 - Configurable project and export output folders
+
+### Settings
+
+- Tabbed settings panel (General, Recording, Devices)
+- Configurable output and project folders
+- Camera maximum resolution selection (720p, 1080p, 4K)
+- Mouse click monitor with color picker and size slider
+- Appearance preference (System, Light, Dark)
 
 ## Requirements
 
