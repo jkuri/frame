@@ -1,37 +1,41 @@
-.PHONY: build run dmg format clean help install uninstall dev
+APP_NAME = Frame
+SCHEME = Frame
+ARCH = $(shell uname -m)
+DESTINATION = platform=macOS,arch=$(ARCH)
+BUILD_DIR = .build
+RELEASE_DIR = $(BUILD_DIR)/Build/Products/Release
+DEBUG_DIR = $(BUILD_DIR)/Build/Products/Debug
+
+.PHONY: build release run dev dmg format clean help install uninstall
 
 all: help
 
-release:
-	$(eval ARCH := $(shell uname -m))
-	$(eval DEVELOPMENT_TEAM := $(shell xcodebuild -quiet -scheme Frame -destination "platform=macOS,arch=$(ARCH)" -showBuildSettings 2>/dev/null | awk -F' = ' '/DEVELOPMENT_TEAM =/ {print $$2}' | tail -1))
-	@xcodebuild -scheme Frame -configuration Release build -quiet CODE_SIGN_STYLE=Automatic DEVELOPMENT_TEAM=$(DEVELOPMENT_TEAM) -derivedDataPath .build -destination 'platform=macOS,arch=$(ARCH)'
-
 build:
-	$(eval ARCH := $(shell uname -m))
-	$(eval DEVELOPMENT_TEAM := $(shell xcodebuild -quiet -scheme Frame -destination "platform=macOS,arch=$(ARCH)" -showBuildSettings 2>/dev/null | awk -F' = ' '/DEVELOPMENT_TEAM =/ {print $$2}' | tail -1))
-	@xcodebuild -scheme Frame -configuration Debug build -quiet CODE_SIGN_STYLE=Automatic DEVELOPMENT_TEAM=$(DEVELOPMENT_TEAM) CODE_SIGN_IDENTITY="Apple Development" -derivedDataPath .build -destination 'platform=macOS,arch=$(ARCH)'
+	@xcodebuild -scheme $(SCHEME) -configuration Debug build -quiet -derivedDataPath $(BUILD_DIR) -destination '$(DESTINATION)'
+
+release:
+	@xcodebuild -scheme $(SCHEME) -configuration Release build -quiet -derivedDataPath $(BUILD_DIR) -destination '$(DESTINATION)'
 
 run: release
-	@open .build/Build/Products/Release/Frame.app
+	@open $(RELEASE_DIR)/$(APP_NAME).app
 
 dev: build
-	@open .build/Build/Products/Debug/Frame.app
+	@open $(DEBUG_DIR)/$(APP_NAME).app
 
 dmg: release
 	@./scripts/create-dmg.sh
 
 install: uninstall release
-	@cp -rf .build/Build/Products/Release/Frame.app /Applications/
+	@cp -rf $(RELEASE_DIR)/$(APP_NAME).app /Applications/
 
 uninstall:
-	@rm -rf /Applications/Frame.app
+	@rm -rf /Applications/$(APP_NAME).app
 
 format:
 	@swift format -i -r Frame/
 
 clean:
-	@rm -rf .build dist
+	@rm -rf $(BUILD_DIR) dist
 
 help:
 	@echo "Frame Build System"
@@ -44,8 +48,8 @@ help:
 	@echo "  dmg       - Create .dmg installer"
 	@echo "  install   - Install to /Applications"
 	@echo "  uninstall - Remove from /Applications"
-	@echo "  run       - Build and run the app"
-	@echo "  dev       - Run in dev mode"
+	@echo "  run       - Build release and run"
+	@echo "  dev       - Build debug and run"
 	@echo "  format    - Format Swift source files"
 	@echo "  clean     - Clean build artifacts"
 	@echo "  help      - Show this help"

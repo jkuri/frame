@@ -6,10 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Debug build
-xcodebuild -scheme Frame -configuration Debug build CODE_SIGNING_ALLOWED=NO
+make build
 
-# Release build
-xcodebuild -scheme Frame -configuration Release build CODE_SIGNING_ALLOWED=NO
+# Release build (archive + export with Developer ID signing)
+make release
+
+# Create DMG installer
+make dmg
 ```
 
 No test target exists yet. No linter is configured.
@@ -73,5 +76,6 @@ Uses `MenuBarExtra(.window)` + MenuBarExtraAccess (1.2.x) for the `isPresented` 
 - Bundle ID: `eu.jkuri.frame`
 - `LSUIElement = false` (app shows in Dock with icon)
 - App sandbox disabled (required for ScreenCaptureKit)
-- Use `CODE_SIGNING_ALLOWED=NO` for command-line builds without a signing team
+- Release builds use `xcodebuild archive` + `exportArchive` with `exportOptions.plist` (Developer ID signing)
+- Version is managed in `Config.xcconfig` (`MARKETING_VERSION` + `CURRENT_PROJECT_VERSION`)
 - SPM PBXBuildFile entries need `productRef` only (no `fileRef`)
