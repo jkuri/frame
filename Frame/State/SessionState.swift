@@ -204,12 +204,8 @@ final class SessionState {
       let savedRect = StateService.shared.lastSelectionRect
     {
       let displayID = StateService.shared.lastDisplayID
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-        MainActor.assumeIsolated {
-          self?.overlayView?.applyExternalRect(savedRect)
-          self?.captureTarget = .region(SelectionRect(rect: savedRect, displayID: displayID))
-        }
-      }
+      overlayView?.applyExternalRect(savedRect)
+      captureTarget = .region(SelectionRect(rect: savedRect, displayID: displayID))
     }
   }
 
