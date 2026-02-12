@@ -1,9 +1,24 @@
 import AVFoundation
 import SwiftUI
 
+private enum SettingsTab: String, CaseIterable {
+  case general = "General"
+  case recording = "Recording"
+  case devices = "Devices"
+
+  var icon: String {
+    switch self {
+    case .general: "gearshape"
+    case .recording: "record.circle"
+    case .devices: "mic.and.signal.meter"
+    }
+  }
+}
+
 struct SettingsView: View {
   var options: RecordingOptions?
 
+  @State private var selectedTab: SettingsTab = .general
   @State private var outputFolder: String = ConfigService.shared.outputFolder
   @State private var cameraMaximumResolution: String = ConfigService.shared.cameraMaximumResolution
   @State private var projectFolder: String = ConfigService.shared.projectFolder
@@ -36,32 +51,59 @@ struct SettingsView: View {
   var body: some View {
     let _ = colorScheme
     VStack(spacing: 0) {
-      header
-      Divider().background(FrameColors.divider)
+      tabBar
       ScrollView {
         VStack(alignment: .leading, spacing: 20) {
-          appearanceSection
-          projectFolderSection
-          outputSection
-          recordingSection
-          audioSection
-          cameraSection
-          optionsSection
+          switch selectedTab {
+          case .general:
+            generalContent
+          case .recording:
+            recordingContent
+          case .devices:
+            devicesContent
+          }
         }
         .padding(24)
       }
     }
-    .frame(width: 800, height: 900)
+    .frame(width: 600, height: 520)
     .background(FrameColors.panelBackground)
   }
 
-  private var header: some View {
-    Text("Settings")
-      .font(.system(size: 16, weight: .semibold))
-      .foregroundStyle(FrameColors.primaryText)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(.horizontal, 24)
-      .padding(.vertical, 16)
+  private var tabBar: some View {
+    HStack(spacing: 6) {
+      ForEach(SettingsTab.allCases, id: \.self) { tab in
+        Button {
+          selectedTab = tab
+        } label: {
+          HStack(spacing: 5) {
+            Image(systemName: tab.icon)
+              .font(.system(size: 11))
+            Text(tab.rawValue)
+              .font(.system(size: 12, weight: .medium))
+          }
+          .foregroundStyle(selectedTab == tab ? FrameColors.primaryText : FrameColors.dimLabel)
+          .padding(.horizontal, 14)
+          .padding(.vertical, 7)
+          .background(selectedTab == tab ? FrameColors.selectedActive : FrameColors.fieldBackground)
+          .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+        .buttonStyle(.plain)
+      }
+    }
+    .padding(.horizontal, 24)
+    .padding(.vertical, 12)
+  }
+
+  // MARK: - General Tab
+
+  private var generalContent: some View {
+    Group {
+      appearanceSection
+      projectFolderSection
+      outputSection
+      optionsSection
+    }
   }
 
   private var appearanceSection: some View {
@@ -135,12 +177,36 @@ struct SettingsView: View {
     }
   }
 
-  private var recordingSection: some View {
+  private var optionsSection: some View {
     VStack(alignment: .leading, spacing: 8) {
-      sectionLabel("Recording")
+      sectionLabel("Options")
+
+      settingsToggle(
+        "Remember Last Selection",
+        isOn: Binding(
+          get: { options?.rememberLastSelection ?? false },
+          set: { options?.rememberLastSelection = $0 }
+        )
+      )
+    }
+  }
+
+  // MARK: - Recording Tab
+
+  private var recordingContent: some View {
+    Group {
+      frameRateSection
+      timerDelaySection
+      mouseClickSection
+    }
+  }
+
+  private var frameRateSection: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      sectionLabel("Frame Rate")
 
       HStack {
-        Text("Frame Rate")
+        Text("FPS")
           .font(.system(size: 13))
           .foregroundStyle(FrameColors.primaryText)
         Spacer()
@@ -160,9 +226,16 @@ struct SettingsView: View {
           }
         }
       }
+      .padding(.horizontal, 10)
+    }
+  }
+
+  private var timerDelaySection: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      sectionLabel("Timer Delay")
 
       HStack {
-        Text("Timer Delay")
+        Text("Countdown")
           .font(.system(size: 13))
           .foregroundStyle(FrameColors.primaryText)
         Spacer()
@@ -183,6 +256,131 @@ struct SettingsView: View {
           }
         }
       }
+      .padding(.horizontal, 10)
+    }
+  }
+
+  private var clickColorDisplay: Color {
+    if let cc = options?.mouseClickColor {
+      return Color(cgColor: cc.cgColor)
+    }
+    return Color.accentColor
+  }
+
+  private var clickColorLabel: String {
+    guard let cc = options?.mouseClickColor else { return "Neutral" }
+    return TailwindColors.all.first { $0.color == cc }?.name ?? "Custom"
+  }
+
+  private var mouseClickSize: Binding<Double> {
+    Binding(
+      get: { Double(options?.mouseClickSize ?? 36) },
+      set: { options?.mouseClickSize = Int($0) }
+    )
+  }
+
+  private var mouseClickSection: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      sectionLabel("Mouse Clicks")
+
+      settingsToggle(
+        "Show Mouse Clicks",
+        isOn: Binding(
+          get: { options?.showMouseClicks ?? false },
+          set: { options?.showMouseClicks = $0 }
+        )
+      )
+
+      if options?.showMouseClicks == true {
+        VStack(spacing: 8) {
+          HStack(spacing: 12) {
+            Text("Color")
+              .font(.system(size: 13))
+              .foregroundStyle(FrameColors.primaryText)
+            colorPickerButton
+            Spacer()
+            Text("Size")
+              .font(.system(size: 13))
+              .foregroundStyle(FrameColors.primaryText)
+            Slider(value: mouseClickSize, in: 16...80, step: 1)
+              .frame(width: 160)
+            Text("\(Int(mouseClickSize.wrappedValue))pt")
+              .font(.system(size: 13, weight: .medium).monospacedDigit())
+              .foregroundStyle(FrameColors.dimLabel)
+              .frame(width: 36, alignment: .trailing)
+          }
+          MouseClickPreview(
+            color: clickColorDisplay,
+            size: CGFloat(mouseClickSize.wrappedValue)
+          )
+          .frame(maxWidth: .infinity)
+          .frame(height: 64)
+        }
+        .padding(.horizontal, 10)
+      }
+    }
+  }
+
+  private var colorPickerButton: some View {
+    Button {
+      showColorPopover.toggle()
+    } label: {
+      HStack(spacing: 6) {
+        Circle()
+          .fill(clickColorDisplay)
+          .frame(width: 16, height: 16)
+        Text(clickColorLabel)
+          .font(.system(size: 13, weight: .medium))
+          .foregroundStyle(FrameColors.primaryText)
+          .lineLimit(1)
+        Image(systemName: "chevron.up.chevron.down")
+          .font(.system(size: 9, weight: .semibold))
+          .foregroundStyle(FrameColors.dimLabel)
+      }
+      .padding(.horizontal, 10)
+      .frame(height: 30)
+      .background(FrameColors.fieldBackground)
+      .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+    .buttonStyle(.plain)
+    .popover(isPresented: $showColorPopover, arrowEdge: .bottom) {
+      ScrollView {
+        VStack(alignment: .leading, spacing: 0) {
+          ColorPresetRow(
+            name: "Neutral",
+            subtitle: "Match base color",
+            color: .accentColor,
+            isSelected: options?.mouseClickColor == nil
+          ) {
+            options?.mouseClickColor = nil
+            showColorPopover = false
+          }
+          ForEach(TailwindColors.all) { preset in
+            ColorPresetRow(
+              name: preset.name,
+              color: preset.swiftUIColor,
+              isSelected: options?.mouseClickColor == preset.color
+            ) {
+              options?.mouseClickColor = preset.color
+              showColorPopover = false
+            }
+          }
+        }
+        .padding(.vertical, 8)
+      }
+      .frame(width: 240)
+      .frame(maxHeight: 360)
+      .background(FrameColors.panelBackground)
+    }
+    .presentationBackground(FrameColors.panelBackground)
+  }
+
+  // MARK: - Devices Tab
+
+  private var devicesContent: some View {
+    Group {
+      audioSection
+      cameraSection
     }
   }
 
@@ -295,129 +493,7 @@ struct SettingsView: View {
     }
   }
 
-  private var clickColorDisplay: Color {
-    if let cc = options?.mouseClickColor {
-      return Color(cgColor: cc.cgColor)
-    }
-    return Color.accentColor
-  }
-
-  private var clickColorLabel: String {
-    guard let cc = options?.mouseClickColor else { return "Neutral" }
-    return TailwindColors.all.first { $0.color == cc }?.name ?? "Custom"
-  }
-
-  private var mouseClickSize: Binding<Double> {
-    Binding(
-      get: { Double(options?.mouseClickSize ?? 36) },
-      set: { options?.mouseClickSize = Int($0) }
-    )
-  }
-
-  private var optionsSection: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      sectionLabel("Options")
-
-      VStack(spacing: 2) {
-        settingsToggle(
-          "Remember Last Selection",
-          isOn: Binding(
-            get: { options?.rememberLastSelection ?? false },
-            set: { options?.rememberLastSelection = $0 }
-          )
-        )
-        settingsToggle(
-          "Show Mouse Clicks",
-          isOn: Binding(
-            get: { options?.showMouseClicks ?? false },
-            set: { options?.showMouseClicks = $0 }
-          )
-        )
-      }
-
-      if options?.showMouseClicks == true {
-        VStack(spacing: 8) {
-          HStack(spacing: 12) {
-            Text("Color")
-              .font(.system(size: 13))
-              .foregroundStyle(FrameColors.primaryText)
-            colorPickerButton
-            Spacer()
-            Text("Size")
-              .font(.system(size: 13))
-              .foregroundStyle(FrameColors.primaryText)
-            Slider(value: mouseClickSize, in: 16...80, step: 1)
-              .frame(width: 160)
-            Text("\(Int(mouseClickSize.wrappedValue))pt")
-              .font(.system(size: 13, weight: .medium).monospacedDigit())
-              .foregroundStyle(FrameColors.dimLabel)
-              .frame(width: 36, alignment: .trailing)
-          }
-          MouseClickPreview(
-            color: clickColorDisplay,
-            size: CGFloat(mouseClickSize.wrappedValue)
-          )
-          .frame(maxWidth: .infinity)
-          .frame(height: 64)
-        }
-        .padding(.horizontal, 10)
-      }
-    }
-  }
-
-  private var colorPickerButton: some View {
-    Button {
-      showColorPopover.toggle()
-    } label: {
-      HStack(spacing: 6) {
-        Circle()
-          .fill(clickColorDisplay)
-          .frame(width: 16, height: 16)
-        Text(clickColorLabel)
-          .font(.system(size: 13, weight: .medium))
-          .foregroundStyle(FrameColors.primaryText)
-          .lineLimit(1)
-        Image(systemName: "chevron.up.chevron.down")
-          .font(.system(size: 9, weight: .semibold))
-          .foregroundStyle(FrameColors.dimLabel)
-      }
-      .padding(.horizontal, 10)
-      .frame(height: 30)
-      .background(FrameColors.fieldBackground)
-      .clipShape(RoundedRectangle(cornerRadius: 6))
-    }
-    .buttonStyle(.plain)
-    .popover(isPresented: $showColorPopover, arrowEdge: .bottom) {
-      ScrollView {
-        VStack(alignment: .leading, spacing: 0) {
-          ColorPresetRow(
-            name: "Neutral",
-            subtitle: "Match base color",
-            color: .accentColor,
-            isSelected: options?.mouseClickColor == nil
-          ) {
-            options?.mouseClickColor = nil
-            showColorPopover = false
-          }
-          ForEach(TailwindColors.all) { preset in
-            ColorPresetRow(
-              name: preset.name,
-              color: preset.swiftUIColor,
-              isSelected: options?.mouseClickColor == preset.color
-            ) {
-              options?.mouseClickColor = preset.color
-              showColorPopover = false
-            }
-          }
-        }
-        .padding(.vertical, 8)
-      }
-      .frame(width: 240)
-      .frame(maxHeight: 360)
-      .background(FrameColors.panelBackground)
-    }
-    .presentationBackground(FrameColors.panelBackground)
-  }
+  // MARK: - Shared Helpers
 
   private func devicePickerButton(label: String, isActive: Binding<Bool>) -> some View {
     Button {
