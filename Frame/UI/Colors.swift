@@ -9,7 +9,8 @@ enum FrameColors {
 
   static let overlayBackground = NSColor.black.withAlphaComponent(0.5)
   static let selectionBorder = NSColor(white: 0.55, alpha: 0.6)
-  static let selectionGrid = NSColor(white: 0.55, alpha: 0.3)
+  static let selectionGrid = NSColor(white: 0.55, alpha: 0.5)
+  static let selectionCenter = NSColor(white: 0.65, alpha: 0.6)
   static let handleFill = NSColor(white: 0.15, alpha: 0.9)
   static let handleStroke = NSColor(white: 0.7, alpha: 0.8)
   static let crosshair = NSColor.white.withAlphaComponent(0.3)

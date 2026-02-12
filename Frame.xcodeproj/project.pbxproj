@@ -87,6 +87,7 @@
 		A3000000000000000000001B /* FrameProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3000000000000000000001B /* FrameProject.swift */; };
 		A3000000000000000000001C /* ProjectMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3000000000000000000001C /* ProjectMetadata.swift */; };
 		A40000000000000000000001 /* SoundEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000001 /* SoundEffect.swift */; };
+		A40000000000000000000002 /* TimeFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000002 /* TimeFormatting.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -172,6 +173,7 @@
 		B3000000000000000000001B /* FrameProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameProject.swift; sourceTree = "<group>"; };
 		B3000000000000000000001C /* ProjectMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectMetadata.swift; sourceTree = "<group>"; };
 		B40000000000000000000001 /* SoundEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEffect.swift; sourceTree = "<group>"; };
+		B40000000000000000000002 /* TimeFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatting.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -280,6 +282,7 @@
 				B10000000000000000000015 /* CGRect+Extensions.swift */,
 				B20000000000000000000011 /* SendableBox.swift */,
 				B40000000000000000000001 /* SoundEffect.swift */,
+				B40000000000000000000002 /* TimeFormatting.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -553,6 +556,7 @@
 				A3000000000000000000001B /* FrameProject.swift in Sources */,
 				A3000000000000000000001C /* ProjectMetadata.swift in Sources */,
 				A40000000000000000000001 /* SoundEffect.swift in Sources */,
+				A40000000000000000000002 /* TimeFormatting.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

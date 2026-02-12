@@ -94,6 +94,22 @@ final class SelectionOverlayView: NSView {
       context.addLine(to: CGPoint(x: rect.maxX, y: y))
       context.strokePath()
     }
+
+    let centerColor = FrameColors.selectionCenter
+    context.setStrokeColor(centerColor.cgColor)
+    context.setLineWidth(0.5)
+    context.setLineDash(phase: 0, lengths: [6, 3])
+
+    let cx = rect.midX
+    let cy = rect.midY
+
+    context.move(to: CGPoint(x: cx, y: rect.minY))
+    context.addLine(to: CGPoint(x: cx, y: rect.maxY))
+    context.strokePath()
+
+    context.move(to: CGPoint(x: rect.minX, y: cy))
+    context.addLine(to: CGPoint(x: rect.maxX, y: cy))
+    context.strokePath()
   }
 
   private func drawCircularHandles(context: CGContext, rect: CGRect) {

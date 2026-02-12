@@ -31,17 +31,10 @@ struct EditorBottomBar: View {
   }
 
   private var timeDisplay: some View {
-    let current = formatTime(editorState.currentTime)
-    let total = formatTime(editorState.duration)
+    let current = formatDuration(editorState.currentTime)
+    let total = formatDuration(editorState.duration)
     return Text("\(current) / \(total)")
       .font(.system(size: 12, design: .monospaced))
       .foregroundStyle(FrameColors.secondaryText)
-  }
-
-  private func formatTime(_ time: CMTime) -> String {
-    let seconds = max(0, CMTimeGetSeconds(time))
-    let mins = Int(seconds) / 60
-    let secs = Int(seconds) % 60
-    return String(format: "%02d:%02d", mins, secs)
   }
 }
