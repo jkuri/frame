@@ -456,73 +456,91 @@ struct PropertiesPanel: View {
     }
   }
 
+  private let zoomLabelWidth: CGFloat = 42
+
+  private func zoomToggleRow(_ label: String, isOn: Binding<Bool>) -> some View {
+    HStack {
+      Text(label)
+        .font(.system(size: 12))
+        .foregroundStyle(ReframedColors.primaryText)
+      Spacer()
+      Toggle("", isOn: isOn)
+        .toggleStyle(.switch)
+        .controlSize(.mini)
+        .labelsHidden()
+    }
+  }
+
   private var zoomSection: some View {
     VStack(alignment: .leading, spacing: 10) {
       sectionHeader(icon: "plus.magnifyingglass", title: "Zoom")
 
-      Toggle(isOn: $editorState.autoZoomEnabled) {
-        Text("Auto Zoom")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.primaryText)
-      }
-      .toggleStyle(.switch)
-      .controlSize(.mini)
-      .onChange(of: editorState.autoZoomEnabled) { _, enabled in
-        if enabled {
-          editorState.generateAutoZoom()
-        } else {
-          editorState.clearAutoZoom()
+      zoomToggleRow("Enable Zoom", isOn: $editorState.zoomEnabled)
+        .onChange(of: editorState.zoomEnabled) { _, enabled in
+          if !enabled {
+            editorState.autoZoomEnabled = false
+            editorState.zoomTimeline = nil
+          }
         }
-      }
 
-      Toggle(isOn: $editorState.zoomFollowCursor) {
-        Text("Follow Cursor")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.primaryText)
-      }
-      .toggleStyle(.switch)
-      .controlSize(.mini)
+      if editorState.zoomEnabled {
+        zoomToggleRow("Follow Cursor", isOn: $editorState.zoomFollowCursor)
 
-      HStack(spacing: 8) {
-        Text("Level")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.secondaryText)
-        Slider(value: $editorState.zoomLevel, in: 1.5...3.0, step: 0.1)
-        Text(String(format: "%.1fx", editorState.zoomLevel))
-          .font(.system(size: 12, design: .monospaced))
-          .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: 36, alignment: .trailing)
-      }
-      .onChange(of: editorState.zoomLevel) { _, _ in
-        if editorState.autoZoomEnabled { editorState.generateAutoZoom() }
-      }
+        zoomToggleRow("Auto Zoom", isOn: $editorState.autoZoomEnabled)
+          .onChange(of: editorState.autoZoomEnabled) { _, enabled in
+            if enabled {
+              editorState.generateAutoZoom()
+            } else {
+              editorState.clearAutoZoom()
+            }
+          }
 
-      HStack(spacing: 8) {
-        Text("Speed")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.secondaryText)
-        Slider(value: $editorState.zoomTransitionSpeed, in: 0.1...1.0, step: 0.05)
-        Text(String(format: "%.2fs", editorState.zoomTransitionSpeed))
-          .font(.system(size: 12, design: .monospaced))
-          .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: 42, alignment: .trailing)
-      }
-      .onChange(of: editorState.zoomTransitionSpeed) { _, _ in
-        if editorState.autoZoomEnabled { editorState.generateAutoZoom() }
-      }
+        if editorState.autoZoomEnabled {
+          HStack {
+            Text("Level")
+              .font(.system(size: 12))
+              .foregroundStyle(ReframedColors.secondaryText)
+              .frame(width: zoomLabelWidth, alignment: .leading)
+            Slider(value: $editorState.zoomLevel, in: 1.5...5.0, step: 0.1)
+            Text(String(format: "%.1fx", editorState.zoomLevel))
+              .font(.system(size: 12, design: .monospaced))
+              .foregroundStyle(ReframedColors.secondaryText)
+              .frame(width: 40, alignment: .trailing)
+          }
+          .onChange(of: editorState.zoomLevel) { _, _ in
+            editorState.generateAutoZoom()
+          }
 
-      HStack(spacing: 8) {
-        Text("Hold")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.secondaryText)
-        Slider(value: $editorState.zoomDwellThreshold, in: 0.5...3.0, step: 0.1)
-        Text(String(format: "%.1fs", editorState.zoomDwellThreshold))
-          .font(.system(size: 12, design: .monospaced))
-          .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: 36, alignment: .trailing)
-      }
-      .onChange(of: editorState.zoomDwellThreshold) { _, _ in
-        if editorState.autoZoomEnabled { editorState.generateAutoZoom() }
+          HStack {
+            Text("Speed")
+              .font(.system(size: 12))
+              .foregroundStyle(ReframedColors.secondaryText)
+              .frame(width: zoomLabelWidth, alignment: .leading)
+            Slider(value: $editorState.zoomTransitionSpeed, in: 0.1...2.0, step: 0.05)
+            Text(String(format: "%.2fs", editorState.zoomTransitionSpeed))
+              .font(.system(size: 12, design: .monospaced))
+              .foregroundStyle(ReframedColors.secondaryText)
+              .frame(width: 40, alignment: .trailing)
+          }
+          .onChange(of: editorState.zoomTransitionSpeed) { _, _ in
+            editorState.generateAutoZoom()
+          }
+
+          HStack {
+            Text("Hold")
+              .font(.system(size: 12))
+              .foregroundStyle(ReframedColors.secondaryText)
+              .frame(width: zoomLabelWidth, alignment: .leading)
+            Slider(value: $editorState.zoomDwellThreshold, in: 0.5...5.0, step: 0.1)
+            Text(String(format: "%.1fs", editorState.zoomDwellThreshold))
+              .font(.system(size: 12, design: .monospaced))
+              .foregroundStyle(ReframedColors.secondaryText)
+              .frame(width: 40, alignment: .trailing)
+          }
+          .onChange(of: editorState.zoomDwellThreshold) { _, _ in
+            editorState.generateAutoZoom()
+          }
+        }
       }
     }
   }

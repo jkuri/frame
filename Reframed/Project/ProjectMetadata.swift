@@ -25,6 +25,7 @@ struct CursorSettingsData: Codable, Sendable {
 }
 
 struct ZoomSettingsData: Codable, Sendable {
+  var zoomEnabled: Bool = false
   var autoZoomEnabled: Bool
   var zoomFollowCursor: Bool = true
   var zoomLevel: Double

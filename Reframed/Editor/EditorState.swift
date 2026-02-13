@@ -44,11 +44,12 @@ final class EditorState {
   var clickHighlightSize: CGFloat = 36
 
   var zoomTimeline: ZoomTimeline?
+  var zoomEnabled: Bool = false
   var autoZoomEnabled: Bool = false
   var zoomFollowCursor: Bool = true
   var zoomLevel: Double = 2.0
-  var zoomTransitionSpeed: Double = 0.4
-  var zoomDwellThreshold: Double = 0.5
+  var zoomTransitionSpeed: Double = 1.0
+  var zoomDwellThreshold: Double = 2.5
 
   private let logger = Logger(label: "eu.jankuri.reframed.editor-state")
 
@@ -114,6 +115,7 @@ final class EditorState {
         clickHighlightSize = cursorSettings.clickHighlightSize
       }
       if let zoomSettings = saved.zoomSettings {
+        zoomEnabled = zoomSettings.zoomEnabled
         autoZoomEnabled = zoomSettings.autoZoomEnabled
         zoomFollowCursor = zoomSettings.zoomFollowCursor
         zoomLevel = zoomSettings.zoomLevel
@@ -303,14 +305,15 @@ final class EditorState {
       )
     }
     var zoomSettings: ZoomSettingsData?
-    if let zt = zoomTimeline {
+    if cursorMetadataProvider != nil {
       zoomSettings = ZoomSettingsData(
+        zoomEnabled: zoomEnabled,
         autoZoomEnabled: autoZoomEnabled,
         zoomFollowCursor: zoomFollowCursor,
         zoomLevel: zoomLevel,
         transitionDuration: zoomTransitionSpeed,
         dwellThreshold: zoomDwellThreshold,
-        keyframes: zt.allKeyframes
+        keyframes: zoomTimeline?.allKeyframes ?? []
       )
     }
     let data = EditorStateData(
@@ -341,8 +344,19 @@ final class EditorState {
     var newKeyframes = ZoomDetector.detect(from: provider.metadata, duration: dur, config: config)
 
     if let existing = zoomTimeline {
+      let autoRegions = groupZoomRegions(from: newKeyframes)
       let manualKeyframes = existing.allKeyframes.filter { !$0.isAuto }
-      newKeyframes.append(contentsOf: manualKeyframes)
+      let manualRegions = groupZoomRegions(from: manualKeyframes)
+
+      for manualRegion in manualRegions {
+        let overlaps = autoRegions.contains { auto in
+          manualRegion.startTime < auto.endTime && manualRegion.endTime > auto.startTime
+        }
+        if !overlaps {
+          let regionKfs = Array(manualKeyframes[manualRegion.startIndex..<(manualRegion.startIndex + manualRegion.count)])
+          newKeyframes.append(contentsOf: regionKfs)
+        }
+      }
     }
 
     zoomTimeline = ZoomTimeline(keyframes: newKeyframes)
@@ -359,15 +373,29 @@ final class EditorState {
   }
 
   func addManualZoomKeyframe(at time: Double, center: CGPoint) {
-    let kf = ZoomKeyframe(
-      t: time,
-      zoomLevel: zoomLevel,
-      centerX: center.x,
-      centerY: center.y,
-      isAuto: false
-    )
+    let dur = CMTimeGetSeconds(duration)
+    let holdDuration = max(zoomDwellThreshold, 0.5)
+    let holdEnd = min(dur, time + holdDuration)
+    let transIn = max(0, time - zoomTransitionSpeed)
+    let transOut = min(dur, holdEnd + zoomTransitionSpeed)
+
+    if let existing = zoomTimeline {
+      let existingRegions = groupZoomRegions(from: existing.allKeyframes)
+      let overlaps = existingRegions.contains { region in
+        transIn < region.endTime && transOut > region.startTime
+      }
+      if overlaps { return }
+    }
+
+    let newKeyframes: [ZoomKeyframe] = [
+      ZoomKeyframe(t: transIn, zoomLevel: 1.0, centerX: center.x, centerY: center.y, isAuto: false),
+      ZoomKeyframe(t: time, zoomLevel: zoomLevel, centerX: center.x, centerY: center.y, isAuto: false),
+      ZoomKeyframe(t: holdEnd, zoomLevel: zoomLevel, centerX: center.x, centerY: center.y, isAuto: false),
+      ZoomKeyframe(t: transOut, zoomLevel: 1.0, centerX: center.x, centerY: center.y, isAuto: false),
+    ]
+
     var existing = zoomTimeline?.allKeyframes ?? []
-    existing.append(kf)
+    existing.append(contentsOf: newKeyframes)
     zoomTimeline = ZoomTimeline(keyframes: existing)
   }
 
@@ -381,6 +409,28 @@ final class EditorState {
     } else {
       zoomTimeline = ZoomTimeline(keyframes: kfs)
     }
+  }
+
+  func removeZoomRegion(startIndex: Int, count: Int) {
+    guard let existing = zoomTimeline else { return }
+    var kfs = existing.allKeyframes
+    let endIndex = startIndex + count
+    guard startIndex >= 0 && endIndex <= kfs.count else { return }
+    kfs.removeSubrange(startIndex..<endIndex)
+    if kfs.isEmpty {
+      zoomTimeline = nil
+    } else {
+      zoomTimeline = ZoomTimeline(keyframes: kfs)
+    }
+  }
+
+  func updateZoomRegion(startIndex: Int, count: Int, newKeyframes: [ZoomKeyframe]) {
+    guard let existing = zoomTimeline else { return }
+    var kfs = existing.allKeyframes
+    let endIndex = startIndex + count
+    guard startIndex >= 0 && endIndex <= kfs.count else { return }
+    kfs.replaceSubrange(startIndex..<endIndex, with: newKeyframes)
+    zoomTimeline = ZoomTimeline(keyframes: kfs)
   }
 
   func teardown() {

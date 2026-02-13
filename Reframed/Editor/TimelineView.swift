@@ -146,8 +146,8 @@ struct TimelineView: View {
             )
           }
 
-          if let zt = editorState.zoomTimeline, !zt.allKeyframes.isEmpty {
-            zoomTrackLane(keyframes: zt.allKeyframes)
+          if editorState.zoomEnabled {
+            zoomTrackLane(keyframes: editorState.zoomTimeline?.allKeyframes ?? [])
           }
         }
       }
@@ -465,8 +465,11 @@ struct TimelineView: View {
               editorState.addManualZoomKeyframe(at: time, center: pos)
             }
           },
-          onRemoveKeyframe: { index in
-            editorState.removeZoomKeyframe(at: index)
+          onRemoveRegion: { startIndex, count in
+            editorState.removeZoomRegion(startIndex: startIndex, count: count)
+          },
+          onUpdateRegion: { startIndex, count, newKeyframes in
+            editorState.updateZoomRegion(startIndex: startIndex, count: count, newKeyframes: newKeyframes)
           }
         )
       }
