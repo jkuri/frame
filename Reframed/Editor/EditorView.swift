@@ -128,6 +128,7 @@ struct EditorView: View {
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .aspectRatio(hasEffects ? canvasAspect : screenSize.width / max(screenSize.height, 1), contentMode: .fit)
+      .clipShape(RoundedRectangle(cornerRadius: hasEffects ? 0 : previewCornerRadius(screenSize: screenSize, viewSize: geo.size)))
       .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     .padding(.horizontal, 16)
@@ -167,6 +168,12 @@ struct EditorView: View {
         editorState.seek(to: time)
       }
     )
+  }
+
+  private func previewCornerRadius(screenSize: CGSize, viewSize: CGSize) -> CGFloat {
+    let nativeRadius: CGFloat = 10
+    let scale = min(viewSize.width / max(screenSize.width, 1), viewSize.height / max(screenSize.height, 1))
+    return nativeRadius * scale
   }
 
   private func handleExport(settings: ExportSettings) {
