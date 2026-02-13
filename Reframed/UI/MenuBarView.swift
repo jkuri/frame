@@ -13,87 +13,78 @@ struct MenuBarView: View {
   let onShowPermissions: () -> Void
 
   @State private var recentProjects: [RecentProject] = []
+  @State private var totalProjectCount: Int = 0
   @Environment(\.colorScheme) private var colorScheme
 
   var body: some View {
     let _ = colorScheme
-    VStack(alignment: .leading, spacing: 0) {
-      quickActions
+    HoverEffectScope {
+      VStack(alignment: .leading, spacing: 0) {
+        SectionHeader(title: "Quick Actions")
 
-      MenuBarDivider()
-
-      recentProjectsSection
-
-      MenuBarDivider()
-
-      utilitySection
-    }
-    .padding(.vertical, 8)
-    .frame(width: 320)
-    .background(ReframedColors.panelBackground)
-    .onAppear {
-      loadRecentProjects()
-    }
-  }
-
-  private var quickActions: some View {
-    VStack(alignment: .leading, spacing: 6) {
-      SectionHeader(title: "Quick Actions")
-
-      MenuBarActionRow(icon: "record.circle", title: "New Recording", shortcut: "N") {
-        onDismiss()
-        if Permissions.allPermissionsGranted {
-          session.showToolbar()
-        } else {
-          onShowPermissions()
-        }
-      }
-      .padding(.horizontal, 12)
-    }
-  }
-
-  private var recentProjectsSection: some View {
-    VStack(alignment: .leading, spacing: 6) {
-      SectionHeader(title: "Recent Projects")
-
-      if recentProjects.isEmpty {
-        Text("No recent projects")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.tertiaryText)
-          .frame(maxWidth: .infinity, alignment: .center)
-          .padding(.vertical, 12)
-      } else {
-        ForEach(recentProjects) { project in
-          ProjectRow(project: project) {
-            onDismiss()
-            session.openProject(at: project.url)
+        MenuBarActionRow(icon: "record.circle", title: "New Recording", shortcut: "N") {
+          onDismiss()
+          if Permissions.allPermissionsGranted {
+            session.showToolbar()
+          } else {
+            onShowPermissions()
           }
+        }
+        .hoverEffect(id: "menu.newRecording")
+        .padding(.horizontal, 12)
+
+        MenuBarDivider()
+
+        SectionHeader(title: "Recent Projects")
+
+        if recentProjects.isEmpty {
+          Text("No recent projects")
+            .font(.system(size: 12))
+            .foregroundStyle(ReframedColors.tertiaryText)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.vertical, 12)
+        } else {
+          ForEach(recentProjects) { project in
+            ProjectRow(project: project) {
+              onDismiss()
+              session.openProject(at: project.url)
+            }
+            .hoverEffect(id: "menu.project.\(project.id)")
+            .padding(.horizontal, 12)
+          }
+
+          MenuBarActionRow(icon: "folder", title: "Open Projects Folder", subtitle: "\(totalProjectCount) project\(totalProjectCount == 1 ? "" : "s")") {
+            onDismiss()
+            let path = (ConfigService.shared.projectFolder as NSString).expandingTildeInPath
+            NSWorkspace.shared.open(URL(fileURLWithPath: path))
+          }
+          .hoverEffect(id: "menu.openProjects")
           .padding(.horizontal, 12)
         }
 
-        MenuBarActionRow(icon: "folder", title: "Show All in Finder") {
+        MenuBarDivider()
+
+        MenuBarActionRow(icon: "info.circle", title: "About") {
           onDismiss()
-          let path = (ConfigService.shared.projectFolder as NSString).expandingTildeInPath
-          NSWorkspace.shared.open(URL(fileURLWithPath: path))
+          NSApp.activate(ignoringOtherApps: true)
+          NSApp.orderFrontStandardAboutPanel(nil)
         }
+        .hoverEffect(id: "menu.about")
         .padding(.horizontal, 12)
+
+        MenuBarActionRow(icon: "power", title: "Quit", shortcut: "Q") {
+          NSApp.terminate(nil)
+        }
+        .hoverEffect(id: "menu.quit")
+        .padding(.horizontal, 12)
+        .padding(.bottom, 2)
       }
+      .padding(.vertical, 8)
+      .frame(width: 320)
     }
-  }
-
-  private var utilitySection: some View {
-    VStack(alignment: .leading, spacing: 6) {
-      MenuBarActionRow(icon: "info.circle", title: "About") {
-        onDismiss()
-        NSApp.activate(ignoringOtherApps: true)
-        NSApp.orderFrontStandardAboutPanel(nil)
-      }
-      .padding(.horizontal, 12)
-
-      MenuBarActionRow(icon: "power", title: "Quit", shortcut: "Q") {
-        NSApp.terminate(nil)
-      }
-      .padding(.horizontal, 12)
+    .background(ReframedColors.panelBackground)
+    .onAppear {
+      loadRecentProjects()
     }
   }
 
@@ -125,10 +116,9 @@ struct MenuBarView: View {
       projects.append(RecentProject(url: url, name: name, createdAt: metadata.createdAt))
     }
 
-    recentProjects = projects
-      .sorted { $0.createdAt > $1.createdAt }
-      .prefix(5)
-      .map { $0 }
+    let sorted = projects.sorted { $0.createdAt > $1.createdAt }
+    totalProjectCount = sorted.count
+    recentProjects = sorted.prefix(5).map { $0 }
   }
 }
 
@@ -136,7 +126,7 @@ private struct ProjectRow: View {
   let project: RecentProject
   let action: () -> Void
 
-  @State private var isHovered = false
+  @Environment(\.colorScheme) private var colorScheme
 
   private static let dateFormatter: DateFormatter = {
     let f = DateFormatter()
@@ -146,21 +136,22 @@ private struct ProjectRow: View {
   }()
 
   var body: some View {
+    let _ = colorScheme
     Button(action: action) {
       HStack(spacing: 10) {
         Image(systemName: "film")
-          .font(.system(size: 20))
+          .font(.system(size: 18))
           .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: 28)
+          .frame(width: 24)
 
         VStack(alignment: .leading, spacing: 2) {
           Text(project.name)
-            .font(.system(size: 13, weight: .medium))
+            .font(.system(size: 12, weight: .medium))
             .foregroundStyle(ReframedColors.primaryText)
             .lineLimit(1)
 
           Text(Self.dateFormatter.string(from: project.createdAt))
-            .font(.system(size: 11))
+            .font(.system(size: 10))
             .foregroundStyle(ReframedColors.tertiaryText)
         }
 
@@ -168,36 +159,45 @@ private struct ProjectRow: View {
       }
       .padding(.horizontal, 10)
       .padding(.vertical, 10)
-      .background(
-        RoundedRectangle(cornerRadius: 7)
-          .fill(isHovered ? ReframedColors.hoverBackground : Color.clear)
-      )
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
-    .onHover { isHovered = $0 }
   }
 }
 
 private struct MenuBarActionRow: View {
   let icon: String
   let title: String
+  var subtitle: String? = nil
   var shortcut: String? = nil
   let action: () -> Void
 
-  @State private var isHovered = false
+  @Environment(\.colorScheme) private var colorScheme
 
   var body: some View {
+    let _ = colorScheme
     Button(action: action) {
       HStack(spacing: 10) {
         Image(systemName: icon)
-          .font(.system(size: 20))
+          .font(.system(size: 18))
           .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: 28)
+          .frame(width: 24)
 
-        Text(title)
-          .font(.system(size: 13, weight: .medium))
-          .foregroundStyle(ReframedColors.primaryText)
+        if let subtitle {
+          VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+              .font(.system(size: 12, weight: .medium))
+              .foregroundStyle(ReframedColors.primaryText)
+
+            Text(subtitle)
+              .font(.system(size: 10))
+              .foregroundStyle(ReframedColors.tertiaryText)
+          }
+        } else {
+          Text(title)
+            .font(.system(size: 12, weight: .medium))
+            .foregroundStyle(ReframedColors.primaryText)
+        }
 
         Spacer()
 
@@ -209,19 +209,17 @@ private struct MenuBarActionRow: View {
       }
       .padding(.horizontal, 10)
       .padding(.vertical, 10)
-      .background(
-        RoundedRectangle(cornerRadius: 7)
-          .fill(isHovered ? ReframedColors.hoverBackground : Color.clear)
-      )
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
-    .onHover { isHovered = $0 }
   }
 }
 
 private struct MenuBarDivider: View {
+  @Environment(\.colorScheme) private var colorScheme
+
   var body: some View {
+    let _ = colorScheme
     Rectangle()
       .fill(ReframedColors.divider)
       .frame(height: 1)

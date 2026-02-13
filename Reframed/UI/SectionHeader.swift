@@ -3,7 +3,10 @@ import SwiftUI
 struct SectionHeader: View {
   let title: String
 
+  @Environment(\.colorScheme) private var colorScheme
+
   var body: some View {
+    let _ = colorScheme
     Text(title)
       .font(.system(size: 11, weight: .medium))
       .foregroundStyle(ReframedColors.dimLabel)

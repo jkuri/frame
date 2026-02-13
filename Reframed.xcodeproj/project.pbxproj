@@ -98,6 +98,7 @@
 		A70000000000000000000003 /* DevicePreviewWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70000000000000000000003 /* DevicePreviewWindow.swift */; };
 		A70000000000000000000004 /* DevicePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70000000000000000000004 /* DevicePopover.swift */; };
 		A80000000000000000000001 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80000000000000000000001 /* MenuBarView.swift */; };
+		A80000000000000000000002 /* HoverEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80000000000000000000002 /* HoverEffect.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -194,6 +195,7 @@
 		B70000000000000000000003 /* DevicePreviewWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicePreviewWindow.swift; sourceTree = "<group>"; };
 		B70000000000000000000004 /* DevicePopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicePopover.swift; sourceTree = "<group>"; };
 		B80000000000000000000001 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		B80000000000000000000002 /* HoverEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoverEffect.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -349,6 +351,7 @@
 				B20000000000000000000012 /* CountdownOverlayWindow.swift */,
 				B70000000000000000000004 /* DevicePopover.swift */,
 				B80000000000000000000001 /* MenuBarView.swift */,
+				B80000000000000000000002 /* HoverEffect.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -597,6 +600,7 @@
 				A70000000000000000000003 /* DevicePreviewWindow.swift in Sources */,
 				A70000000000000000000004 /* DevicePopover.swift in Sources */,
 				A80000000000000000000001 /* MenuBarView.swift in Sources */,
+				A80000000000000000000002 /* HoverEffect.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */
