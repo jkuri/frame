@@ -37,7 +37,7 @@ struct PropertiesPanel: View {
           paddingSection
           cornerRadiusSection
         case .camera:
-          pipSection
+          cameraSection
         case .cursor:
           cursorSection
         case .zoom:
@@ -249,22 +249,22 @@ struct PropertiesPanel: View {
     }
   }
 
-  private var pipSection: some View {
+  private var cameraSection: some View {
     VStack(alignment: .leading, spacing: 10) {
-      sectionHeader(icon: "pip", title: "Picture in Picture")
+      sectionHeader(icon: "pip", title: "Camera")
 
       HStack(spacing: 4) {
         ForEach(
           Array(
             zip(
-              [PiPCorner.topLeft, .topRight, .bottomLeft, .bottomRight],
+              [CameraCorner.topLeft, .topRight, .bottomLeft, .bottomRight],
               ["arrow.up.left", "arrow.up.right", "arrow.down.left", "arrow.down.right"]
             )
           ),
           id: \.1
         ) { corner, icon in
           Button {
-            editorState.setPipCorner(corner)
+            editorState.setCameraCorner(corner)
           } label: {
             Image(systemName: icon)
               .font(.system(size: 11))
@@ -281,9 +281,9 @@ struct PropertiesPanel: View {
         Text("Size")
           .font(.system(size: 12))
           .foregroundStyle(ReframedColors.secondaryText)
-        Slider(value: $editorState.pipLayout.relativeWidth, in: 0.1...1.0, step: 0.01)
-          .onChange(of: editorState.pipLayout.relativeWidth) { _, _ in
-            editorState.clampPipPosition()
+        Slider(value: $editorState.cameraLayout.relativeWidth, in: 0.1...1.0, step: 0.01)
+          .onChange(of: editorState.cameraLayout.relativeWidth) { _, _ in
+            editorState.clampCameraPosition()
           }
       }
 
@@ -291,8 +291,8 @@ struct PropertiesPanel: View {
         Text("Radius")
           .font(.system(size: 12))
           .foregroundStyle(ReframedColors.secondaryText)
-        Slider(value: $editorState.pipCornerRadius, in: 0...50, step: 1)
-        Text("\(Int(editorState.pipCornerRadius))%")
+        Slider(value: $editorState.cameraCornerRadius, in: 0...50, step: 1)
+        Text("\(Int(editorState.cameraCornerRadius))%")
           .font(.system(size: 12, design: .monospaced))
           .foregroundStyle(ReframedColors.secondaryText)
           .frame(width: 36, alignment: .trailing)
@@ -302,8 +302,8 @@ struct PropertiesPanel: View {
         Text("Border")
           .font(.system(size: 12))
           .foregroundStyle(ReframedColors.secondaryText)
-        Slider(value: $editorState.pipBorderWidth, in: 0...10, step: 0.5)
-        Text(String(format: "%.1f", editorState.pipBorderWidth))
+        Slider(value: $editorState.cameraBorderWidth, in: 0...10, step: 0.5)
+        Text(String(format: "%.1f", editorState.cameraBorderWidth))
           .font(.system(size: 12, design: .monospaced))
           .foregroundStyle(ReframedColors.secondaryText)
           .frame(width: 36, alignment: .trailing)

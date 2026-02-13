@@ -13,15 +13,15 @@ enum VideoCompositor {
 
   static func export(
     result: RecordingResult,
-    pipLayout: PiPLayout,
+    cameraLayout: CameraLayout,
     trimRange: CMTimeRange,
     systemAudioTrimRange: CMTimeRange? = nil,
     micAudioTrimRange: CMTimeRange? = nil,
     backgroundStyle: BackgroundStyle = .none,
     padding: CGFloat = 0,
     videoCornerRadius: CGFloat = 0,
-    pipCornerRadius: CGFloat = 12,
-    pipBorderWidth: CGFloat = 0,
+    cameraCornerRadius: CGFloat = 12,
+    cameraBorderWidth: CGFloat = 0,
     exportSettings: ExportSettings = ExportSettings(),
     cursorSnapshot: CursorMetadataSnapshot? = nil,
     cursorStyle: CursorStyle = .defaultArrow,
@@ -94,7 +94,7 @@ enum VideoCompositor {
 
     if needsCompositor {
       var webcamTrackID: CMPersistentTrackID?
-      var pipRect: CGRect?
+      var cameraRect: CGRect?
 
       if let webcamURL = result.webcamVideoURL, let webcamSize = result.webcamSize {
         let webcamAsset = AVURLAsset(url: webcamURL)
@@ -105,7 +105,7 @@ enum VideoCompositor {
           )
           try wTrack?.insertTimeRange(effectiveTrim, of: webcamVideoTrack, at: .zero)
           webcamTrackID = 2
-          pipRect = pipLayout.pixelRect(screenSize: screenNaturalSize, webcamSize: webcamSize)
+          cameraRect = cameraLayout.pixelRect(screenSize: screenNaturalSize, webcamSize: webcamSize)
         }
       }
 
@@ -130,7 +130,7 @@ enum VideoCompositor {
         timeRange: CMTimeRange(start: .zero, duration: effectiveTrim.duration),
         screenTrackID: 1,
         webcamTrackID: webcamTrackID,
-        pipRect: pipRect.map { rect in
+        cameraRect: cameraRect.map { rect in
           let scaleX = renderSize.width / canvasSize.width
           let scaleY = renderSize.height / canvasSize.height
           return CGRect(
@@ -140,15 +140,15 @@ enum VideoCompositor {
             height: rect.height * scaleY
           )
         },
-        pipCornerRadius: {
-          guard let rect = pipRect else { return 0 }
+        cameraCornerRadius: {
+          guard let rect = cameraRect else { return 0 }
           let sX = renderSize.width / canvasSize.width
           let sY = renderSize.height / canvasSize.height
           let scaledW = rect.width * sX
           let scaledH = rect.height * sY
-          return min(scaledW, scaledH) * (pipCornerRadius / 100.0)
+          return min(scaledW, scaledH) * (cameraCornerRadius / 100.0)
         }(),
-        pipBorderWidth: pipBorderWidth * (renderSize.width / canvasSize.width),
+        cameraBorderWidth: cameraBorderWidth * (renderSize.width / canvasSize.width),
         outputSize: renderSize,
         backgroundColors: bgColors,
         backgroundStartPoint: bgStartPoint,
@@ -171,7 +171,7 @@ enum VideoCompositor {
       )
 
       let videoComposition = AVMutableVideoComposition()
-      videoComposition.customVideoCompositorClass = PiPVideoCompositor.self
+      videoComposition.customVideoCompositorClass = CameraVideoCompositor.self
       videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(exportFPS))
       videoComposition.renderSize = renderSize
       videoComposition.instructions = [instruction]

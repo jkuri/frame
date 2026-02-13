@@ -63,7 +63,7 @@
 		A20000000000000000000001 /* WebcamCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* WebcamCapture.swift */; };
 		A20000000000000000000002 /* WebcamPreviewWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* WebcamPreviewWindow.swift */; };
 		A20000000000000000000003 /* RecordingResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000003 /* RecordingResult.swift */; };
-		A20000000000000000000004 /* PiPLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000004 /* PiPLayout.swift */; };
+		A20000000000000000000004 /* CameraLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000004 /* CameraLayout.swift */; };
 		A20000000000000000000005 /* SyncedPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000005 /* SyncedPlayerController.swift */; };
 		A20000000000000000000006 /* EditorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000006 /* EditorState.swift */; };
 
@@ -82,7 +82,7 @@
 		A2000000000000000000001A /* CompositionInstruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000001A /* CompositionInstruction.swift */; };
 		A2000000000000000000000C /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000C /* EditorView.swift */; };
 		A2000000000000000000000D /* EditorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000D /* EditorWindow.swift */; };
-		A2000000000000000000000F /* PiPVideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000F /* PiPVideoCompositor.swift */; };
+		A2000000000000000000000F /* CameraVideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000F /* CameraVideoCompositor.swift */; };
 		A20000000000000000000010 /* VideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000010 /* VideoCompositor.swift */; };
 		A20000000000000000000011 /* SendableBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000011 /* SendableBox.swift */; };
 		A20000000000000000000012 /* CountdownOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000012 /* CountdownOverlayWindow.swift */; };
@@ -168,7 +168,7 @@
 		B20000000000000000000001 /* WebcamCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebcamCapture.swift; sourceTree = "<group>"; };
 		B20000000000000000000002 /* WebcamPreviewWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebcamPreviewWindow.swift; sourceTree = "<group>"; };
 		B20000000000000000000003 /* RecordingResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingResult.swift; sourceTree = "<group>"; };
-		B20000000000000000000004 /* PiPLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPLayout.swift; sourceTree = "<group>"; };
+		B20000000000000000000004 /* CameraLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraLayout.swift; sourceTree = "<group>"; };
 		B20000000000000000000005 /* SyncedPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncedPlayerController.swift; sourceTree = "<group>"; };
 		B20000000000000000000006 /* EditorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorState.swift; sourceTree = "<group>"; };
 
@@ -187,7 +187,7 @@
 		B2000000000000000000001A /* CompositionInstruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositionInstruction.swift; sourceTree = "<group>"; };
 		B2000000000000000000000C /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
 		B2000000000000000000000D /* EditorWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorWindow.swift; sourceTree = "<group>"; };
-		B2000000000000000000000F /* PiPVideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPVideoCompositor.swift; sourceTree = "<group>"; };
+		B2000000000000000000000F /* CameraVideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraVideoCompositor.swift; sourceTree = "<group>"; };
 		B20000000000000000000010 /* VideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCompositor.swift; sourceTree = "<group>"; };
 		B20000000000000000000011 /* SendableBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendableBox.swift; sourceTree = "<group>"; };
 		B20000000000000000000012 /* CountdownOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownOverlayWindow.swift; sourceTree = "<group>"; };
@@ -446,8 +446,8 @@
 				B20000000000000000000015 /* ExportSettings.swift */,
 				B20000000000000000000017 /* ExportSheet.swift */,
 				B20000000000000000000014 /* GradientPresets.swift */,
-				B20000000000000000000004 /* PiPLayout.swift */,
-				B2000000000000000000000F /* PiPVideoCompositor.swift */,
+				B20000000000000000000004 /* CameraLayout.swift */,
+				B2000000000000000000000F /* CameraVideoCompositor.swift */,
 				B20000000000000000000018 /* PropertiesPanel.swift */,
 				B20000000000000000000005 /* SyncedPlayerController.swift */,
 
@@ -589,7 +589,7 @@
 				A20000000000000000000001 /* WebcamCapture.swift in Sources */,
 				A20000000000000000000002 /* WebcamPreviewWindow.swift in Sources */,
 				A20000000000000000000003 /* RecordingResult.swift in Sources */,
-				A20000000000000000000004 /* PiPLayout.swift in Sources */,
+				A20000000000000000000004 /* CameraLayout.swift in Sources */,
 				A20000000000000000000005 /* SyncedPlayerController.swift in Sources */,
 				A20000000000000000000006 /* EditorState.swift in Sources */,
 
@@ -607,7 +607,7 @@
 				A2000000000000000000001A /* CompositionInstruction.swift in Sources */,
 				A2000000000000000000000C /* EditorView.swift in Sources */,
 				A2000000000000000000000D /* EditorWindow.swift in Sources */,
-				A2000000000000000000000F /* PiPVideoCompositor.swift in Sources */,
+				A2000000000000000000000F /* CameraVideoCompositor.swift in Sources */,
 				A20000000000000000000010 /* VideoCompositor.swift in Sources */,
 				A20000000000000000000011 /* SendableBox.swift in Sources */,
 				A20000000000000000000012 /* CountdownOverlayWindow.swift in Sources */,

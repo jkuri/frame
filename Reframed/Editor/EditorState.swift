@@ -10,7 +10,7 @@ final class EditorState {
   private(set) var result: RecordingResult
   private(set) var project: ReframedProject?
   var playerController: SyncedPlayerController
-  var pipLayout = PiPLayout()
+  var cameraLayout = CameraLayout()
   var trimStart: CMTime = .zero
   var trimEnd: CMTime = .zero
   var systemAudioTrimStart: CMTime = .zero
@@ -23,8 +23,8 @@ final class EditorState {
   var backgroundStyle: BackgroundStyle = .none
   var padding: CGFloat = 0
   var videoCornerRadius: CGFloat = 0
-  var pipCornerRadius: CGFloat = 8
-  var pipBorderWidth: CGFloat = 0
+  var cameraCornerRadius: CGFloat = 8
+  var cameraBorderWidth: CGFloat = 0
   var projectName: String = ""
   var showExportSheet = false
   var showDeleteConfirmation = false
@@ -68,9 +68,9 @@ final class EditorState {
       self.backgroundStyle = saved.backgroundStyle
       self.padding = saved.padding
       self.videoCornerRadius = saved.videoCornerRadius
-      self.pipCornerRadius = saved.pipCornerRadius
-      self.pipBorderWidth = saved.pipBorderWidth
-      self.pipLayout = saved.pipLayout
+      self.cameraCornerRadius = saved.cameraCornerRadius
+      self.cameraBorderWidth = saved.cameraBorderWidth
+      self.cameraLayout = saved.cameraLayout
     }
   }
 
@@ -126,7 +126,7 @@ final class EditorState {
         }
       }
     } else if hasWebcam {
-      setPipCorner(.bottomRight)
+      setCameraCorner(.bottomRight)
     }
   }
 
@@ -166,37 +166,37 @@ final class EditorState {
     playerController.micAudioTrimEnd = time
   }
 
-  func setPipCorner(_ corner: PiPCorner) {
+  func setCameraCorner(_ corner: CameraCorner) {
     let margin: CGFloat = 0.02
-    let relH = pipRelativeHeight
+    let relH = cameraRelativeHeight
 
     switch corner {
     case .topLeft:
-      pipLayout.relativeX = margin
-      pipLayout.relativeY = margin
+      cameraLayout.relativeX = margin
+      cameraLayout.relativeY = margin
     case .topRight:
-      pipLayout.relativeX = 1.0 - pipLayout.relativeWidth - margin
-      pipLayout.relativeY = margin
+      cameraLayout.relativeX = 1.0 - cameraLayout.relativeWidth - margin
+      cameraLayout.relativeY = margin
     case .bottomLeft:
-      pipLayout.relativeX = margin
-      pipLayout.relativeY = 1.0 - relH - margin
+      cameraLayout.relativeX = margin
+      cameraLayout.relativeY = 1.0 - relH - margin
     case .bottomRight:
-      pipLayout.relativeX = 1.0 - pipLayout.relativeWidth - margin
-      pipLayout.relativeY = 1.0 - relH - margin
+      cameraLayout.relativeX = 1.0 - cameraLayout.relativeWidth - margin
+      cameraLayout.relativeY = 1.0 - relH - margin
     }
   }
 
-  func clampPipPosition() {
-    let relH = pipRelativeHeight
-    pipLayout.relativeX = max(0, min(1 - pipLayout.relativeWidth, pipLayout.relativeX))
-    pipLayout.relativeY = max(0, min(1 - relH, pipLayout.relativeY))
+  func clampCameraPosition() {
+    let relH = cameraRelativeHeight
+    cameraLayout.relativeX = max(0, min(1 - cameraLayout.relativeWidth, cameraLayout.relativeX))
+    cameraLayout.relativeY = max(0, min(1 - relH, cameraLayout.relativeY))
   }
 
-  private var pipRelativeHeight: CGFloat {
-    guard let ws = result.webcamSize else { return pipLayout.relativeWidth * 0.75 }
+  private var cameraRelativeHeight: CGFloat {
+    guard let ws = result.webcamSize else { return cameraLayout.relativeWidth * 0.75 }
     let canvas = canvasSize(for: result.screenSize)
     let aspect = ws.height / max(ws.width, 1)
-    return pipLayout.relativeWidth * aspect * (canvas.width / max(canvas.height, 1))
+    return cameraLayout.relativeWidth * aspect * (canvas.width / max(canvas.height, 1))
   }
 
   func canvasSize(for screenSize: CGSize) -> CGSize {
@@ -217,15 +217,15 @@ final class EditorState {
     let state = self
     let url = try await VideoCompositor.export(
       result: result,
-      pipLayout: pipLayout,
+      cameraLayout: cameraLayout,
       trimRange: CMTimeRange(start: trimStart, end: trimEnd),
       systemAudioTrimRange: CMTimeRange(start: systemAudioTrimStart, end: systemAudioTrimEnd),
       micAudioTrimRange: CMTimeRange(start: micAudioTrimStart, end: micAudioTrimEnd),
       backgroundStyle: backgroundStyle,
       padding: padding,
       videoCornerRadius: videoCornerRadius,
-      pipCornerRadius: pipCornerRadius,
-      pipBorderWidth: pipBorderWidth,
+      cameraCornerRadius: cameraCornerRadius,
+      cameraBorderWidth: cameraBorderWidth,
       exportSettings: settings,
       cursorSnapshot: cursorSnapshot,
       cursorStyle: cursorStyle,
@@ -322,9 +322,9 @@ final class EditorState {
       backgroundStyle: backgroundStyle,
       padding: padding,
       videoCornerRadius: videoCornerRadius,
-      pipCornerRadius: pipCornerRadius,
-      pipBorderWidth: pipBorderWidth,
-      pipLayout: pipLayout,
+      cameraCornerRadius: cameraCornerRadius,
+      cameraBorderWidth: cameraBorderWidth,
+      cameraLayout: cameraLayout,
       cursorSettings: cursorSettings,
       zoomSettings: zoomSettings
     )
@@ -439,6 +439,6 @@ final class EditorState {
   }
 }
 
-enum PiPCorner {
+enum CameraCorner {
   case topLeft, topRight, bottomLeft, bottomRight
 }

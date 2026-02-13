@@ -58,7 +58,7 @@ struct TimelineView: View {
             label: "Screen",
             icon: "display",
             rowIndex: 0,
-
+            borderColor: ReframedColors.screenTrackColor,
             content: { width, height in videoTrackBackground(width: width, height: height, trimStart: videoTrimStart, trimEnd: videoTrimEnd) },
             trimStart: videoTrimStart,
             trimEnd: videoTrimEnd,
@@ -75,7 +75,7 @@ struct TimelineView: View {
               label: "Camera",
               icon: "web.camera",
               rowIndex: 1,
-
+              borderColor: ReframedColors.webcamTrackColor,
               content: { width, height in videoTrackBackground(width: width, height: height, isWebcam: true, trimStart: videoTrimStart, trimEnd: videoTrimEnd) },
               trimStart: videoTrimStart,
               trimEnd: videoTrimEnd,
@@ -297,23 +297,15 @@ struct TimelineView: View {
   // MARK: - Video Content
 
   private func videoTrackBackground(width: CGFloat, height: CGFloat, isWebcam: Bool = false, trimStart: Double, trimEnd: Double) -> some View {
-    let startX = width * trimStart
-    let trimWidth = width * (trimEnd - trimStart)
+    let accentColor = isWebcam ? ReframedColors.webcamTrackColor : ReframedColors.screenTrackColor
 
     return ZStack(alignment: .leading) {
       Color.clear
-        .frame(width: width, height: height)
 
       RoundedRectangle(cornerRadius: 10)
-        .fill(
-          LinearGradient(
-            colors: isWebcam ? ReframedColors.webcamTrackGradient : ReframedColors.screenTrackGradient,
-            startPoint: .top,
-            endPoint: .bottom
-          )
-        )
-        .frame(width: max(0, trimWidth), height: height)
-        .offset(x: startX)
+        .fill(accentColor.opacity(0.1))
+        .frame(width: max(0, width * (trimEnd - trimStart)), height: height)
+        .offset(x: width * trimStart)
     }
     .frame(width: width, height: height)
   }

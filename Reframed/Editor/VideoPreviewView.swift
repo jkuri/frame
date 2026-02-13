@@ -5,14 +5,14 @@ import SwiftUI
 struct VideoPreviewView: NSViewRepresentable {
   let screenPlayer: AVPlayer
   let webcamPlayer: AVPlayer?
-  @Binding var pipLayout: PiPLayout
+  @Binding var cameraLayout: CameraLayout
   let webcamSize: CGSize?
   let screenSize: CGSize
   let canvasSize: CGSize
   var padding: CGFloat = 0
   var videoCornerRadius: CGFloat = 0
-  var pipCornerRadius: CGFloat = 12
-  var pipBorderWidth: CGFloat = 0
+  var cameraCornerRadius: CGFloat = 12
+  var cameraBorderWidth: CGFloat = 0
   var cursorMetadataProvider: CursorMetadataProvider?
   var showCursor: Bool = false
   var cursorStyle: CursorStyle = .defaultArrow
@@ -37,15 +37,15 @@ struct VideoPreviewView: NSViewRepresentable {
   }
 
   func updateNSView(_ nsView: VideoPreviewContainer, context: Context) {
-    nsView.updatePiPLayout(
-      pipLayout,
+    nsView.updateCameraLayout(
+      cameraLayout,
       webcamSize: webcamSize,
       screenSize: screenSize,
       canvasSize: canvasSize,
       padding: padding,
       videoCornerRadius: videoCornerRadius,
-      pipCornerRadius: pipCornerRadius,
-      pipBorderWidth: pipBorderWidth
+      cameraCornerRadius: cameraCornerRadius,
+      cameraBorderWidth: cameraBorderWidth
     )
 
     if let zoom = zoomTimeline {
@@ -85,20 +85,20 @@ struct VideoPreviewView: NSViewRepresentable {
   }
 
   func makeCoordinator() -> Coordinator {
-    Coordinator(pipLayout: $pipLayout, screenSize: screenSize, canvasSize: canvasSize, webcamSize: webcamSize)
+    Coordinator(cameraLayout: $cameraLayout, screenSize: screenSize, canvasSize: canvasSize, webcamSize: webcamSize)
   }
 
   final class Coordinator {
-    var pipLayout: Binding<PiPLayout>
+    var cameraLayout: Binding<CameraLayout>
     let screenSize: CGSize
     var canvasSize: CGSize
     let webcamSize: CGSize?
     var isDragging = false
     var dragStart: CGPoint = .zero
-    var startLayout: PiPLayout = PiPLayout()
+    var startLayout: CameraLayout = CameraLayout()
 
-    init(pipLayout: Binding<PiPLayout>, screenSize: CGSize, canvasSize: CGSize, webcamSize: CGSize?) {
-      self.pipLayout = pipLayout
+    init(cameraLayout: Binding<CameraLayout>, screenSize: CGSize, canvasSize: CGSize, webcamSize: CGSize?) {
+      self.cameraLayout = cameraLayout
       self.screenSize = screenSize
       self.canvasSize = canvasSize
       self.webcamSize = webcamSize
@@ -109,18 +109,18 @@ struct VideoPreviewView: NSViewRepresentable {
 final class VideoPreviewContainer: NSView {
   let screenPlayerLayer = AVPlayerLayer()
   let webcamPlayerLayer = AVPlayerLayer()
-  private let webcamView = WebcamPiPView()
+  private let webcamView = WebcamCameraView()
   private let cursorOverlay = CursorOverlayLayer()
   private let screenContainerLayer = CALayer()
   var coordinator: VideoPreviewView.Coordinator?
-  private var currentLayout = PiPLayout()
+  private var currentLayout = CameraLayout()
   private var currentWebcamSize: CGSize?
   private var currentScreenSize: CGSize = .zero
   private var currentCanvasSize: CGSize = .zero
   private var currentPadding: CGFloat = 0
   private var currentVideoCornerRadius: CGFloat = 0
-  private var currentPipCornerRadius: CGFloat = 12
-  private var currentPipBorderWidth: CGFloat = 0
+  private var currentCameraCornerRadius: CGFloat = 12
+  private var currentCameraBorderWidth: CGFloat = 0
   private let screenMaskLayer = CAShapeLayer()
   private var trackingArea: NSTrackingArea?
   private var currentZoomRect = CGRect(x: 0, y: 0, width: 1, height: 1)
@@ -179,15 +179,15 @@ final class VideoPreviewContainer: NSView {
     trackingArea = area
   }
 
-  func updatePiPLayout(
-    _ layout: PiPLayout,
+  func updateCameraLayout(
+    _ layout: CameraLayout,
     webcamSize: CGSize?,
     screenSize: CGSize,
     canvasSize: CGSize,
     padding: CGFloat = 0,
     videoCornerRadius: CGFloat = 0,
-    pipCornerRadius: CGFloat = 12,
-    pipBorderWidth: CGFloat = 0
+    cameraCornerRadius: CGFloat = 12,
+    cameraBorderWidth: CGFloat = 0
   ) {
     currentLayout = layout
     currentWebcamSize = webcamSize
@@ -195,8 +195,8 @@ final class VideoPreviewContainer: NSView {
     currentCanvasSize = canvasSize.width > 0 ? canvasSize : screenSize
     currentPadding = padding
     currentVideoCornerRadius = videoCornerRadius
-    currentPipCornerRadius = pipCornerRadius
-    currentPipBorderWidth = pipBorderWidth
+    currentCameraCornerRadius = cameraCornerRadius
+    currentCameraBorderWidth = cameraBorderWidth
     layoutAll()
   }
 
@@ -332,8 +332,8 @@ final class VideoPreviewContainer: NSView {
     let y = canvasRect.origin.y + canvasRect.height * currentLayout.relativeY
 
     let minDim = min(w, h)
-    let scaledRadius = minDim * (currentPipCornerRadius / 100.0)
-    let scaledBorder = currentPipBorderWidth * min(scaleX, scaleY)
+    let scaledRadius = minDim * (currentCameraCornerRadius / 100.0)
+    let scaledBorder = currentCameraBorderWidth * min(scaleX, scaleY)
 
     webcamView.frame = CGRect(x: x, y: bounds.height - y - h, width: w, height: h)
     webcamView.layer?.cornerRadius = scaledRadius
@@ -372,7 +372,7 @@ final class VideoPreviewContainer: NSView {
       coord.isDragging = true
       NSCursor.closedHand.set()
       coord.dragStart = loc
-      coord.startLayout = coord.pipLayout.wrappedValue
+      coord.startLayout = coord.cameraLayout.wrappedValue
     } else {
       super.mouseDown(with: event)
     }
@@ -391,7 +391,7 @@ final class VideoPreviewContainer: NSView {
     var newX = coord.startLayout.relativeX + dx
     var newY = coord.startLayout.relativeY + dy
 
-    let relW = coord.pipLayout.wrappedValue.relativeWidth
+    let relW = coord.cameraLayout.wrappedValue.relativeWidth
     let relH: CGFloat = {
       guard let ws = coord.webcamSize else { return relW * 0.75 }
       let aspect = ws.height / max(ws.width, 1)
@@ -408,8 +408,8 @@ final class VideoPreviewContainer: NSView {
     if newY < snapDistY { newY = 0.02 }
     if newY > 1 - relH - snapDistY { newY = 1 - relH - 0.02 }
 
-    coord.pipLayout.wrappedValue.relativeX = newX
-    coord.pipLayout.wrappedValue.relativeY = newY
+    coord.cameraLayout.wrappedValue.relativeX = newX
+    coord.cameraLayout.wrappedValue.relativeY = newY
   }
 
   override func mouseUp(with event: NSEvent) {
@@ -427,6 +427,6 @@ final class VideoPreviewContainer: NSView {
   }
 }
 
-private final class WebcamPiPView: NSView {
+private final class WebcamCameraView: NSView {
   override var isFlipped: Bool { true }
 }

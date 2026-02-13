@@ -40,9 +40,9 @@ struct EditorStateData: Codable, Sendable {
   var backgroundStyle: BackgroundStyle
   var padding: CGFloat
   var videoCornerRadius: CGFloat
-  var pipCornerRadius: CGFloat
-  var pipBorderWidth: CGFloat
-  var pipLayout: PiPLayout
+  var cameraCornerRadius: CGFloat
+  var cameraBorderWidth: CGFloat
+  var cameraLayout: CameraLayout
   var cursorSettings: CursorSettingsData?
   var zoomSettings: ZoomSettingsData?
 }

@@ -10,9 +10,9 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
 
   let screenTrackID: CMPersistentTrackID
   let webcamTrackID: CMPersistentTrackID?
-  let pipRect: CGRect?
-  let pipCornerRadius: CGFloat
-  let pipBorderWidth: CGFloat
+  let cameraRect: CGRect?
+  let cameraCornerRadius: CGFloat
+  let cameraBorderWidth: CGFloat
   let outputSize: CGSize
 
   let backgroundColors: [(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)]
@@ -39,9 +39,9 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     timeRange: CMTimeRange,
     screenTrackID: CMPersistentTrackID,
     webcamTrackID: CMPersistentTrackID?,
-    pipRect: CGRect?,
-    pipCornerRadius: CGFloat,
-    pipBorderWidth: CGFloat = 0,
+    cameraRect: CGRect?,
+    cameraCornerRadius: CGFloat,
+    cameraBorderWidth: CGFloat = 0,
     outputSize: CGSize,
     backgroundColors: [(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)] = [],
     backgroundStartPoint: CGPoint = .zero,
@@ -65,9 +65,9 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     self.timeRange = timeRange
     self.screenTrackID = screenTrackID
     self.webcamTrackID = webcamTrackID
-    self.pipRect = pipRect
-    self.pipCornerRadius = pipCornerRadius
-    self.pipBorderWidth = pipBorderWidth
+    self.cameraRect = cameraRect
+    self.cameraCornerRadius = cameraCornerRadius
+    self.cameraBorderWidth = cameraBorderWidth
     self.outputSize = outputSize
     self.backgroundColors = backgroundColors
     self.backgroundStartPoint = backgroundStartPoint

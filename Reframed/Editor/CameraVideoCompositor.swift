@@ -1,7 +1,7 @@
 import AVFoundation
 import CoreVideo
 
-final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendable {
+final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendable {
   var sourcePixelBufferAttributes: [String: any Sendable]? {
     [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
   }
@@ -14,17 +14,17 @@ final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendabl
 
   func startRequest(_ request: AVAsynchronousVideoCompositionRequest) {
     guard let instruction = request.videoCompositionInstruction as? CompositionInstruction else {
-      request.finish(with: NSError(domain: "PiPVideoCompositor", code: -1))
+      request.finish(with: NSError(domain: "CameraVideoCompositor", code: -1))
       return
     }
 
     guard let screenBuffer = request.sourceFrame(byTrackID: instruction.screenTrackID) else {
-      request.finish(with: NSError(domain: "PiPVideoCompositor", code: -2))
+      request.finish(with: NSError(domain: "CameraVideoCompositor", code: -2))
       return
     }
 
     guard let outputBuffer = request.renderContext.newPixelBuffer() else {
-      request.finish(with: NSError(domain: "PiPVideoCompositor", code: -3))
+      request.finish(with: NSError(domain: "CameraVideoCompositor", code: -3))
       return
     }
 
@@ -50,7 +50,7 @@ final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendabl
         bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
       )
     else {
-      request.finish(with: NSError(domain: "PiPVideoCompositor", code: -4))
+      request.finish(with: NSError(domain: "CameraVideoCompositor", code: -4))
       return
     }
 
@@ -171,32 +171,32 @@ final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendabl
 
     if let webcamTrackID = instruction.webcamTrackID,
       let webcamBuffer = request.sourceFrame(byTrackID: webcamTrackID),
-      let pipRect = instruction.pipRect
+      let cameraRect = instruction.cameraRect
     {
       CVPixelBufferLockBaseAddress(webcamBuffer, .readOnly)
       defer { CVPixelBufferUnlockBaseAddress(webcamBuffer, .readOnly) }
 
       if let webcamImage = createImage(from: webcamBuffer, colorSpace: colorSpace) {
-        let adjustedPipRect = CGRect(
-          x: pipRect.origin.x + instruction.paddingH,
-          y: pipRect.origin.y + instruction.paddingV,
-          width: pipRect.width,
-          height: pipRect.height
+        let adjustedCameraRect = CGRect(
+          x: cameraRect.origin.x + instruction.paddingH,
+          y: cameraRect.origin.y + instruction.paddingV,
+          width: cameraRect.width,
+          height: cameraRect.height
         )
-        let flippedY = CGFloat(height) - adjustedPipRect.origin.y - adjustedPipRect.height
+        let flippedY = CGFloat(height) - adjustedCameraRect.origin.y - adjustedCameraRect.height
         let drawRect = CGRect(
-          x: adjustedPipRect.origin.x,
+          x: adjustedCameraRect.origin.x,
           y: flippedY,
-          width: adjustedPipRect.width,
-          height: adjustedPipRect.height
+          width: adjustedCameraRect.width,
+          height: adjustedCameraRect.height
         )
 
-        let bw = instruction.pipBorderWidth
+        let bw = instruction.cameraBorderWidth
         if bw > 0 {
           let borderPath = CGPath(
             roundedRect: drawRect,
-            cornerWidth: instruction.pipCornerRadius,
-            cornerHeight: instruction.pipCornerRadius,
+            cornerWidth: instruction.cameraCornerRadius,
+            cornerHeight: instruction.cameraCornerRadius,
             transform: nil
           )
           context.saveGState()
@@ -206,7 +206,7 @@ final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendabl
           context.restoreGState()
 
           let insetRect = drawRect.insetBy(dx: bw, dy: bw)
-          let innerRadius = max(0, instruction.pipCornerRadius - bw)
+          let innerRadius = max(0, instruction.cameraCornerRadius - bw)
           let innerPath = CGPath(
             roundedRect: insetRect,
             cornerWidth: innerRadius,
@@ -221,8 +221,8 @@ final class PiPVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendabl
         } else {
           let path = CGPath(
             roundedRect: drawRect,
-            cornerWidth: instruction.pipCornerRadius,
-            cornerHeight: instruction.pipCornerRadius,
+            cornerWidth: instruction.cameraCornerRadius,
+            cornerHeight: instruction.cameraCornerRadius,
             transform: nil
           )
           context.saveGState()
