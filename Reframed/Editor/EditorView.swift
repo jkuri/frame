@@ -1,12 +1,37 @@
 import CoreMedia
 import SwiftUI
 
+enum EditorTab: String, CaseIterable, Identifiable {
+  case general, video, camera, cursor, zoom
+
+  var id: String { rawValue }
+
+  var label: String {
+    switch self {
+    case .general: "General"
+    case .video: "Video"
+    case .camera: "Camera"
+    case .cursor: "Cursor"
+    case .zoom: "Zoom"
+    }
+  }
+
+  var icon: String {
+    switch self {
+    case .general: "slider.horizontal.3"
+    case .video: "play.rectangle"
+    case .camera: "web.camera"
+    case .cursor: "cursorarrow"
+    case .zoom: "plus.magnifyingglass"
+    }
+  }
+}
+
 struct EditorView: View {
   @Bindable var editorState: EditorState
-  @State private var thumbnailGenerator = ThumbnailGenerator(count: 24)
-  @State private var webcamThumbnailGenerator = ThumbnailGenerator(count: 24)
   @State private var systemWaveformGenerator = AudioWaveformGenerator()
   @State private var micWaveformGenerator = AudioWaveformGenerator()
+  @State private var selectedTab: EditorTab = .general
   @Environment(\.colorScheme) private var colorScheme
 
   let onSave: (URL) -> Void
@@ -23,11 +48,14 @@ struct EditorView: View {
       )
       .padding(.bottom, 4)
 
-      HStack(spacing: 12) {
+      HStack(spacing: 6) {
         mainContent
           .background(ReframedColors.panelBackground)
           .clipShape(RoundedRectangle(cornerRadius: 8))
-        PropertiesPanel(editorState: editorState)
+        editorSidebar
+          .background(ReframedColors.panelBackground)
+          .clipShape(RoundedRectangle(cornerRadius: 8))
+        PropertiesPanel(editorState: editorState, selectedTab: selectedTab)
           .background(ReframedColors.panelBackground)
           .clipShape(RoundedRectangle(cornerRadius: 8))
       }
@@ -47,19 +75,13 @@ struct EditorView: View {
       await editorState.setup()
       let sysURL = editorState.result.systemAudioURL
       let micURL = editorState.result.microphoneAudioURL
-      let screenURL = editorState.result.screenVideoURL
-      let webcamURL = editorState.result.webcamVideoURL
-      async let thumbTask: Void = thumbnailGenerator.generate(from: screenURL)
-      async let webcamTask: Void = {
-        if let url = webcamURL { await webcamThumbnailGenerator.generate(from: url) }
-      }()
       async let sysTask: Void = {
         if let url = sysURL { await systemWaveformGenerator.generate(from: url) }
       }()
       async let micTask: Void = {
         if let url = micURL { await micWaveformGenerator.generate(from: url) }
       }()
-      _ = await (thumbTask, webcamTask, sysTask, micTask)
+      _ = await (sysTask, micTask)
     }
     .sheet(isPresented: $editorState.showExportSheet) {
       ExportSheet(isPresented: $editorState.showExportSheet, sourceFPS: editorState.result.fps) { settings in
@@ -88,6 +110,40 @@ struct EditorView: View {
     } message: {
       Text(editorState.exportResultMessage)
     }
+  }
+
+  private var editorSidebar: some View {
+    VStack(spacing: 0) {
+      HoverEffectScope {
+        VStack(spacing: 2) {
+          ForEach(EditorTab.allCases) { tab in
+            Button {
+              selectedTab = tab
+            } label: {
+              VStack(spacing: 3) {
+                Image(systemName: tab.icon)
+                  .font(.system(size: 16))
+                  .foregroundStyle(selectedTab == tab ? ReframedColors.primaryText : ReframedColors.secondaryText)
+                Text(tab.label)
+                  .font(.system(size: 10))
+                  .foregroundStyle(selectedTab == tab ? ReframedColors.secondaryText : ReframedColors.dimLabel)
+              }
+              .frame(width: 56, height: 48)
+              .background(
+                selectedTab == tab ? ReframedColors.selectedBackground : Color.clear,
+                in: RoundedRectangle(cornerRadius: 8)
+              )
+              .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .hoverEffect(id: "tab.\(tab.rawValue)")
+          }
+        }
+      }
+      Spacer()
+    }
+    .padding(.vertical, 8)
+    .padding(.horizontal, 4)
   }
 
   private var mainContent: some View {
@@ -170,8 +226,6 @@ struct EditorView: View {
   private var timeline: some View {
     TimelineView(
       editorState: editorState,
-      thumbnails: thumbnailGenerator.thumbnails,
-      webcamThumbnails: webcamThumbnailGenerator.thumbnails,
       systemAudioSamples: systemWaveformGenerator.samples,
       micAudioSamples: micWaveformGenerator.samples,
       onScrub: { time in

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PropertiesPanel: View {
   @Bindable var editorState: EditorState
+  let selectedTab: EditorTab
   @Environment(\.colorScheme) private var colorScheme
 
   private enum BackgroundMode: Int, CaseIterable {
@@ -28,23 +29,24 @@ struct PropertiesPanel: View {
     let _ = colorScheme
     ScrollView {
       VStack(alignment: .leading, spacing: 20) {
-        projectSection
-        backgroundSection
-        paddingSection
-        cornerRadiusSection
-        if editorState.cursorMetadataProvider != nil {
-          cursorSection
-        }
-        if editorState.cursorMetadataProvider != nil {
-          zoomSection
-        }
-        if editorState.hasWebcam {
+        switch selectedTab {
+        case .general:
+          projectSection
+        case .video:
+          backgroundSection
+          paddingSection
+          cornerRadiusSection
+        case .camera:
           pipSection
+        case .cursor:
+          cursorSection
+        case .zoom:
+          zoomSection
         }
       }
       .padding(16)
     }
-    .frame(width: 260)
+    .frame(width: 300)
     .onChange(of: backgroundMode) { _, newValue in
       updateBackgroundStyle(mode: newValue)
     }

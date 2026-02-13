@@ -322,7 +322,7 @@ struct ZoomKeyframeEditor: View {
 
   var body: some View {
     ZStack(alignment: .leading) {
-      RoundedRectangle(cornerRadius: 6)
+      RoundedRectangle(cornerRadius: 10)
         .fill(ReframedColors.panelBackground)
         .frame(width: width, height: height)
         .contentShape(Rectangle())
@@ -339,12 +339,20 @@ struct ZoomKeyframeEditor: View {
           }
         }
 
+      if regions.isEmpty {
+        Text("Double-click to add zoom region")
+          .font(.system(size: 11))
+          .foregroundStyle(ReframedColors.dimLabel)
+          .frame(width: width, height: height)
+          .allowsHitTesting(false)
+      }
+
       ForEach(Array(regions.enumerated()), id: \.offset) { _, region in
         regionView(for: region)
       }
     }
     .frame(width: width, height: height)
-    .clipShape(RoundedRectangle(cornerRadius: 6))
+    .clipShape(RoundedRectangle(cornerRadius: 10))
     .coordinateSpace(name: "zoomEditor")
   }
 
@@ -457,9 +465,8 @@ struct ZoomKeyframeEditor: View {
     let startX = max(0, (times.start / duration) * width)
     let endX = min(width, (times.end / duration) * width)
     let regionWidth = max(4, endX - startX)
-    let baseColor: Color = region.isAuto
-      ? Color(red: 0.3, green: 0.6, blue: 1.0)
-      : Color.orange
+    let fillColor = region.isAuto ? ReframedColors.zoomAutoColor : ReframedColors.zoomManualColor
+    let easeColor = region.isAuto ? ReframedColors.zoomAutoEaseColor : ReframedColors.zoomManualEaseColor
 
     let zoomStartX = (times.zoomStart / duration) * width
     let zoomEndX = (times.zoomEnd / duration) * width
@@ -473,36 +480,24 @@ struct ZoomKeyframeEditor: View {
     HStack(spacing: 0) {
       if leadTransWidth > 0 {
         Rectangle()
-          .fill(
-            LinearGradient(
-              colors: [baseColor.opacity(0.1), baseColor.opacity(0.35)],
-              startPoint: .leading,
-              endPoint: .trailing
-            )
-          )
+          .fill(easeColor)
           .frame(width: leadTransWidth, height: height - 6)
       }
 
       Rectangle()
-        .fill(baseColor.opacity(0.45))
+        .fill(fillColor)
         .frame(width: holdWidth, height: height - 6)
 
       if trailTransWidth > 0 {
         Rectangle()
-          .fill(
-            LinearGradient(
-              colors: [baseColor.opacity(0.35), baseColor.opacity(0.1)],
-              startPoint: .leading,
-              endPoint: .trailing
-            )
-          )
+          .fill(easeColor)
           .frame(width: trailTransWidth, height: height - 6)
       }
     }
-    .clipShape(RoundedRectangle(cornerRadius: 4))
+    .clipShape(RoundedRectangle(cornerRadius: 10))
     .overlay(
-      RoundedRectangle(cornerRadius: 4)
-        .strokeBorder(baseColor.opacity(0.6), lineWidth: 1)
+      RoundedRectangle(cornerRadius: 10)
+        .stroke(fillColor, lineWidth: 2)
     )
     .frame(width: regionWidth, height: height - 6)
     .contentShape(Rectangle())

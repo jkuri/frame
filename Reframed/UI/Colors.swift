@@ -142,4 +142,25 @@ enum ReframedColors {
     Color(nsColor: .controlAccentColor)
   }
 
+  static let screenTrackGradient: [Color] = [
+    Color(red: 0.10, green: 0.20, blue: 0.55),
+    Color(red: 0.15, green: 0.30, blue: 0.65),
+    Color(red: 0.10, green: 0.42, blue: 0.72),
+  ]
+
+  static let webcamTrackGradient: [Color] = [
+    Color(red: 0.05, green: 0.45, blue: 0.35),
+    Color(red: 0.08, green: 0.58, blue: 0.42),
+    Color(red: 0.12, green: 0.70, blue: 0.50),
+  ]
+
+  static let systemAudioColor = Color(red: 0.92, green: 0.70, blue: 0.03)
+  static let micAudioColor = Color(red: 0.94, green: 0.27, blue: 0.27)
+
+  static let zoomAutoColor = Color(red: 0.45, green: 0.30, blue: 0.75)
+  static let zoomAutoEaseColor = Color(red: 0.45, green: 0.30, blue: 0.75).opacity(0.5)
+
+  static let zoomManualColor = Color(red: 0.96, green: 0.55, blue: 0.15)
+  static let zoomManualEaseColor = Color(red: 0.96, green: 0.55, blue: 0.15).opacity(0.5)
+
 }

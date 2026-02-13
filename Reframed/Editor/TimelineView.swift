@@ -1,11 +1,8 @@
 import AVFoundation
-import AppKit
 import SwiftUI
 
 struct TimelineView: View {
   @Bindable var editorState: EditorState
-  let thumbnails: [NSImage]
-  let webcamThumbnails: [NSImage]
   let systemAudioSamples: [Float]
   let micAudioSamples: [Float]
   let onScrub: (CMTime) -> Void
@@ -61,8 +58,8 @@ struct TimelineView: View {
             label: "Screen",
             icon: "display",
             rowIndex: 0,
-            isVideo: true,
-            content: { width, height in screenThumbnailStrip(width: width, height: height) },
+
+            content: { width, height in videoTrackBackground(width: width, height: height, trimStart: videoTrimStart, trimEnd: videoTrimEnd) },
             trimStart: videoTrimStart,
             trimEnd: videoTrimEnd,
             onTrimStart: { f in
@@ -73,13 +70,13 @@ struct TimelineView: View {
             }
           )
 
-          if !webcamThumbnails.isEmpty {
+          if editorState.hasWebcam {
             trackLane(
               label: "Camera",
               icon: "web.camera",
               rowIndex: 1,
-              isVideo: true,
-              content: { width, height in webcamThumbnailStrip(width: width, height: height) },
+
+              content: { width, height in videoTrackBackground(width: width, height: height, isWebcam: true, trimStart: videoTrimStart, trimEnd: videoTrimEnd) },
               trimStart: videoTrimStart,
               trimEnd: videoTrimEnd,
               onTrimStart: { f in
@@ -95,14 +92,16 @@ struct TimelineView: View {
             trackLane(
               label: "System",
               icon: "speaker.wave.2",
-              rowIndex: webcamThumbnails.isEmpty ? 1 : 2,
+              rowIndex: editorState.hasWebcam ? 2 : 1,
+              borderColor: ReframedColors.systemAudioColor,
               content: { width, height in
                 audioClipContent(
                   samples: systemAudioSamples,
                   trimStart: sysAudioTrimStart,
                   trimEnd: sysAudioTrimEnd,
                   width: width,
-                  height: height
+                  height: height,
+                  accentColor: ReframedColors.systemAudioColor
                 )
               },
               trimStart: sysAudioTrimStart,
@@ -122,17 +121,19 @@ struct TimelineView: View {
               icon: "mic",
               rowIndex: {
                 var idx = 1
-                if !webcamThumbnails.isEmpty { idx += 1 }
+                if editorState.hasWebcam { idx += 1 }
                 if !systemAudioSamples.isEmpty { idx += 1 }
                 return idx
               }(),
+              borderColor: ReframedColors.micAudioColor,
               content: { width, height in
                 audioClipContent(
                   samples: micAudioSamples,
                   trimStart: micAudioTrimStart,
                   trimEnd: micAudioTrimEnd,
                   width: width,
-                  height: height
+                  height: height,
+                  accentColor: ReframedColors.micAudioColor
                 )
               },
               trimStart: micAudioTrimStart,
@@ -242,7 +243,7 @@ struct TimelineView: View {
     label: String,
     icon: String,
     rowIndex: Int,
-    isVideo: Bool = false,
+    borderColor: Color = ReframedColors.controlAccentColor,
     @ViewBuilder content: @escaping (CGFloat, CGFloat) -> Content,
     trimStart: Double,
     trimEnd: Double,
@@ -259,12 +260,10 @@ struct TimelineView: View {
 
         ZStack(alignment: .leading) {
           content(width, h)
-
-          dimmedRegions(width: width, height: h, trimStart: trimStart, trimEnd: trimEnd, isVideo: isVideo)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 6))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay {
-          trimBorderOverlay(width: width, height: h, trimStart: trimStart, trimEnd: trimEnd)
+          trimBorderOverlay(width: width, height: h, trimStart: trimStart, trimEnd: trimEnd, borderColor: borderColor)
         }
         .contentShape(Rectangle())
         .coordinateSpace(name: "timeline")
@@ -297,46 +296,26 @@ struct TimelineView: View {
 
   // MARK: - Video Content
 
-  @ViewBuilder
-  private func screenThumbnailStrip(width: CGFloat, height: CGFloat) -> some View {
-    thumbnailStrip(images: thumbnails, width: width, height: height)
-  }
+  private func videoTrackBackground(width: CGFloat, height: CGFloat, isWebcam: Bool = false, trimStart: Double, trimEnd: Double) -> some View {
+    let startX = width * trimStart
+    let trimWidth = width * (trimEnd - trimStart)
 
-  @ViewBuilder
-  private func webcamThumbnailStrip(width: CGFloat, height: CGFloat) -> some View {
-    thumbnailStrip(images: webcamThumbnails, width: width, height: height)
-  }
-
-  @ViewBuilder
-  private func thumbnailStrip(images: [NSImage], width: CGFloat, height: CGFloat) -> some View {
-    if images.isEmpty {
-      Rectangle()
-        .fill(Color(white: 0.08))
+    return ZStack(alignment: .leading) {
+      Color.clear
         .frame(width: width, height: height)
-    } else {
-      ZStack {
-        Color(white: 0.08)
 
-        HStack(spacing: 0) {
-          ForEach(Array(images.enumerated()), id: \.offset) { _, image in
-            Image(nsImage: image)
-              .resizable()
-              .aspectRatio(contentMode: .fill)
-              .frame(width: width / CGFloat(images.count), height: height)
-              .clipped()
-          }
-        }
-
-        VStack {
-          LinearGradient(colors: [Color.black.opacity(0.3), Color.clear], startPoint: .top, endPoint: .bottom)
-            .frame(height: 6)
-          Spacer()
-          LinearGradient(colors: [Color.clear, Color.black.opacity(0.3)], startPoint: .top, endPoint: .bottom)
-            .frame(height: 6)
-        }
-      }
-      .frame(width: width, height: height)
+      RoundedRectangle(cornerRadius: 10)
+        .fill(
+          LinearGradient(
+            colors: isWebcam ? ReframedColors.webcamTrackGradient : ReframedColors.screenTrackGradient,
+            startPoint: .top,
+            endPoint: .bottom
+          )
+        )
+        .frame(width: max(0, trimWidth), height: height)
+        .offset(x: startX)
     }
+    .frame(width: width, height: height)
   }
 
   // MARK: - Audio Content
@@ -346,20 +325,25 @@ struct TimelineView: View {
     trimStart: Double,
     trimEnd: Double,
     width: CGFloat,
-    height: CGFloat
+    height: CGFloat,
+    accentColor: Color
   ) -> some View {
-    ZStack {
-      RoundedRectangle(cornerRadius: 6)
-        .fill(ReframedColors.panelBackground)
+    ZStack(alignment: .leading) {
+      Color.clear
 
-      waveformView(samples: samples, trimStart: trimStart, trimEnd: trimEnd, width: width, height: height)
+      RoundedRectangle(cornerRadius: 10)
+        .fill(accentColor.opacity(0.1))
+        .frame(width: max(0, width * (trimEnd - trimStart)), height: height)
+        .offset(x: width * trimStart)
+
+      waveformView(samples: samples, trimStart: trimStart, trimEnd: trimEnd, width: width, height: height, accentColor: accentColor)
     }
     .frame(width: width, height: height)
   }
 
   // MARK: - Waveform
 
-  private func waveformView(samples: [Float], trimStart: Double, trimEnd: Double, width: CGFloat, height: CGFloat) -> some View {
+  private func waveformView(samples: [Float], trimStart: Double, trimEnd: Double, width: CGFloat, height: CGFloat, accentColor: Color) -> some View {
     Canvas { context, size in
       let count = samples.count
       guard count > 0 else { return }
@@ -382,7 +366,7 @@ struct TimelineView: View {
       let inactiveLeftShape = buildWaveformPath(top: topPoints, bottom: bottomPoints, minX: 0, maxX: trimStartX)
       let inactiveRightShape = buildWaveformPath(top: topPoints, bottom: bottomPoints, minX: trimEndX, maxX: size.width)
 
-      context.fill(activeShape, with: .color(ReframedColors.controlAccentColor.opacity(0.7)))
+      context.fill(activeShape, with: .color(accentColor))
       context.fill(inactiveLeftShape, with: .color(ReframedColors.tertiaryText.opacity(0.4)))
       context.fill(inactiveRightShape, with: .color(ReframedColors.tertiaryText.opacity(0.4)))
     }
@@ -481,28 +465,7 @@ struct TimelineView: View {
 
   // MARK: - Trim & Playhead
 
-  private func dimmedRegions(width: CGFloat, height: CGFloat, trimStart: Double, trimEnd: Double, isVideo: Bool = false) -> some View {
-    let topFill = ReframedColors.fieldBackground.opacity(0.7)
-    let baseFill = isVideo ? ReframedColors.panelBackground : Color.clear
-
-    return ZStack(alignment: .leading) {
-      Color.clear.frame(width: width, height: height)
-
-      Rectangle()
-        .fill(topFill)
-        .background(baseFill)
-        .frame(width: max(0, width * trimStart), height: height)
-
-      Rectangle()
-        .fill(topFill)
-        .background(baseFill)
-        .frame(width: max(0, width * (1 - trimEnd)), height: height)
-        .offset(x: width * trimEnd)
-    }
-    .allowsHitTesting(false)
-  }
-
-  private func trimBorderOverlay(width: CGFloat, height: CGFloat, trimStart: Double, trimEnd: Double) -> some View {
+  private func trimBorderOverlay(width: CGFloat, height: CGFloat, trimStart: Double, trimEnd: Double, borderColor: Color) -> some View {
     let startX = width * trimStart
     let endX = width * trimEnd
     let selectionWidth = endX - startX
@@ -510,8 +473,8 @@ struct TimelineView: View {
     return ZStack(alignment: .leading) {
       Color.clear.frame(width: width, height: height)
 
-      RoundedRectangle(cornerRadius: 6)
-        .stroke(ReframedColors.controlAccentColor.opacity(0.7), lineWidth: 2)
+      RoundedRectangle(cornerRadius: 10)
+        .stroke(borderColor, lineWidth: 2)
         .frame(width: max(0, selectionWidth), height: height)
         .offset(x: startX)
     }
