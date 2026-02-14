@@ -11,6 +11,7 @@ extension PropertiesPanel {
         }
       }
       .pickerStyle(.segmented)
+      .labelsHidden()
 
       switch backgroundMode {
       case .none:

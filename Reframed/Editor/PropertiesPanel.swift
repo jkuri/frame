@@ -147,6 +147,7 @@ struct PropertiesPanel: View {
         }
       }
       .pickerStyle(.segmented)
+      .labelsHidden()
     }
   }
 
