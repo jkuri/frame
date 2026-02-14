@@ -107,6 +107,18 @@
 		A90000000000000000000006 /* ZoomTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000006 /* ZoomTimeline.swift */; };
 		A90000000000000000000007 /* ZoomDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000007 /* ZoomDetector.swift */; };
 		A90000000000000000000008 /* ZoomKeyframeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000008 /* ZoomKeyframeEditor.swift */; };
+		A2000000000000000000001B /* TimelineView+AudioTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000001B /* TimelineView+AudioTrack.swift */; };
+		A2000000000000000000001C /* TimelineView+CameraTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000001C /* TimelineView+CameraTrack.swift */; };
+		A2000000000000000000001D /* PropertiesPanel+VideoTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000001D /* PropertiesPanel+VideoTab.swift */; };
+		A2000000000000000000001E /* PropertiesPanel+CameraTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000001E /* PropertiesPanel+CameraTab.swift */; };
+		A2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift */; };
+		A90000000000000000000009 /* ZoomRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000009 /* ZoomRegion.swift */; };
+		A9000000000000000000000A /* RegionEditPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9000000000000000000000A /* RegionEditPopover.swift */; };
+		A9000000000000000000000B /* RightClickOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9000000000000000000000B /* RightClickOverlay.swift */; };
+		A10000000000000000000036 /* SettingsGeneralTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000036 /* SettingsGeneralTab.swift */; };
+		A10000000000000000000037 /* SettingsRecordingTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000037 /* SettingsRecordingTab.swift */; };
+		A10000000000000000000038 /* SettingsDevicesTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000038 /* SettingsDevicesTab.swift */; };
+		A10000000000000000000039 /* CaptureToolbarComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000039 /* CaptureToolbarComponents.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -212,6 +224,18 @@
 		B90000000000000000000006 /* ZoomTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomTimeline.swift; sourceTree = "<group>"; };
 		B90000000000000000000007 /* ZoomDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomDetector.swift; sourceTree = "<group>"; };
 		B90000000000000000000008 /* ZoomKeyframeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomKeyframeEditor.swift; sourceTree = "<group>"; };
+		B2000000000000000000001B /* TimelineView+AudioTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineView+AudioTrack.swift"; sourceTree = "<group>"; };
+		B2000000000000000000001C /* TimelineView+CameraTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineView+CameraTrack.swift"; sourceTree = "<group>"; };
+		B2000000000000000000001D /* PropertiesPanel+VideoTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+VideoTab.swift"; sourceTree = "<group>"; };
+		B2000000000000000000001E /* PropertiesPanel+CameraTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+CameraTab.swift"; sourceTree = "<group>"; };
+		B2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+CursorZoomTab.swift"; sourceTree = "<group>"; };
+		B90000000000000000000009 /* ZoomRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomRegion.swift; sourceTree = "<group>"; };
+		B9000000000000000000000A /* RegionEditPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionEditPopover.swift; sourceTree = "<group>"; };
+		B9000000000000000000000B /* RightClickOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightClickOverlay.swift; sourceTree = "<group>"; };
+		B10000000000000000000036 /* SettingsGeneralTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsGeneralTab.swift; sourceTree = "<group>"; };
+		B10000000000000000000037 /* SettingsRecordingTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRecordingTab.swift; sourceTree = "<group>"; };
+		B10000000000000000000038 /* SettingsDevicesTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDevicesTab.swift; sourceTree = "<group>"; };
+		B10000000000000000000039 /* CaptureToolbarComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbarComponents.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -370,6 +394,10 @@
 				B70000000000000000000004 /* DevicePopover.swift */,
 				B80000000000000000000001 /* MenuBarView.swift */,
 				B80000000000000000000002 /* HoverEffect.swift */,
+				B10000000000000000000036 /* SettingsGeneralTab.swift */,
+				B10000000000000000000037 /* SettingsRecordingTab.swift */,
+				B10000000000000000000038 /* SettingsDevicesTab.swift */,
+				B10000000000000000000039 /* CaptureToolbarComponents.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -454,6 +482,14 @@
 				B90000000000000000000006 /* ZoomTimeline.swift */,
 				B90000000000000000000007 /* ZoomDetector.swift */,
 				B90000000000000000000008 /* ZoomKeyframeEditor.swift */,
+				B90000000000000000000009 /* ZoomRegion.swift */,
+				B9000000000000000000000A /* RegionEditPopover.swift */,
+				B9000000000000000000000B /* RightClickOverlay.swift */,
+				B2000000000000000000001B /* TimelineView+AudioTrack.swift */,
+				B2000000000000000000001C /* TimelineView+CameraTrack.swift */,
+				B2000000000000000000001D /* PropertiesPanel+VideoTab.swift */,
+				B2000000000000000000001E /* PropertiesPanel+CameraTab.swift */,
+				B2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -640,6 +676,18 @@
 				A70000000000000000000004 /* DevicePopover.swift in Sources */,
 				A80000000000000000000001 /* MenuBarView.swift in Sources */,
 				A80000000000000000000002 /* HoverEffect.swift in Sources */,
+				A2000000000000000000001B /* TimelineView+AudioTrack.swift in Sources */,
+				A2000000000000000000001C /* TimelineView+CameraTrack.swift in Sources */,
+				A2000000000000000000001D /* PropertiesPanel+VideoTab.swift in Sources */,
+				A2000000000000000000001E /* PropertiesPanel+CameraTab.swift in Sources */,
+				A2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift in Sources */,
+				A90000000000000000000009 /* ZoomRegion.swift in Sources */,
+				A9000000000000000000000A /* RegionEditPopover.swift in Sources */,
+				A9000000000000000000000B /* RightClickOverlay.swift in Sources */,
+				A10000000000000000000036 /* SettingsGeneralTab.swift in Sources */,
+				A10000000000000000000037 /* SettingsRecordingTab.swift in Sources */,
+				A10000000000000000000038 /* SettingsDevicesTab.swift in Sources */,
+				A10000000000000000000039 /* CaptureToolbarComponents.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */
