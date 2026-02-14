@@ -17,21 +17,13 @@ extension SettingsView {
           .font(.system(size: 13))
           .foregroundStyle(ReframedColors.primaryText)
         Spacer()
-        HStack(spacing: 4) {
-          ForEach(fpsOptions, id: \.self) { option in
-            Button {
-              options?.fps = option
-            } label: {
-              Text("\(option)")
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(ReframedColors.primaryText)
-                .frame(width: 44, height: 28)
-                .background(options?.fps == option ? ReframedColors.selectedActive : ReframedColors.fieldBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
-            }
-            .buttonStyle(.plain)
-          }
-        }
+        SegmentPicker(
+          items: fpsOptions,
+          label: { "\($0)" },
+          isSelected: { options?.fps == $0 },
+          onSelect: { options?.fps = $0 },
+          itemWidth: 44
+        )
       }
       .padding(.horizontal, 10)
     }
@@ -46,22 +38,12 @@ extension SettingsView {
           .font(.system(size: 13))
           .foregroundStyle(ReframedColors.primaryText)
         Spacer()
-        HStack(spacing: 4) {
-          ForEach(TimerDelay.allCases, id: \.self) { delay in
-            Button {
-              options?.timerDelay = delay
-            } label: {
-              Text(delay.label)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(ReframedColors.primaryText)
-                .padding(.horizontal, 10)
-                .frame(height: 28)
-                .background(options?.timerDelay == delay ? ReframedColors.selectedActive : ReframedColors.fieldBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
-            }
-            .buttonStyle(.plain)
-          }
-        }
+        SegmentPicker(
+          items: TimerDelay.allCases,
+          label: { $0.label },
+          isSelected: { options?.timerDelay == $0 },
+          onSelect: { options?.timerDelay = $0 }
+        )
       }
       .padding(.horizontal, 10)
     }

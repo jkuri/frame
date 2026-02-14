@@ -29,37 +29,30 @@ extension PropertiesPanel {
         }
       }
 
-      HStack(spacing: 8) {
-        Text("Size")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.secondaryText)
-        Slider(value: $editorState.cameraLayout.relativeWidth, in: 0.1...1.0, step: 0.01)
-          .onChange(of: editorState.cameraLayout.relativeWidth) { _, _ in
-            editorState.clampCameraPosition()
-          }
+      SliderRow(
+        label: "Size",
+        value: $editorState.cameraLayout.relativeWidth,
+        range: 0.1...1.0,
+        step: 0.01
+      )
+      .onChange(of: editorState.cameraLayout.relativeWidth) { _, _ in
+        editorState.clampCameraPosition()
       }
 
-      HStack(spacing: 8) {
-        Text("Radius")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.secondaryText)
-        Slider(value: $editorState.cameraCornerRadius, in: 0...50, step: 1)
-        Text("\(Int(editorState.cameraCornerRadius))%")
-          .font(.system(size: 12, design: .monospaced))
-          .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: 36, alignment: .trailing)
-      }
+      SliderRow(
+        label: "Radius",
+        value: $editorState.cameraCornerRadius,
+        range: 0...50,
+        formattedValue: "\(Int(editorState.cameraCornerRadius))%"
+      )
 
-      HStack(spacing: 8) {
-        Text("Border")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.secondaryText)
-        Slider(value: $editorState.cameraBorderWidth, in: 0...10, step: 0.5)
-        Text(String(format: "%.1f", editorState.cameraBorderWidth))
-          .font(.system(size: 12, design: .monospaced))
-          .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: 36, alignment: .trailing)
-      }
+      SliderRow(
+        label: "Border",
+        value: $editorState.cameraBorderWidth,
+        range: 0...10,
+        step: 0.5,
+        formattedValue: String(format: "%.1f", editorState.cameraBorderWidth)
+      )
     }
   }
 }

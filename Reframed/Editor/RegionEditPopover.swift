@@ -45,17 +45,14 @@ struct RegionEditPopover: View {
     VStack(alignment: .leading, spacing: 0) {
       SectionHeader(title: "Zoom")
 
-      HStack {
-        Text("Level")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: popoverLabelWidth, alignment: .leading)
-        Slider(value: $zoomLevel, in: 1.1...5.0, step: 0.1)
-        Text(String(format: "%.1fx", zoomLevel))
-          .font(.system(size: 12, design: .monospaced))
-          .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: 36, alignment: .trailing)
-      }
+      SliderRow(
+        label: "Level",
+        labelWidth: popoverLabelWidth,
+        value: $zoomLevel,
+        range: 1.1...5.0,
+        step: 0.1,
+        formattedValue: String(format: "%.1fx", zoomLevel)
+      )
       .padding(.horizontal, 12)
       .padding(.vertical, 4)
 
@@ -65,31 +62,27 @@ struct RegionEditPopover: View {
 
       SectionHeader(title: "Transition")
 
-      HStack {
-        Text("Ease In")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: popoverLabelWidth, alignment: .leading)
-        Slider(value: $easeIn, in: 0.05...2.0, step: 0.05)
-        Text(String(format: "%.2fs", easeIn))
-          .font(.system(size: 12, design: .monospaced))
-          .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: 42, alignment: .trailing)
-      }
+      SliderRow(
+        label: "Ease In",
+        labelWidth: popoverLabelWidth,
+        value: $easeIn,
+        range: 0.05...2.0,
+        step: 0.05,
+        formattedValue: String(format: "%.2fs", easeIn),
+        valueWidth: 42
+      )
       .padding(.horizontal, 12)
       .padding(.vertical, 4)
 
-      HStack {
-        Text("Ease Out")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: popoverLabelWidth, alignment: .leading)
-        Slider(value: $easeOut, in: 0.05...2.0, step: 0.05)
-        Text(String(format: "%.2fs", easeOut))
-          .font(.system(size: 12, design: .monospaced))
-          .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: 42, alignment: .trailing)
-      }
+      SliderRow(
+        label: "Ease Out",
+        labelWidth: popoverLabelWidth,
+        value: $easeOut,
+        range: 0.05...2.0,
+        step: 0.05,
+        formattedValue: String(format: "%.2fs", easeOut),
+        valueWidth: 42
+      )
       .padding(.horizontal, 12)
       .padding(.vertical, 4)
 

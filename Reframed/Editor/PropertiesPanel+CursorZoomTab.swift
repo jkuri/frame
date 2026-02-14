@@ -37,17 +37,14 @@ extension PropertiesPanel {
       if editorState.showCursor {
         cursorStyleGrid
 
-        HStack(spacing: 8) {
-          Text("Size")
-            .font(.system(size: 12))
-            .foregroundStyle(ReframedColors.secondaryText)
-            .frame(width: cursorLabelWidth, alignment: .leading)
-          Slider(value: $editorState.cursorSize, in: 16...64, step: 2)
-          Text("\(Int(editorState.cursorSize))px")
-            .font(.system(size: 12, design: .monospaced))
-            .foregroundStyle(ReframedColors.secondaryText)
-            .frame(width: 36, alignment: .trailing)
-        }
+        SliderRow(
+          label: "Size",
+          labelWidth: cursorLabelWidth,
+          value: $editorState.cursorSize,
+          range: 16...64,
+          step: 2,
+          formattedValue: "\(Int(editorState.cursorSize))px"
+        )
 
         clickHighlightsSubsection
       }
@@ -69,79 +66,27 @@ extension PropertiesPanel {
           clickColorPickerButton
         }
 
-        HStack(spacing: 8) {
-          Text("Size")
-            .font(.system(size: 12))
-            .foregroundStyle(ReframedColors.secondaryText)
-            .frame(width: cursorLabelWidth, alignment: .leading)
-          Slider(value: $editorState.clickHighlightSize, in: 16...80, step: 2)
-          Text("\(Int(editorState.clickHighlightSize))px")
-            .font(.system(size: 12, design: .monospaced))
-            .foregroundStyle(ReframedColors.secondaryText)
-            .frame(width: 36, alignment: .trailing)
-        }
+        SliderRow(
+          label: "Size",
+          labelWidth: cursorLabelWidth,
+          value: $editorState.clickHighlightSize,
+          range: 16...80,
+          step: 2,
+          formattedValue: "\(Int(editorState.clickHighlightSize))px"
+        )
       }
     }
   }
 
   var clickColorPickerButton: some View {
     let currentName = TailwindColors.all.first { $0.color == editorState.clickHighlightColor }?.name ?? "Blue"
-    return Button {
-      showClickColorPopover.toggle()
-    } label: {
-      HStack(spacing: 6) {
-        Circle()
-          .fill(Color(cgColor: editorState.clickHighlightColor.cgColor))
-          .frame(width: 16, height: 16)
-        Text(currentName)
-          .font(.system(size: 12, weight: .medium))
-          .foregroundStyle(ReframedColors.primaryText)
-          .lineLimit(1)
-        Spacer()
-        Image(systemName: "chevron.up.chevron.down")
-          .font(.system(size: 9, weight: .semibold))
-          .foregroundStyle(ReframedColors.dimLabel)
-      }
-      .padding(.horizontal, 10)
-      .frame(height: 30)
-      .background(ReframedColors.fieldBackground)
-      .clipShape(RoundedRectangle(cornerRadius: 6))
-    }
-    .buttonStyle(.plain)
-    .popover(isPresented: $showClickColorPopover, arrowEdge: .trailing) {
-      ScrollView {
-        VStack(alignment: .leading, spacing: 0) {
-          ForEach(TailwindColors.all) { preset in
-            Button {
-              editorState.clickHighlightColor = preset.color
-              showClickColorPopover = false
-            } label: {
-              HStack(spacing: 10) {
-                Circle()
-                  .fill(preset.swiftUIColor)
-                  .frame(width: 18, height: 18)
-                Text(preset.name)
-                  .font(.system(size: 13))
-                  .foregroundStyle(ReframedColors.primaryText)
-                Spacer()
-                if editorState.clickHighlightColor == preset.color {
-                  Image(systemName: "checkmark")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(ReframedColors.primaryText)
-                }
-              }
-              .padding(.horizontal, 12)
-              .padding(.vertical, 5)
-              .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-          }
-        }
-        .padding(.vertical, 8)
-      }
-      .frame(width: 200)
-      .frame(maxHeight: 320)
-    }
+    return TailwindColorPicker(
+      displayColor: Color(cgColor: editorState.clickHighlightColor.cgColor),
+      displayName: currentName,
+      isPresented: $showClickColorPopover,
+      isSelected: { $0.color == editorState.clickHighlightColor },
+      onSelect: { editorState.clickHighlightColor = $0.color }
+    )
   }
 
   func toggleRow(_ label: String, isOn: Binding<Bool>) -> some View {
@@ -182,47 +127,41 @@ extension PropertiesPanel {
           }
 
         if editorState.autoZoomEnabled {
-          HStack {
-            Text("Level")
-              .font(.system(size: 12))
-              .foregroundStyle(ReframedColors.secondaryText)
-              .frame(width: zoomLabelWidth, alignment: .leading)
-            Slider(value: $editorState.zoomLevel, in: 1.5...5.0, step: 0.1)
-            Text(String(format: "%.1fx", editorState.zoomLevel))
-              .font(.system(size: 12, design: .monospaced))
-              .foregroundStyle(ReframedColors.secondaryText)
-              .frame(width: 40, alignment: .trailing)
-          }
+          SliderRow(
+            label: "Level",
+            labelWidth: zoomLabelWidth,
+            value: $editorState.zoomLevel,
+            range: 1.5...5.0,
+            step: 0.1,
+            formattedValue: String(format: "%.1fx", editorState.zoomLevel),
+            valueWidth: 40
+          )
           .onChange(of: editorState.zoomLevel) { _, _ in
             editorState.generateAutoZoom()
           }
 
-          HStack {
-            Text("Speed")
-              .font(.system(size: 12))
-              .foregroundStyle(ReframedColors.secondaryText)
-              .frame(width: zoomLabelWidth, alignment: .leading)
-            Slider(value: $editorState.zoomTransitionSpeed, in: 0.1...2.0, step: 0.05)
-            Text(String(format: "%.2fs", editorState.zoomTransitionSpeed))
-              .font(.system(size: 12, design: .monospaced))
-              .foregroundStyle(ReframedColors.secondaryText)
-              .frame(width: 40, alignment: .trailing)
-          }
+          SliderRow(
+            label: "Speed",
+            labelWidth: zoomLabelWidth,
+            value: $editorState.zoomTransitionSpeed,
+            range: 0.1...2.0,
+            step: 0.05,
+            formattedValue: String(format: "%.2fs", editorState.zoomTransitionSpeed),
+            valueWidth: 40
+          )
           .onChange(of: editorState.zoomTransitionSpeed) { _, _ in
             editorState.generateAutoZoom()
           }
 
-          HStack {
-            Text("Hold")
-              .font(.system(size: 12))
-              .foregroundStyle(ReframedColors.secondaryText)
-              .frame(width: zoomLabelWidth, alignment: .leading)
-            Slider(value: $editorState.zoomDwellThreshold, in: 0.5...5.0, step: 0.1)
-            Text(String(format: "%.1fs", editorState.zoomDwellThreshold))
-              .font(.system(size: 12, design: .monospaced))
-              .foregroundStyle(ReframedColors.secondaryText)
-              .frame(width: 40, alignment: .trailing)
-          }
+          SliderRow(
+            label: "Hold",
+            labelWidth: zoomLabelWidth,
+            value: $editorState.zoomDwellThreshold,
+            range: 0.5...5.0,
+            step: 0.1,
+            formattedValue: String(format: "%.1fs", editorState.zoomDwellThreshold),
+            valueWidth: 40
+          )
           .onChange(of: editorState.zoomDwellThreshold) { _, _ in
             editorState.generateAutoZoom()
           }

@@ -95,23 +95,15 @@ extension SettingsView {
           .font(.system(size: 13))
           .foregroundStyle(ReframedColors.primaryText)
         Spacer()
-        HStack(spacing: 4) {
-          ForEach(["720p", "1080p", "4K"], id: \.self) { res in
-            Button {
-              cameraMaximumResolution = res
-              ConfigService.shared.cameraMaximumResolution = res
-            } label: {
-              Text(res)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(ReframedColors.primaryText)
-                .padding(.horizontal, 10)
-                .frame(height: 28)
-                .background(cameraMaximumResolution == res ? ReframedColors.selectedActive : ReframedColors.fieldBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
-            }
-            .buttonStyle(.plain)
+        SegmentPicker(
+          items: ["720p", "1080p", "4K"],
+          label: { $0 },
+          isSelected: { cameraMaximumResolution == $0 },
+          onSelect: {
+            cameraMaximumResolution = $0
+            ConfigService.shared.cameraMaximumResolution = $0
           }
-        }
+        )
       }
       .padding(.horizontal, 10)
     }

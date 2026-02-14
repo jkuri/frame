@@ -119,6 +119,9 @@
 		A10000000000000000000037 /* SettingsRecordingTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000037 /* SettingsRecordingTab.swift */; };
 		A10000000000000000000038 /* SettingsDevicesTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000038 /* SettingsDevicesTab.swift */; };
 		A10000000000000000000039 /* CaptureToolbarComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000039 /* CaptureToolbarComponents.swift */; };
+		A1000000000000000000003A /* SliderRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003A /* SliderRow.swift */; };
+		A1000000000000000000003B /* TailwindColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003B /* TailwindColorPicker.swift */; };
+		A1000000000000000000003C /* SegmentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003C /* SegmentPicker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -236,6 +239,9 @@
 		B10000000000000000000037 /* SettingsRecordingTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRecordingTab.swift; sourceTree = "<group>"; };
 		B10000000000000000000038 /* SettingsDevicesTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDevicesTab.swift; sourceTree = "<group>"; };
 		B10000000000000000000039 /* CaptureToolbarComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbarComponents.swift; sourceTree = "<group>"; };
+		B1000000000000000000003A /* SliderRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderRow.swift; sourceTree = "<group>"; };
+		B1000000000000000000003B /* TailwindColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailwindColorPicker.swift; sourceTree = "<group>"; };
+		B1000000000000000000003C /* SegmentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentPicker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -398,6 +404,9 @@
 				B10000000000000000000037 /* SettingsRecordingTab.swift */,
 				B10000000000000000000038 /* SettingsDevicesTab.swift */,
 				B10000000000000000000039 /* CaptureToolbarComponents.swift */,
+				B1000000000000000000003A /* SliderRow.swift */,
+				B1000000000000000000003B /* TailwindColorPicker.swift */,
+				B1000000000000000000003C /* SegmentPicker.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -688,6 +697,9 @@
 				A10000000000000000000037 /* SettingsRecordingTab.swift in Sources */,
 				A10000000000000000000038 /* SettingsDevicesTab.swift in Sources */,
 				A10000000000000000000039 /* CaptureToolbarComponents.swift in Sources */,
+				A1000000000000000000003A /* SliderRow.swift in Sources */,
+				A1000000000000000000003B /* TailwindColorPicker.swift in Sources */,
+				A1000000000000000000003C /* SegmentPicker.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

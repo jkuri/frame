@@ -14,24 +14,17 @@ extension SettingsView {
     VStack(alignment: .leading, spacing: 8) {
       sectionLabel("Appearance")
 
-      HStack(spacing: 4) {
-        ForEach(["system", "light", "dark"], id: \.self) { mode in
-          Button {
-            appearance = mode
-            ConfigService.shared.appearance = mode
-            updateWindowBackgrounds()
-          } label: {
-            Text(mode.capitalized)
-              .font(.system(size: 12, weight: .medium))
-              .foregroundStyle(ReframedColors.primaryText)
-              .padding(.horizontal, 14)
-              .frame(height: 28)
-              .background(appearance == mode ? ReframedColors.selectedActive : ReframedColors.fieldBackground)
-              .clipShape(RoundedRectangle(cornerRadius: 6))
-          }
-          .buttonStyle(.plain)
-        }
-      }
+      SegmentPicker(
+        items: ["system", "light", "dark"],
+        label: { $0.capitalized },
+        isSelected: { appearance == $0 },
+        onSelect: {
+          appearance = $0
+          ConfigService.shared.appearance = $0
+          updateWindowBackgrounds()
+        },
+        horizontalPadding: 14
+      )
     }
   }
 
