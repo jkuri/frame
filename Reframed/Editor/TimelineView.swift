@@ -288,18 +288,18 @@ struct TimelineView: View {
         ZStack(alignment: .leading) {
           audioRegionCanvas(
             samples: samples,
-            regions: regions,
             width: width,
-            height: h,
-            accentColor: accentColor
+            height: h
           )
 
           ForEach(regions) { region in
-            audioRegionOverlay(
+            audioRegionView(
               region: region,
               trackType: trackType,
+              samples: samples,
               width: width,
-              height: h
+              height: h,
+              accentColor: accentColor
             )
           }
 
@@ -313,6 +313,7 @@ struct TimelineView: View {
         }
         .frame(width: width, height: h)
         .clipShape(RoundedRectangle(cornerRadius: 10))
+        .coordinateSpace(name: trackType)
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { location in
           let time = (location.x / width) * totalSeconds
@@ -335,17 +336,15 @@ struct TimelineView: View {
 
   private func audioRegionCanvas(
     samples: [Float],
-    regions: [AudioRegionData],
     width: CGFloat,
-    height: CGFloat,
-    accentColor: Color
+    height: CGFloat
   ) -> some View {
     Canvas { context, size in
       let count = samples.count
-      guard count > 0 else { return }
+      guard count > 1 else { return }
       let midY = size.height / 2
       let maxAmp = size.height * 0.4
-      let step = size.width / CGFloat(max(count - 1, 1))
+      let step = size.width / CGFloat(count - 1)
 
       var topPoints: [CGPoint] = []
       var bottomPoints: [CGPoint] = []
@@ -358,34 +357,19 @@ struct TimelineView: View {
 
       let fullPath = buildWaveformPath(top: topPoints, bottom: bottomPoints, minX: 0, maxX: size.width)
       context.fill(fullPath, with: .color(ReframedColors.tertiaryText.opacity(0.4)))
-
-      for region in regions {
-        let effective = effectiveAudioRegion(region, width: width)
-        let startX = CGFloat(effective.start / totalSeconds) * size.width
-        let endX = CGFloat(effective.end / totalSeconds) * size.width
-        let regionWidth = endX - startX
-        guard regionWidth > 0 else { continue }
-
-        let bgRect = CGRect(x: startX, y: 0, width: regionWidth, height: size.height)
-        context.fill(Path(bgRect), with: .color(accentColor.opacity(0.15)))
-
-        let activePath = buildWaveformPath(top: topPoints, bottom: bottomPoints, minX: startX, maxX: endX)
-        context.fill(activePath, with: .color(accentColor))
-
-        let borderRect = CGRect(x: startX + 1, y: 1, width: max(0, regionWidth - 2), height: size.height - 2)
-        context.stroke(Path(roundedRect: borderRect, cornerRadius: 6), with: .color(accentColor), lineWidth: 2)
-      }
     }
     .frame(width: width, height: height)
     .allowsHitTesting(false)
   }
 
   @ViewBuilder
-  private func audioRegionOverlay(
+  private func audioRegionView(
     region: AudioRegionData,
     trackType: AudioTrackType,
+    samples: [Float],
     width: CGFloat,
-    height: CGFloat
+    height: CGFloat,
+    accentColor: Color
   ) -> some View {
     let effective = effectiveAudioRegion(region, width: width)
     let startX = max(0, CGFloat(effective.start / totalSeconds) * width)
@@ -393,54 +377,101 @@ struct TimelineView: View {
     let regionWidth = max(4, endX - startX)
     let edgeThreshold: CGFloat = 8
 
-    Color.clear
-      .frame(width: regionWidth, height: height)
-      .contentShape(Rectangle())
-      .overlay {
-        RightClickOverlay {
-          editorState.removeRegion(trackType: trackType, regionId: region.id)
-        }
-      }
-      .gesture(
-        DragGesture(minimumDistance: 3)
-          .onChanged { value in
-            if audioDragType == nil {
-              let origWidth = CGFloat((region.endSeconds - region.startSeconds) / totalSeconds) * width
-              let relX = value.startLocation.x
-              if relX <= edgeThreshold && origWidth > edgeThreshold * 3 {
-                audioDragType = .resizeLeft
-              } else if relX >= origWidth - edgeThreshold && origWidth > edgeThreshold * 3 {
-                audioDragType = .resizeRight
-              } else {
-                audioDragType = .move
-              }
-              audioDragRegionId = region.id
-            }
-            audioDragOffset = value.translation.width
-          }
-          .onEnded { _ in
-            guard audioDragType != nil else { return }
-            commitAudioDrag(region: region, trackType: trackType, width: width)
-            audioDragOffset = 0
-            audioDragType = nil
-            audioDragRegionId = nil
-          }
+    ZStack {
+      RoundedRectangle(cornerRadius: 6)
+        .fill(accentColor.opacity(0.15))
+
+      audioRegionWaveform(
+        samples: samples,
+        startX: startX,
+        endX: endX,
+        fullWidth: width,
+        accentColor: accentColor
       )
-      .onContinuousHover { phase in
-        switch phase {
-        case .active(let location):
-          if location.x <= edgeThreshold || location.x >= regionWidth - edgeThreshold {
-            NSCursor.resizeLeftRight.set()
-          } else {
-            NSCursor.openHand.set()
-          }
-        case .ended:
-          NSCursor.arrow.set()
-        @unknown default:
-          break
-        }
+      .clipShape(RoundedRectangle(cornerRadius: 6))
+
+      RoundedRectangle(cornerRadius: 6)
+        .stroke(accentColor, lineWidth: 2)
+    }
+    .frame(width: regionWidth, height: height - 6)
+    .contentShape(Rectangle())
+    .overlay {
+      RightClickOverlay {
+        editorState.removeRegion(trackType: trackType, regionId: region.id)
       }
-      .position(x: startX + regionWidth / 2, y: height / 2)
+    }
+    .gesture(
+      DragGesture(minimumDistance: 3, coordinateSpace: .named(trackType))
+        .onChanged { value in
+          if audioDragType == nil {
+            let origStartX = CGFloat(region.startSeconds / totalSeconds) * width
+            let origEndX = CGFloat(region.endSeconds / totalSeconds) * width
+            let origWidth = origEndX - origStartX
+            let relX = value.startLocation.x - origStartX
+            if relX <= edgeThreshold && origWidth > edgeThreshold * 3 {
+              audioDragType = .resizeLeft
+            } else if relX >= origWidth - edgeThreshold && origWidth > edgeThreshold * 3 {
+              audioDragType = .resizeRight
+            } else {
+              audioDragType = .move
+            }
+            audioDragRegionId = region.id
+          }
+          audioDragOffset = value.translation.width
+        }
+        .onEnded { _ in
+          guard audioDragType != nil else { return }
+          commitAudioDrag(region: region, trackType: trackType, width: width)
+          audioDragOffset = 0
+          audioDragType = nil
+          audioDragRegionId = nil
+        }
+    )
+    .onContinuousHover { phase in
+      switch phase {
+      case .active(let location):
+        if location.x <= edgeThreshold || location.x >= regionWidth - edgeThreshold {
+          NSCursor.resizeLeftRight.set()
+        } else {
+          NSCursor.openHand.set()
+        }
+      case .ended:
+        NSCursor.arrow.set()
+      @unknown default:
+        break
+      }
+    }
+    .position(x: startX + regionWidth / 2, y: height / 2)
+  }
+
+  private func audioRegionWaveform(
+    samples: [Float],
+    startX: CGFloat,
+    endX: CGFloat,
+    fullWidth: CGFloat,
+    accentColor: Color
+  ) -> some View {
+    Canvas { context, size in
+      let count = samples.count
+      guard count > 1 else { return }
+      let midY = size.height / 2
+      let maxAmp = size.height * 0.4
+      let step = fullWidth / CGFloat(count - 1)
+
+      var topPoints: [CGPoint] = []
+      var bottomPoints: [CGPoint] = []
+      for i in 0..<count {
+        let x = CGFloat(i) * step
+        let amp = CGFloat(samples[i]) * maxAmp
+        topPoints.append(CGPoint(x: x, y: midY - amp))
+        bottomPoints.append(CGPoint(x: x, y: midY + amp))
+      }
+
+      context.translateBy(x: -startX, y: 0)
+      let activePath = buildWaveformPath(top: topPoints, bottom: bottomPoints, minX: startX, maxX: endX)
+      context.fill(activePath, with: .color(accentColor))
+    }
+    .allowsHitTesting(false)
   }
 
   private func effectiveAudioRegion(_ region: AudioRegionData, width: CGFloat) -> (start: Double, end: Double) {
