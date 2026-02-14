@@ -18,7 +18,6 @@ struct CursorSettingsData: Codable, Sendable {
   var showCursor: Bool
   var cursorStyleRaw: Int
   var cursorSize: CGFloat
-  var cursorSmoothingRaw: Int
   var showClickHighlights: Bool = true
   var clickHighlightColor: CodableColor? = nil
   var clickHighlightSize: CGFloat = 36
@@ -38,6 +37,7 @@ struct EditorStateData: Codable, Sendable {
   var trimStartSeconds: Double
   var trimEndSeconds: Double
   var backgroundStyle: BackgroundStyle
+  var canvasAspect: CanvasAspect?
   var padding: CGFloat
   var videoCornerRadius: CGFloat
   var cameraCornerRadius: CGFloat

@@ -18,6 +18,7 @@ enum VideoCompositor {
     systemAudioTrimRange: CMTimeRange? = nil,
     micAudioTrimRange: CMTimeRange? = nil,
     backgroundStyle: BackgroundStyle = .none,
+    canvasAspect: CanvasAspect = .original,
     padding: CGFloat = 0,
     videoCornerRadius: CGFloat = 0,
     cameraCornerRadius: CGFloat = 12,
@@ -26,7 +27,6 @@ enum VideoCompositor {
     cursorSnapshot: CursorMetadataSnapshot? = nil,
     cursorStyle: CursorStyle = .defaultArrow,
     cursorSize: CGFloat = 24,
-    cursorSmoothing: CursorSmoothing = .standard,
     showClickHighlights: Bool = true,
     clickHighlightColor: CGColor = CGColor(srgbRed: 0.2, green: 0.5, blue: 1.0, alpha: 1.0),
     clickHighlightSize: CGFloat = 36,
@@ -65,7 +65,8 @@ enum VideoCompositor {
       audioSources.append(AudioSource(url: micURL, trimRange: micAudioTrimRange ?? effectiveTrim))
     }
 
-    let hasVisualEffects = backgroundStyle != .none || padding > 0 || videoCornerRadius > 0
+    let hasVisualEffects =
+      backgroundStyle != .none || canvasAspect != .original || padding > 0 || videoCornerRadius > 0
     let hasWebcam = result.webcamVideoURL != nil
     let hasCursor = cursorSnapshot != nil
     let hasZoom = zoomTimeline != nil
@@ -75,7 +76,9 @@ enum VideoCompositor {
     let needsCompositor = hasVisualEffects || hasWebcam || needsReencode || hasCursor || hasZoom
 
     let canvasSize: CGSize
-    if padding > 0 {
+    if let baseSize = canvasAspect.size(for: screenNaturalSize) {
+      canvasSize = baseSize
+    } else if padding > 0 {
       let scale = 1.0 + 2.0 * padding
       canvasSize = CGSize(width: screenNaturalSize.width * scale, height: screenNaturalSize.height * scale)
     } else {
@@ -105,7 +108,7 @@ enum VideoCompositor {
           )
           try wTrack?.insertTimeRange(effectiveTrim, of: webcamVideoTrack, at: .zero)
           webcamTrackID = 2
-          cameraRect = cameraLayout.pixelRect(screenSize: screenNaturalSize, webcamSize: webcamSize)
+          cameraRect = cameraLayout.pixelRect(screenSize: canvasSize, webcamSize: webcamSize)
         }
       }
 
@@ -160,7 +163,6 @@ enum VideoCompositor {
         cursorSnapshot: cursorSnapshot,
         cursorStyle: cursorStyle,
         cursorSize: cursorSize,
-        cursorSmoothing: cursorSmoothing,
         showCursor: cursorSnapshot != nil,
         showClickHighlights: showClickHighlights,
         clickHighlightColor: clickHighlightColor,

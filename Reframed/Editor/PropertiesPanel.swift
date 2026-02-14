@@ -33,6 +33,7 @@ struct PropertiesPanel: View {
         case .general:
           projectSection
         case .video:
+          canvasSection
           backgroundSection
           paddingSection
           cornerRadiusSection
@@ -82,6 +83,19 @@ struct PropertiesPanel: View {
           if !focused { commitProjectRename() }
         }
         .onAppear { editingProjectName = editorState.projectName }
+    }
+  }
+
+  private var canvasSection: some View {
+    VStack(alignment: .leading, spacing: 10) {
+      sectionHeader(icon: "rectangle.dashed", title: "Canvas")
+
+      Picker("", selection: $editorState.canvasAspect) {
+        ForEach(CanvasAspect.allCases) { aspect in
+          Text(aspect.label).tag(aspect)
+        }
+      }
+      .pickerStyle(.segmented)
     }
   }
 
@@ -311,23 +325,20 @@ struct PropertiesPanel: View {
     }
   }
 
+  private let cursorLabelWidth: CGFloat = 42
+
   private var cursorSection: some View {
-    VStack(alignment: .leading, spacing: 10) {
+    VStack(alignment: .leading, spacing: 14) {
       sectionHeader(icon: "cursorarrow", title: "Cursor")
 
-      Toggle(isOn: $editorState.showCursor) {
-        Text("Show Cursor")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.primaryText)
-      }
-      .toggleStyle(.switch)
-      .controlSize(.mini)
+      toggleRow("Show Cursor", isOn: $editorState.showCursor)
 
       if editorState.showCursor {
         HStack(spacing: 8) {
           Text("Style")
             .font(.system(size: 12))
             .foregroundStyle(ReframedColors.secondaryText)
+            .frame(width: cursorLabelWidth, alignment: .leading)
           Picker("", selection: $editorState.cursorStyle) {
             ForEach(CursorStyle.allCases, id: \.rawValue) { style in
               Text(style.label).tag(style)
@@ -340,6 +351,7 @@ struct PropertiesPanel: View {
           Text("Size")
             .font(.system(size: 12))
             .foregroundStyle(ReframedColors.secondaryText)
+            .frame(width: cursorLabelWidth, alignment: .leading)
           Slider(value: $editorState.cursorSize, in: 16...64, step: 2)
           Text("\(Int(editorState.cursorSize))px")
             .font(.system(size: 12, design: .monospaced))
@@ -347,40 +359,23 @@ struct PropertiesPanel: View {
             .frame(width: 36, alignment: .trailing)
         }
 
-        HStack(spacing: 8) {
-          Text("Smooth")
-            .font(.system(size: 12))
-            .foregroundStyle(ReframedColors.secondaryText)
-          Picker("", selection: $editorState.cursorSmoothing) {
-            ForEach(CursorSmoothing.allCases, id: \.rawValue) { level in
-              Text(level.label).tag(level)
-            }
-          }
-          .pickerStyle(.segmented)
-        }
+        clickHighlightsSubsection
       }
-
-      clickHighlightsSubsection
     }
   }
 
   private var clickHighlightsSubsection: some View {
-    VStack(alignment: .leading, spacing: 10) {
+    VStack(alignment: .leading, spacing: 14) {
       sectionHeader(icon: "cursorarrow.click.2", title: "Click Highlights")
 
-      Toggle(isOn: $editorState.showClickHighlights) {
-        Text("Show Click Highlights")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.primaryText)
-      }
-      .toggleStyle(.switch)
-      .controlSize(.mini)
+      toggleRow("Show Highlights", isOn: $editorState.showClickHighlights)
 
       if editorState.showClickHighlights {
         HStack(spacing: 8) {
           Text("Color")
             .font(.system(size: 12))
             .foregroundStyle(ReframedColors.secondaryText)
+            .frame(width: cursorLabelWidth, alignment: .leading)
           clickColorPickerButton
         }
 
@@ -388,6 +383,7 @@ struct PropertiesPanel: View {
           Text("Size")
             .font(.system(size: 12))
             .foregroundStyle(ReframedColors.secondaryText)
+            .frame(width: cursorLabelWidth, alignment: .leading)
           Slider(value: $editorState.clickHighlightSize, in: 16...80, step: 2)
           Text("\(Int(editorState.clickHighlightSize))px")
             .font(.system(size: 12, design: .monospaced))
@@ -460,7 +456,7 @@ struct PropertiesPanel: View {
 
   private let zoomLabelWidth: CGFloat = 42
 
-  private func zoomToggleRow(_ label: String, isOn: Binding<Bool>) -> some View {
+  private func toggleRow(_ label: String, isOn: Binding<Bool>) -> some View {
     HStack {
       Text(label)
         .font(.system(size: 12))
@@ -477,7 +473,7 @@ struct PropertiesPanel: View {
     VStack(alignment: .leading, spacing: 10) {
       sectionHeader(icon: "plus.magnifyingglass", title: "Zoom")
 
-      zoomToggleRow("Enable Zoom", isOn: $editorState.zoomEnabled)
+      toggleRow("Enable Zoom", isOn: $editorState.zoomEnabled)
         .onChange(of: editorState.zoomEnabled) { _, enabled in
           if !enabled {
             editorState.autoZoomEnabled = false
@@ -486,9 +482,9 @@ struct PropertiesPanel: View {
         }
 
       if editorState.zoomEnabled {
-        zoomToggleRow("Follow Cursor", isOn: $editorState.zoomFollowCursor)
+        toggleRow("Follow Cursor", isOn: $editorState.zoomFollowCursor)
 
-        zoomToggleRow("Auto Zoom", isOn: $editorState.autoZoomEnabled)
+        toggleRow("Auto Zoom", isOn: $editorState.autoZoomEnabled)
           .onChange(of: editorState.autoZoomEnabled) { _, enabled in
             if enabled {
               editorState.generateAutoZoom()

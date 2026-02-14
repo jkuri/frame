@@ -1,22 +1,6 @@
 import CoreGraphics
 import Foundation
 
-enum CursorSmoothing: Int, Codable, Sendable, CaseIterable {
-  case rapid = 2
-  case quick = 4
-  case standard = 8
-  case slow = 16
-
-  var label: String {
-    switch self {
-    case .rapid: "Rapid"
-    case .quick: "Quick"
-    case .standard: "Default"
-    case .slow: "Slow"
-    }
-  }
-}
-
 final class CursorMetadataProvider: @unchecked Sendable {
   let metadata: CursorMetadataFile
 
@@ -30,28 +14,10 @@ final class CursorMetadataProvider: @unchecked Sendable {
     return CursorMetadataProvider(metadata: file)
   }
 
-  func sample(at time: Double, smoothing: CursorSmoothing = .standard) -> CGPoint {
+  func sample(at time: Double) -> CGPoint {
     let samples = metadata.samples
     guard !samples.isEmpty else { return CGPoint(x: 0.5, y: 0.5) }
-
     let idx = binarySearch(samples: samples, time: time)
-
-    let windowSize = smoothing.rawValue
-    let start = max(0, idx - windowSize + 1)
-    let end = min(samples.count - 1, idx)
-
-    var sumX = 0.0
-    var sumY = 0.0
-    var count = 0.0
-    for i in start...end {
-      sumX += samples[i].x
-      sumY += samples[i].y
-      count += 1
-    }
-
-    if count > 0 {
-      return CGPoint(x: sumX / count, y: sumY / count)
-    }
     return CGPoint(x: samples[idx].x, y: samples[idx].y)
   }
 
@@ -111,26 +77,9 @@ final class CursorMetadataSnapshot: @unchecked Sendable {
     self.captureAreaHeight = captureAreaHeight
   }
 
-  func sample(at time: Double, smoothing: CursorSmoothing = .standard) -> CGPoint {
+  func sample(at time: Double) -> CGPoint {
     guard !samples.isEmpty else { return CGPoint(x: 0.5, y: 0.5) }
-
     let idx = binarySearch(time: time)
-    let windowSize = smoothing.rawValue
-    let start = max(0, idx - windowSize + 1)
-    let end = min(samples.count - 1, idx)
-
-    var sumX = 0.0
-    var sumY = 0.0
-    var count = 0.0
-    for i in start...end {
-      sumX += samples[i].x
-      sumY += samples[i].y
-      count += 1
-    }
-
-    if count > 0 {
-      return CGPoint(x: sumX / count, y: sumY / count)
-    }
     return CGPoint(x: samples[idx].x, y: samples[idx].y)
   }
 

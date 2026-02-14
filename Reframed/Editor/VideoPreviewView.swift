@@ -17,7 +17,6 @@ struct VideoPreviewView: NSViewRepresentable {
   var showCursor: Bool = false
   var cursorStyle: CursorStyle = .defaultArrow
   var cursorSize: CGFloat = 24
-  var cursorSmoothing: CursorSmoothing = .standard
   var showClickHighlights: Bool = true
   var clickHighlightColor: CGColor = CGColor(srgbRed: 0.2, green: 0.5, blue: 1.0, alpha: 1.0)
   var clickHighlightSize: CGFloat = 36
@@ -53,7 +52,7 @@ struct VideoPreviewView: NSViewRepresentable {
       if zoomFollowCursor, zoomRect.width < 1.0 || zoomRect.height < 1.0,
         let provider = cursorMetadataProvider
       {
-        let cursorPos = provider.sample(at: currentTime, smoothing: cursorSmoothing)
+        let cursorPos = provider.sample(at: currentTime)
         zoomRect = ZoomTimeline.followCursor(zoomRect, cursorPosition: cursorPos)
       }
       nsView.updateZoomRect(zoomRect)
@@ -62,7 +61,7 @@ struct VideoPreviewView: NSViewRepresentable {
     }
 
     if let provider = cursorMetadataProvider, showCursor {
-      let pos = provider.sample(at: currentTime, smoothing: cursorSmoothing)
+      let pos = provider.sample(at: currentTime)
       let clicks = showClickHighlights ? provider.activeClicks(at: currentTime) : []
       nsView.updateCursorOverlay(
         normalizedPosition: pos,
@@ -215,12 +214,13 @@ final class VideoPreviewContainer: NSView {
     let padH = currentPadding * currentScreenSize.width * scaleX
     let padV = currentPadding * currentScreenSize.height * scaleY
 
-    let screenRect = CGRect(
+    let paddedArea = CGRect(
       x: canvasRect.origin.x + padH,
       y: canvasRect.origin.y + padV,
       width: canvasRect.width - padH * 2,
       height: canvasRect.height - padV * 2
     )
+    let screenRect = AVMakeRect(aspectRatio: currentScreenSize, insideRect: paddedArea)
 
     let zr = currentZoomRect
     let isZoomed = zr.width < 1.0 || zr.height < 1.0
@@ -287,12 +287,13 @@ final class VideoPreviewContainer: NSView {
     let padH = currentPadding * currentScreenSize.width * scaleX
     let padV = currentPadding * currentScreenSize.height * scaleY
 
-    let screenRect = CGRect(
+    let paddedArea = CGRect(
       x: canvasRect.origin.x + padH,
       y: canvasRect.origin.y + padV,
       width: canvasRect.width - padH * 2,
       height: canvasRect.height - padV * 2
     )
+    let screenRect = AVMakeRect(aspectRatio: currentScreenSize, insideRect: paddedArea)
 
     screenContainerLayer.frame = screenRect
     let maskPath = CGPath(

@@ -58,7 +58,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
 
     drawBackground(in: context, rect: canvasRect, instruction: instruction, colorSpace: colorSpace)
 
-    let videoRect = CGRect(
+    let paddedArea = CGRect(
       x: instruction.paddingH,
       y: instruction.paddingV,
       width: CGFloat(width) - 2 * instruction.paddingH,
@@ -67,12 +67,15 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
 
     let screenImage = createImage(from: screenBuffer, colorSpace: colorSpace)
     if let img = screenImage {
+      let screenAspect = CGSize(width: img.width, height: img.height)
+      let videoRect = AVMakeRect(aspectRatio: screenAspect, insideRect: paddedArea)
+
       let metadataTime = CMTimeGetSeconds(request.compositionTime) + instruction.trimStartSeconds
       var zoomRect = instruction.zoomTimeline?.zoomRect(at: metadataTime)
       if instruction.zoomFollowCursor, let zr = zoomRect, zr.width < 1.0 || zr.height < 1.0,
         let snapshot = instruction.cursorSnapshot
       {
-        let cursorPos = snapshot.sample(at: metadataTime, smoothing: instruction.cursorSmoothing)
+        let cursorPos = snapshot.sample(at: metadataTime)
         zoomRect = ZoomTimeline.followCursor(zr, cursorPosition: cursorPos)
       }
       context.saveGState()
@@ -120,7 +123,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
           height: videoRect.height
         )
 
-        let cursorPos = snapshot.sample(at: metadataTime, smoothing: instruction.cursorSmoothing)
+        let cursorPos = snapshot.sample(at: metadataTime)
 
         var pixelX: CGFloat
         var pixelY: CGFloat
@@ -182,18 +185,12 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
       defer { CVPixelBufferUnlockBaseAddress(webcamBuffer, .readOnly) }
 
       if let webcamImage = createImage(from: webcamBuffer, colorSpace: colorSpace) {
-        let adjustedCameraRect = CGRect(
-          x: cameraRect.origin.x + instruction.paddingH,
-          y: cameraRect.origin.y + instruction.paddingV,
+        let flippedY = CGFloat(height) - cameraRect.origin.y - cameraRect.height
+        let drawRect = CGRect(
+          x: cameraRect.origin.x,
+          y: flippedY,
           width: cameraRect.width,
           height: cameraRect.height
-        )
-        let flippedY = CGFloat(height) - adjustedCameraRect.origin.y - adjustedCameraRect.height
-        let drawRect = CGRect(
-          x: adjustedCameraRect.origin.x,
-          y: flippedY,
-          width: adjustedCameraRect.width,
-          height: adjustedCameraRect.height
         )
 
         let bw = instruction.cameraBorderWidth

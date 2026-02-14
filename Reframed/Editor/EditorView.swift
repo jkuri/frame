@@ -70,6 +70,7 @@ struct EditorView: View {
         .padding(.top, 12)
         .padding(.bottom, 12)
     }
+    .frame(minWidth: 1200, minHeight: 800)
     .background(ReframedColors.selectedBackground.opacity(0.55))
     .task {
       await editorState.setup()
@@ -117,6 +118,7 @@ struct EditorView: View {
       HoverEffectScope {
         VStack(spacing: 2) {
           ForEach(EditorTab.allCases) { tab in
+            let disabled = tab == .camera && !editorState.hasWebcam
             Button {
               selectedTab = tab
             } label: {
@@ -134,9 +136,11 @@ struct EditorView: View {
                 in: RoundedRectangle(cornerRadius: 8)
               )
               .contentShape(Rectangle())
+              .opacity(disabled ? 0.35 : 1)
             }
             .buttonStyle(.plain)
             .hoverEffect(id: "tab.\(tab.rawValue)")
+            .disabled(disabled)
           }
         }
       }
@@ -157,8 +161,8 @@ struct EditorView: View {
   private var videoPreview: some View {
     let screenSize = editorState.result.screenSize
     let hasEffects =
-      editorState.backgroundStyle != .none || editorState.padding > 0
-      || editorState.videoCornerRadius > 0
+      editorState.backgroundStyle != .none || editorState.canvasAspect != .original
+      || editorState.padding > 0 || editorState.videoCornerRadius > 0
     let canvasAspect: CGFloat = {
       let canvas = editorState.canvasSize(for: screenSize)
       return canvas.width / max(canvas.height, 1)
@@ -185,7 +189,6 @@ struct EditorView: View {
           showCursor: editorState.showCursor,
           cursorStyle: editorState.cursorStyle,
           cursorSize: editorState.cursorSize,
-          cursorSmoothing: editorState.cursorSmoothing,
           showClickHighlights: editorState.showClickHighlights,
           clickHighlightColor: editorState.clickHighlightColor.cgColor,
           clickHighlightSize: editorState.clickHighlightSize,
@@ -207,7 +210,7 @@ struct EditorView: View {
   private var backgroundView: some View {
     switch editorState.backgroundStyle {
     case .none:
-      Color.clear
+      editorState.canvasAspect != .original ? Color.black : Color.clear
     case .gradient(let id):
       if let preset = GradientPresets.preset(for: id) {
         LinearGradient(

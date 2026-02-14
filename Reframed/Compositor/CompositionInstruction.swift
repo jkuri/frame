@@ -26,7 +26,6 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
   let cursorSnapshot: CursorMetadataSnapshot?
   let cursorStyle: CursorStyle
   let cursorSize: CGFloat
-  let cursorSmoothing: CursorSmoothing
   let showCursor: Bool
   let showClickHighlights: Bool
   let clickHighlightColor: CGColor
@@ -53,7 +52,6 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     cursorSnapshot: CursorMetadataSnapshot? = nil,
     cursorStyle: CursorStyle = .defaultArrow,
     cursorSize: CGFloat = 24,
-    cursorSmoothing: CursorSmoothing = .standard,
     showCursor: Bool = false,
     showClickHighlights: Bool = true,
     clickHighlightColor: CGColor = CGColor(srgbRed: 0.2, green: 0.5, blue: 1.0, alpha: 1.0),
@@ -79,7 +77,6 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     self.cursorSnapshot = cursorSnapshot
     self.cursorStyle = cursorStyle
     self.cursorSize = cursorSize
-    self.cursorSmoothing = cursorSmoothing
     self.showCursor = showCursor
     self.showClickHighlights = showClickHighlights
     self.clickHighlightColor = clickHighlightColor

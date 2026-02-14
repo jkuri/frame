@@ -58,7 +58,8 @@ final class EditorWindow: NSObject, NSWindowDelegate {
     window.styleMask.insert(.fullSizeContentView)
     window.backgroundColor = ReframedColors.panelBackgroundNS
     window.contentView = hostingView
-    window.minSize = NSSize(width: 900, height: 550)
+    window.contentMinSize = NSSize(width: 1200, height: 800)
+    window.minSize = NSSize(width: 1200, height: 800)
     window.center()
     window.isReleasedWhenClosed = false
     window.delegate = self

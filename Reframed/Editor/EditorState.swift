@@ -4,6 +4,36 @@ import CoreMedia
 import Foundation
 import Logging
 
+enum CanvasAspect: String, Codable, Sendable, CaseIterable, Identifiable {
+  case original
+  case ratio16x9
+  case ratio1x1
+  case ratio4x3
+  case ratio9x16
+
+  var id: String { rawValue }
+
+  var label: String {
+    switch self {
+    case .original: "Original"
+    case .ratio16x9: "16:9"
+    case .ratio1x1: "1:1"
+    case .ratio4x3: "4:3"
+    case .ratio9x16: "9:16"
+    }
+  }
+
+  func size(for screenSize: CGSize) -> CGSize? {
+    switch self {
+    case .original: nil
+    case .ratio16x9: CGSize(width: screenSize.width, height: screenSize.width * 9.0 / 16.0)
+    case .ratio1x1: CGSize(width: screenSize.width, height: screenSize.width)
+    case .ratio4x3: CGSize(width: screenSize.width, height: screenSize.width * 3.0 / 4.0)
+    case .ratio9x16: CGSize(width: screenSize.height * 9.0 / 16.0, height: screenSize.height)
+    }
+  }
+}
+
 @MainActor
 @Observable
 final class EditorState {
@@ -21,6 +51,7 @@ final class EditorState {
   var exportProgress: Double = 0
 
   var backgroundStyle: BackgroundStyle = .none
+  var canvasAspect: CanvasAspect = .original
   var padding: CGFloat = 0
   var videoCornerRadius: CGFloat = 0
   var cameraCornerRadius: CGFloat = 8
@@ -37,9 +68,8 @@ final class EditorState {
   var showCursor: Bool = true
   var cursorStyle: CursorStyle = .defaultArrow
   var cursorSize: CGFloat = 24
-  var cursorSmoothing: CursorSmoothing = .standard
 
-  var showClickHighlights: Bool = true
+  var showClickHighlights: Bool = false
   var clickHighlightColor: CodableColor = CodableColor(r: 0.2, g: 0.5, b: 1.0, a: 1.0)
   var clickHighlightSize: CGFloat = 36
 
@@ -66,6 +96,7 @@ final class EditorState {
 
     if let saved = project.metadata.editorState {
       self.backgroundStyle = saved.backgroundStyle
+      self.canvasAspect = saved.canvasAspect ?? .original
       self.padding = saved.padding
       self.videoCornerRadius = saved.videoCornerRadius
       self.cameraCornerRadius = saved.cameraCornerRadius
@@ -107,7 +138,6 @@ final class EditorState {
         showCursor = cursorSettings.showCursor
         cursorStyle = CursorStyle(rawValue: cursorSettings.cursorStyleRaw) ?? .defaultArrow
         cursorSize = cursorSettings.cursorSize
-        cursorSmoothing = CursorSmoothing(rawValue: cursorSettings.cursorSmoothingRaw) ?? .standard
         showClickHighlights = cursorSettings.showClickHighlights
         if let savedColor = cursorSettings.clickHighlightColor {
           clickHighlightColor = savedColor
@@ -200,6 +230,9 @@ final class EditorState {
   }
 
   func canvasSize(for screenSize: CGSize) -> CGSize {
+    if let base = canvasAspect.size(for: screenSize) {
+      return base
+    }
     if padding > 0 {
       let scale = 1.0 + 2.0 * padding
       return CGSize(width: screenSize.width * scale, height: screenSize.height * scale)
@@ -222,6 +255,7 @@ final class EditorState {
       systemAudioTrimRange: CMTimeRange(start: systemAudioTrimStart, end: systemAudioTrimEnd),
       micAudioTrimRange: CMTimeRange(start: micAudioTrimStart, end: micAudioTrimEnd),
       backgroundStyle: backgroundStyle,
+      canvasAspect: canvasAspect,
       padding: padding,
       videoCornerRadius: videoCornerRadius,
       cameraCornerRadius: cameraCornerRadius,
@@ -230,7 +264,6 @@ final class EditorState {
       cursorSnapshot: cursorSnapshot,
       cursorStyle: cursorStyle,
       cursorSize: cursorSize,
-      cursorSmoothing: cursorSmoothing,
       showClickHighlights: showClickHighlights,
       clickHighlightColor: clickHighlightColor.cgColor,
       clickHighlightSize: clickHighlightSize,
@@ -298,7 +331,6 @@ final class EditorState {
         showCursor: showCursor,
         cursorStyleRaw: cursorStyle.rawValue,
         cursorSize: cursorSize,
-        cursorSmoothingRaw: cursorSmoothing.rawValue,
         showClickHighlights: showClickHighlights,
         clickHighlightColor: clickHighlightColor,
         clickHighlightSize: clickHighlightSize
@@ -320,6 +352,7 @@ final class EditorState {
       trimStartSeconds: CMTimeGetSeconds(trimStart),
       trimEndSeconds: CMTimeGetSeconds(trimEnd),
       backgroundStyle: backgroundStyle,
+      canvasAspect: canvasAspect,
       padding: padding,
       videoCornerRadius: videoCornerRadius,
       cameraCornerRadius: cameraCornerRadius,
