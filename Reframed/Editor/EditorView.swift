@@ -82,6 +82,7 @@ struct EditorView: View {
           .padding(.bottom, 12)
       }
     }
+    .ignoresSafeArea(edges: .top)
     .frame(minWidth: 1200, minHeight: 800)
     .background(ReframedColors.selectedBackground.opacity(0.55))
     .task {
