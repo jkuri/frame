@@ -5,6 +5,8 @@ struct TimelineView: View {
   @Bindable var editorState: EditorState
   let systemAudioSamples: [Float]
   let micAudioSamples: [Float]
+  var systemAudioProgress: Double?
+  var micAudioProgress: Double?
   let onScrub: (CMTime) -> Void
 
   private let sidebarWidth: CGFloat = 70
@@ -88,6 +90,13 @@ struct TimelineView: View {
               samples: systemAudioSamples,
               accentColor: ReframedColors.systemAudioColor
             )
+          } else if let progress = systemAudioProgress {
+            audioLoadingLane(
+              label: "System",
+              icon: "speaker.wave.2",
+              progress: progress,
+              accentColor: ReframedColors.systemAudioColor
+            )
           }
 
           if !micAudioSamples.isEmpty {
@@ -102,6 +111,13 @@ struct TimelineView: View {
               }(),
               trackType: .mic,
               samples: micAudioSamples,
+              accentColor: ReframedColors.micAudioColor
+            )
+          } else if let progress = micAudioProgress {
+            audioLoadingLane(
+              label: "Mic",
+              icon: "mic",
+              progress: progress,
               accentColor: ReframedColors.micAudioColor
             )
           }
@@ -336,6 +352,45 @@ struct TimelineView: View {
             editorState.addRegion(trackType: trackType, atTime: time)
           }
         }
+      }
+      .padding(.trailing, 8)
+    }
+    .frame(height: trackHeight)
+    .background(ReframedColors.panelBackground)
+  }
+
+  private func audioLoadingLane(
+    label: String,
+    icon: String,
+    progress: Double,
+    accentColor: Color
+  ) -> some View {
+    HStack(spacing: 0) {
+      trackSidebar(label: label, icon: icon)
+        .frame(width: sidebarWidth)
+
+      GeometryReader { geo in
+        ZStack {
+          RoundedRectangle(cornerRadius: 10)
+            .fill(accentColor.opacity(0.06))
+
+          HStack(spacing: 10) {
+            ZStack(alignment: .leading) {
+              RoundedRectangle(cornerRadius: 2.5)
+                .fill(accentColor.opacity(0.15))
+                .frame(width: 100, height: 5)
+              RoundedRectangle(cornerRadius: 2.5)
+                .fill(accentColor.opacity(0.6))
+                .frame(width: 100 * max(0, min(1, progress)), height: 5)
+            }
+
+            Text("Generating waveform… \(Int(progress * 100))%")
+              .font(.system(size: 10))
+              .foregroundStyle(ReframedColors.dimLabel)
+          }
+        }
+        .frame(width: geo.size.width, height: geo.size.height)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
       }
       .padding(.trailing, 8)
     }

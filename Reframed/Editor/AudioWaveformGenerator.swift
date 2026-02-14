@@ -7,19 +7,31 @@ import Foundation
 final class AudioWaveformGenerator {
   private(set) var samples: [Float] = []
   private(set) var isGenerating = false
+  private(set) var progress: Double = 0
 
   func generate(from url: URL, count: Int = 200) async {
     isGenerating = true
+    progress = 0
     defer { isGenerating = false }
 
+    let gen = self
+    let handler: @MainActor @Sendable (Double) -> Void = { p in
+      gen.progress = p
+    }
+
     let result = await Task.detached(priority: .userInitiated) {
-      await Self.extractSamples(from: url, count: count)
+      await Self.extractSamples(from: url, count: count, onProgress: handler)
     }.value
 
     samples = result
+    progress = 1.0
   }
 
-  nonisolated private static func extractSamples(from url: URL, count: Int) async -> [Float] {
+  nonisolated private static func extractSamples(
+    from url: URL,
+    count: Int,
+    onProgress: (@MainActor @Sendable (Double) -> Void)? = nil
+  ) async -> [Float] {
     let asset = AVURLAsset(url: url)
     guard let reader = try? AVAssetReader(asset: asset) else { return [] }
 
@@ -29,6 +41,10 @@ final class AudioWaveformGenerator {
       guard videoTracks.first != nil else { return [] }
       return []
     }
+
+    let trackTimeRange = try? await track.load(.timeRange)
+    let assetDuration = try? await asset.load(.duration)
+    let totalDuration = CMTimeGetSeconds(trackTimeRange?.duration ?? assetDuration ?? .zero)
 
     let settings: [String: Any] = [
       AVFormatIDKey: kAudioFormatLinearPCM,
@@ -43,7 +59,23 @@ final class AudioWaveformGenerator {
     guard reader.startReading() else { return [] }
 
     var allSamples: [Int16] = []
+    var lastReportedTime = ProcessInfo.processInfo.systemUptime
+    let updateInterval = 1.0 / 60.0
+
     while let buffer = output.copyNextSampleBuffer() {
+      if let onProgress, totalDuration > 0 {
+        let pts = CMSampleBufferGetPresentationTimeStamp(buffer)
+        let currentTime = CMTimeGetSeconds(pts)
+
+        let now = ProcessInfo.processInfo.systemUptime
+        if now - lastReportedTime >= updateInterval {
+          lastReportedTime = now
+          let readProgress = min(max(currentTime / totalDuration, 0.0), 1.0)
+          let scaledProgress = readProgress * 0.95
+          await onProgress(scaledProgress)
+        }
+      }
+
       guard let blockBuffer = CMSampleBufferGetDataBuffer(buffer) else { continue }
       let length = CMBlockBufferGetDataLength(blockBuffer)
       var data = Data(count: length)
@@ -66,28 +98,42 @@ final class AudioWaveformGenerator {
     let total = raw.count
     guard total > 0 && count > 0 else { return [] }
 
+    var floatSamples = [Float](repeating: 0.0, count: total)
+    vDSP_vflt16(raw, 1, &floatSamples, 1, vDSP_Length(total))
+
     let bucketSize = max(1, total / count)
     var result: [Float] = []
     result.reserveCapacity(count)
 
-    for i in 0..<count {
-      let start = i * total / count
-      let end = min(start + bucketSize, total)
-      guard start < end else {
-        result.append(0)
-        continue
-      }
+    floatSamples.withUnsafeBufferPointer { floatPtr in
+      guard let baseAddress = floatPtr.baseAddress else { return }
 
-      var maxVal: Float = 0
-      for j in start..<end {
-        let absVal = Float(abs(Int32(raw[j])))
-        if absVal > maxVal { maxVal = absVal }
+      for i in 0..<count {
+        let start = i * total / count
+        let end = min(start + bucketSize, total)
+        let currentBucketSize = end - start
+
+        guard currentBucketSize > 0 else {
+          result.append(0)
+          continue
+        }
+
+        var maxVal: Float = 0.0
+        vDSP_maxmgv(baseAddress + start, 1, &maxVal, vDSP_Length(currentBucketSize))
+
+        result.append(maxVal / 32768.0)
       }
-      result.append(maxVal / 32768.0)
     }
 
-    let peak = result.max() ?? 1.0
+    var peak: Float = 0.0
+    vDSP_maxv(result, 1, &peak, vDSP_Length(result.count))
+
     guard peak > 0 else { return result }
-    return result.map { $0 / peak }
+
+    var normalizedResult = [Float](repeating: 0.0, count: result.count)
+    var divisor = peak
+    vDSP_vsdiv(result, 1, &divisor, &normalizedResult, 1, vDSP_Length(result.count))
+
+    return normalizedResult
   }
 }

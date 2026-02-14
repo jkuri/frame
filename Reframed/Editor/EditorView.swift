@@ -231,6 +231,8 @@ struct EditorView: View {
       editorState: editorState,
       systemAudioSamples: systemWaveformGenerator.samples,
       micAudioSamples: micWaveformGenerator.samples,
+      systemAudioProgress: systemWaveformGenerator.isGenerating ? systemWaveformGenerator.progress : nil,
+      micAudioProgress: micWaveformGenerator.isGenerating ? micWaveformGenerator.progress : nil,
       onScrub: { time in
         editorState.pause()
         editorState.seek(to: time)
