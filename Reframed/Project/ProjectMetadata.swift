@@ -53,6 +53,7 @@ struct EditorStateData: Codable, Sendable {
   var zoomSettings: ZoomSettingsData?
   var systemAudioRegions: [AudioRegionData]?
   var micAudioRegions: [AudioRegionData]?
+  var cameraFullscreenRegions: [AudioRegionData]?
 }
 
 struct CodableSize: Codable, Sendable {

@@ -49,6 +49,7 @@ final class EditorState {
   var trimEnd: CMTime = .zero
   var systemAudioRegions: [AudioRegionData] = []
   var micAudioRegions: [AudioRegionData] = []
+  var cameraFullscreenRegions: [AudioRegionData] = []
   var isExporting = false
   var exportProgress: Double = 0
 
@@ -166,6 +167,9 @@ final class EditorState {
       }
       if let savedMicRegions = saved.micAudioRegions, !savedMicRegions.isEmpty {
         micAudioRegions = savedMicRegions
+      }
+      if let savedCameraRegions = saved.cameraFullscreenRegions, !savedCameraRegions.isEmpty {
+        cameraFullscreenRegions = savedCameraRegions
       }
       syncAudioRegionsToPlayer()
     } else if hasWebcam {
@@ -313,6 +317,78 @@ final class EditorState {
     }
   }
 
+  func isCameraFullscreen(at time: Double) -> Bool {
+    cameraFullscreenRegions.contains { time >= $0.startSeconds && time <= $0.endSeconds }
+  }
+
+  func addCameraRegion(atTime time: Double) {
+    let dur = CMTimeGetSeconds(duration)
+    let desiredHalf: Double = 1.0
+    var gapStart: Double = 0
+    var gapEnd: Double = dur
+    var insertIdx = cameraFullscreenRegions.count
+
+    for i in 0..<cameraFullscreenRegions.count {
+      if time < cameraFullscreenRegions[i].startSeconds {
+        gapEnd = cameraFullscreenRegions[i].startSeconds
+        insertIdx = i
+        break
+      }
+      gapStart = cameraFullscreenRegions[i].endSeconds
+    }
+    if insertIdx == cameraFullscreenRegions.count {
+      gapEnd = dur
+    }
+
+    guard gapEnd - gapStart >= 0.05 else { return }
+
+    let regionStart = max(gapStart, time - desiredHalf)
+    let regionEnd = min(gapEnd, time + desiredHalf)
+    let finalStart = max(gapStart, min(regionStart, regionEnd - 0.05))
+    let finalEnd = min(gapEnd, max(regionEnd, finalStart + 0.05))
+
+    cameraFullscreenRegions.insert(
+      AudioRegionData(startSeconds: finalStart, endSeconds: finalEnd), at: insertIdx
+    )
+    cameraFullscreenRegions.sort { $0.startSeconds < $1.startSeconds }
+  }
+
+  func removeCameraRegion(regionId: UUID) {
+    cameraFullscreenRegions.removeAll { $0.id == regionId }
+  }
+
+  func updateCameraRegionStart(regionId: UUID, newStart: Double) {
+    guard let idx = cameraFullscreenRegions.firstIndex(where: { $0.id == regionId }) else { return }
+    let minStart: Double = idx > 0 ? cameraFullscreenRegions[idx - 1].endSeconds : 0
+    let maxStart = cameraFullscreenRegions[idx].endSeconds - 0.01
+    cameraFullscreenRegions[idx].startSeconds = max(minStart, min(maxStart, newStart))
+    cameraFullscreenRegions.sort { $0.startSeconds < $1.startSeconds }
+  }
+
+  func updateCameraRegionEnd(regionId: UUID, newEnd: Double) {
+    guard let idx = cameraFullscreenRegions.firstIndex(where: { $0.id == regionId }) else { return }
+    let dur = CMTimeGetSeconds(duration)
+    let maxEnd: Double = idx < cameraFullscreenRegions.count - 1
+      ? cameraFullscreenRegions[idx + 1].startSeconds : dur
+    let minEnd = cameraFullscreenRegions[idx].startSeconds + 0.01
+    cameraFullscreenRegions[idx].endSeconds = max(minEnd, min(maxEnd, newEnd))
+    cameraFullscreenRegions.sort { $0.startSeconds < $1.startSeconds }
+  }
+
+  func moveCameraRegion(regionId: UUID, newStart: Double) {
+    guard let idx = cameraFullscreenRegions.firstIndex(where: { $0.id == regionId }) else { return }
+    let dur = CMTimeGetSeconds(duration)
+    let regionDuration = cameraFullscreenRegions[idx].endSeconds - cameraFullscreenRegions[idx].startSeconds
+    let minStart: Double = idx > 0 ? cameraFullscreenRegions[idx - 1].endSeconds : 0
+    let maxStart: Double =
+      (idx < cameraFullscreenRegions.count - 1
+        ? cameraFullscreenRegions[idx + 1].startSeconds : dur) - regionDuration
+    let clampedStart = max(minStart, min(maxStart, newStart))
+    cameraFullscreenRegions[idx].startSeconds = clampedStart
+    cameraFullscreenRegions[idx].endSeconds = clampedStart + regionDuration
+    cameraFullscreenRegions.sort { $0.startSeconds < $1.startSeconds }
+  }
+
   func setCameraCorner(_ corner: CameraCorner) {
     let margin: CGFloat = 0.02
     let relH = cameraRelativeHeight
@@ -376,6 +452,12 @@ final class EditorState {
         end: CMTime(seconds: $0.endSeconds, preferredTimescale: 600)
       )
     }
+    let camFsRegions = cameraFullscreenRegions.map {
+      CMTimeRange(
+        start: CMTime(seconds: $0.startSeconds, preferredTimescale: 600),
+        end: CMTime(seconds: $0.endSeconds, preferredTimescale: 600)
+      )
+    }
 
     let state = self
     let url = try await VideoCompositor.export(
@@ -384,6 +466,7 @@ final class EditorState {
       trimRange: CMTimeRange(start: trimStart, end: trimEnd),
       systemAudioRegions: sysRegions.isEmpty ? nil : sysRegions,
       micAudioRegions: micRegions.isEmpty ? nil : micRegions,
+      cameraFullscreenRegions: camFsRegions.isEmpty ? nil : camFsRegions,
       backgroundStyle: backgroundStyle,
       canvasAspect: canvasAspect,
       padding: padding,
@@ -491,7 +574,8 @@ final class EditorState {
       cursorSettings: cursorSettings,
       zoomSettings: zoomSettings,
       systemAudioRegions: systemAudioRegions.isEmpty ? nil : systemAudioRegions,
-      micAudioRegions: micAudioRegions.isEmpty ? nil : micAudioRegions
+      micAudioRegions: micAudioRegions.isEmpty ? nil : micAudioRegions,
+      cameraFullscreenRegions: cameraFullscreenRegions.isEmpty ? nil : cameraFullscreenRegions
     )
     try? project.saveEditorState(data)
   }

@@ -33,6 +33,10 @@ struct TimelineView: View {
   @State private var audioDragType: RegionDragType?
   @State private var audioDragRegionId: UUID?
 
+  @State private var cameraDragOffset: CGFloat = 0
+  @State private var cameraDragType: RegionDragType?
+  @State private var cameraDragRegionId: UUID?
+
   var body: some View {
     ZStack(alignment: .top) {
       VStack(spacing: 8) {
@@ -62,23 +66,7 @@ struct TimelineView: View {
           )
 
           if editorState.hasWebcam {
-            trackLane(
-              label: "Camera",
-              icon: "web.camera",
-              rowIndex: 1,
-              borderColor: ReframedColors.webcamTrackColor,
-              content: { width, height in
-                videoTrackBackground(width: width, height: height, isWebcam: true, trimStart: videoTrimStart, trimEnd: videoTrimEnd)
-              },
-              trimStart: videoTrimStart,
-              trimEnd: videoTrimEnd,
-              onTrimStart: { f in
-                editorState.updateTrimStart(CMTime(seconds: max(0, f) * totalSeconds, preferredTimescale: 600))
-              },
-              onTrimEnd: { f in
-                editorState.updateTrimEnd(CMTime(seconds: min(1, f) * totalSeconds, preferredTimescale: 600))
-              }
-            )
+            cameraTrackLane()
           }
 
           if !systemAudioSamples.isEmpty {
@@ -567,6 +555,160 @@ struct TimelineView: View {
       editorState.updateRegionStart(trackType: trackType, regionId: region.id, newStart: region.startSeconds + timeDelta)
     case .resizeRight:
       editorState.updateRegionEnd(trackType: trackType, regionId: region.id, newEnd: region.endSeconds + timeDelta)
+    case nil:
+      break
+    }
+  }
+
+  // MARK: - Camera Track (Multi-Region)
+
+  private func cameraTrackLane() -> some View {
+    HStack(spacing: 0) {
+      trackSidebar(label: "Camera", icon: "web.camera")
+        .frame(width: sidebarWidth)
+
+      GeometryReader { geo in
+        let width = geo.size.width
+        let h = geo.size.height
+        let regions = editorState.cameraFullscreenRegions
+
+        ZStack(alignment: .leading) {
+          ForEach(regions) { region in
+            cameraRegionView(
+              region: region,
+              width: width,
+              height: h
+            )
+          }
+
+          if regions.isEmpty {
+            Text("Double-click to add fullscreen region")
+              .font(.system(size: 11))
+              .foregroundStyle(ReframedColors.dimLabel)
+              .frame(width: width, height: h)
+              .allowsHitTesting(false)
+          }
+        }
+        .frame(width: width, height: h)
+        .clipped()
+        .coordinateSpace(name: "cameraRegion")
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) { location in
+          let time = (location.x / width) * totalSeconds
+          let hitRegion = regions.first { r in
+            let eff = effectiveCameraRegion(r, width: width)
+            let startX = (eff.start / totalSeconds) * width
+            let endX = (eff.end / totalSeconds) * width
+            return location.x >= startX && location.x <= endX
+          }
+          if hitRegion == nil {
+            editorState.addCameraRegion(atTime: time)
+          }
+        }
+      }
+      .padding(.trailing, 8)
+    }
+    .frame(height: trackHeight)
+    .background(ReframedColors.panelBackground)
+  }
+
+  @ViewBuilder
+  private func cameraRegionView(
+    region: AudioRegionData,
+    width: CGFloat,
+    height: CGFloat
+  ) -> some View {
+    let accentColor = ReframedColors.webcamTrackColor
+    let effective = effectiveCameraRegion(region, width: width)
+    let startX = max(0, CGFloat(effective.start / totalSeconds) * width)
+    let endX = min(width, CGFloat(effective.end / totalSeconds) * width)
+    let regionWidth = max(4, endX - startX)
+    let edgeThreshold: CGFloat = 8
+
+    ZStack {
+      RoundedRectangle(cornerRadius: 6)
+        .fill(accentColor.opacity(0.6))
+
+      RoundedRectangle(cornerRadius: 6)
+        .strokeBorder(accentColor, lineWidth: 2)
+    }
+    .frame(width: regionWidth, height: height)
+    .contentShape(Rectangle())
+    .overlay {
+      RightClickOverlay {
+        editorState.removeCameraRegion(regionId: region.id)
+      }
+    }
+    .gesture(
+      DragGesture(minimumDistance: 3, coordinateSpace: .named("cameraRegion"))
+        .onChanged { value in
+          if cameraDragType == nil {
+            let origStartX = CGFloat(region.startSeconds / totalSeconds) * width
+            let origEndX = CGFloat(region.endSeconds / totalSeconds) * width
+            let origWidth = origEndX - origStartX
+            let relX = value.startLocation.x - origStartX
+            if relX <= edgeThreshold && origWidth > edgeThreshold * 3 {
+              cameraDragType = .resizeLeft
+            } else if relX >= origWidth - edgeThreshold && origWidth > edgeThreshold * 3 {
+              cameraDragType = .resizeRight
+            } else {
+              cameraDragType = .move
+            }
+            cameraDragRegionId = region.id
+          }
+          cameraDragOffset = value.translation.width
+        }
+        .onEnded { _ in
+          guard cameraDragType != nil else { return }
+          commitCameraDrag(region: region, width: width)
+          cameraDragOffset = 0
+          cameraDragType = nil
+          cameraDragRegionId = nil
+        }
+    )
+    .onContinuousHover { phase in
+      switch phase {
+      case .active(let location):
+        if location.x <= edgeThreshold || location.x >= regionWidth - edgeThreshold {
+          NSCursor.resizeLeftRight.set()
+        } else {
+          NSCursor.openHand.set()
+        }
+      case .ended:
+        NSCursor.arrow.set()
+      @unknown default:
+        break
+      }
+    }
+    .position(x: startX + regionWidth / 2, y: height / 2)
+  }
+
+  private func effectiveCameraRegion(_ region: AudioRegionData, width: CGFloat) -> (start: Double, end: Double) {
+    guard cameraDragRegionId == region.id, let dt = cameraDragType else {
+      return (region.startSeconds, region.endSeconds)
+    }
+    let timeDelta = (cameraDragOffset / width) * totalSeconds
+
+    switch dt {
+    case .move:
+      return (region.startSeconds + timeDelta, region.endSeconds + timeDelta)
+    case .resizeLeft:
+      return (region.startSeconds + timeDelta, region.endSeconds)
+    case .resizeRight:
+      return (region.startSeconds, region.endSeconds + timeDelta)
+    }
+  }
+
+  private func commitCameraDrag(region: AudioRegionData, width: CGFloat) {
+    let timeDelta = (cameraDragOffset / width) * totalSeconds
+
+    switch cameraDragType {
+    case .move:
+      editorState.moveCameraRegion(regionId: region.id, newStart: region.startSeconds + timeDelta)
+    case .resizeLeft:
+      editorState.updateCameraRegionStart(regionId: region.id, newStart: region.startSeconds + timeDelta)
+    case .resizeRight:
+      editorState.updateCameraRegionEnd(regionId: region.id, newEnd: region.endSeconds + timeDelta)
     case nil:
       break
     }

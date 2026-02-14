@@ -23,6 +23,7 @@ struct VideoPreviewView: NSViewRepresentable {
   var zoomFollowCursor: Bool = true
   var currentTime: Double = 0
   var zoomTimeline: ZoomTimeline?
+  var cameraFullscreenRegions: [(start: Double, end: Double)] = []
 
   func makeNSView(context: Context) -> VideoPreviewContainer {
     let container = VideoPreviewContainer()
@@ -36,6 +37,9 @@ struct VideoPreviewView: NSViewRepresentable {
   }
 
   func updateNSView(_ nsView: VideoPreviewContainer, context: Context) {
+    let isFullscreen = cameraFullscreenRegions.contains { currentTime >= $0.start && currentTime <= $0.end }
+    nsView.isCameraFullscreen = isFullscreen
+
     nsView.updateCameraLayout(
       cameraLayout,
       webcamSize: webcamSize,
@@ -112,6 +116,7 @@ final class VideoPreviewContainer: NSView {
   private let cursorOverlay = CursorOverlayLayer()
   private let screenContainerLayer = CALayer()
   var coordinator: VideoPreviewView.Coordinator?
+  var isCameraFullscreen = false
   private var currentLayout = CameraLayout()
   private var currentWebcamSize: CGSize?
   private var currentScreenSize: CGSize = .zero
@@ -325,6 +330,16 @@ final class VideoPreviewContainer: NSView {
       return
     }
     webcamView.isHidden = false
+
+    if isCameraFullscreen {
+      webcamView.frame = canvasRect
+      webcamView.layer?.cornerRadius = 0
+      webcamView.layer?.borderWidth = 0
+      webcamView.layer?.borderColor = NSColor.clear.cgColor
+      webcamPlayerLayer.frame = webcamView.bounds
+      CATransaction.commit()
+      return
+    }
 
     let aspect = ws.height / max(ws.width, 1)
     let w = canvasRect.width * currentLayout.relativeWidth

@@ -178,60 +178,74 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
     }
 
     if let webcamTrackID = instruction.webcamTrackID,
-      let webcamBuffer = request.sourceFrame(byTrackID: webcamTrackID),
-      let cameraRect = instruction.cameraRect
+      let webcamBuffer = request.sourceFrame(byTrackID: webcamTrackID)
     {
       CVPixelBufferLockBaseAddress(webcamBuffer, .readOnly)
       defer { CVPixelBufferUnlockBaseAddress(webcamBuffer, .readOnly) }
 
+      let isCamFullscreen = instruction.cameraFullscreenRegions.contains {
+        $0.containsTime(request.compositionTime)
+      }
+
       if let webcamImage = createImage(from: webcamBuffer, colorSpace: colorSpace) {
-        let flippedY = CGFloat(height) - cameraRect.origin.y - cameraRect.height
-        let drawRect = CGRect(
-          x: cameraRect.origin.x,
-          y: flippedY,
-          width: cameraRect.width,
-          height: cameraRect.height
-        )
+        if isCamFullscreen {
+          let fullRect = CGRect(x: 0, y: 0, width: width, height: height)
+          let webcamAspect = CGSize(width: webcamImage.width, height: webcamImage.height)
+          let fitRect = AVMakeRect(aspectRatio: webcamAspect, insideRect: fullRect)
+          context.saveGState()
+          context.setFillColor(CGColor(red: 0, green: 0, blue: 0, alpha: 1))
+          context.fill([fullRect])
+          context.draw(webcamImage, in: fitRect)
+          context.restoreGState()
+        } else if let cameraRect = instruction.cameraRect {
+          let flippedY = CGFloat(height) - cameraRect.origin.y - cameraRect.height
+          let drawRect = CGRect(
+            x: cameraRect.origin.x,
+            y: flippedY,
+            width: cameraRect.width,
+            height: cameraRect.height
+          )
 
-        let bw = instruction.cameraBorderWidth
-        if bw > 0 {
-          let borderPath = CGPath(
-            roundedRect: drawRect,
-            cornerWidth: instruction.cameraCornerRadius,
-            cornerHeight: instruction.cameraCornerRadius,
-            transform: nil
-          )
-          context.saveGState()
-          context.addPath(borderPath)
-          context.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 0.3))
-          context.fillPath()
-          context.restoreGState()
+          let bw = instruction.cameraBorderWidth
+          if bw > 0 {
+            let borderPath = CGPath(
+              roundedRect: drawRect,
+              cornerWidth: instruction.cameraCornerRadius,
+              cornerHeight: instruction.cameraCornerRadius,
+              transform: nil
+            )
+            context.saveGState()
+            context.addPath(borderPath)
+            context.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 0.3))
+            context.fillPath()
+            context.restoreGState()
 
-          let insetRect = drawRect.insetBy(dx: bw, dy: bw)
-          let innerRadius = max(0, instruction.cameraCornerRadius - bw)
-          let innerPath = CGPath(
-            roundedRect: insetRect,
-            cornerWidth: innerRadius,
-            cornerHeight: innerRadius,
-            transform: nil
-          )
-          context.saveGState()
-          context.addPath(innerPath)
-          context.clip()
-          context.draw(webcamImage, in: insetRect)
-          context.restoreGState()
-        } else {
-          let path = CGPath(
-            roundedRect: drawRect,
-            cornerWidth: instruction.cameraCornerRadius,
-            cornerHeight: instruction.cameraCornerRadius,
-            transform: nil
-          )
-          context.saveGState()
-          context.addPath(path)
-          context.clip()
-          context.draw(webcamImage, in: drawRect)
-          context.restoreGState()
+            let insetRect = drawRect.insetBy(dx: bw, dy: bw)
+            let innerRadius = max(0, instruction.cameraCornerRadius - bw)
+            let innerPath = CGPath(
+              roundedRect: insetRect,
+              cornerWidth: innerRadius,
+              cornerHeight: innerRadius,
+              transform: nil
+            )
+            context.saveGState()
+            context.addPath(innerPath)
+            context.clip()
+            context.draw(webcamImage, in: insetRect)
+            context.restoreGState()
+          } else {
+            let path = CGPath(
+              roundedRect: drawRect,
+              cornerWidth: instruction.cameraCornerRadius,
+              cornerHeight: instruction.cameraCornerRadius,
+              transform: nil
+            )
+            context.saveGState()
+            context.addPath(path)
+            context.clip()
+            context.draw(webcamImage, in: drawRect)
+            context.restoreGState()
+          }
         }
       }
     }

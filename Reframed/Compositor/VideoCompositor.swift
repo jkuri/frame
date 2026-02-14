@@ -17,6 +17,7 @@ enum VideoCompositor {
     trimRange: CMTimeRange,
     systemAudioRegions: [CMTimeRange]? = nil,
     micAudioRegions: [CMTimeRange]? = nil,
+    cameraFullscreenRegions: [CMTimeRange]? = nil,
     backgroundStyle: BackgroundStyle = .none,
     canvasAspect: CanvasAspect = .original,
     padding: CGFloat = 0,
@@ -169,7 +170,16 @@ enum VideoCompositor {
         clickHighlightSize: clickHighlightSize,
         zoomFollowCursor: zoomFollowCursor,
         zoomTimeline: zoomTimeline,
-        trimStartSeconds: CMTimeGetSeconds(effectiveTrim.start)
+        trimStartSeconds: CMTimeGetSeconds(effectiveTrim.start),
+        cameraFullscreenRegions: (cameraFullscreenRegions ?? []).compactMap { region in
+          let overlapStart = CMTimeMaximum(region.start, effectiveTrim.start)
+          let overlapEnd = CMTimeMinimum(region.end, effectiveTrim.end)
+          guard CMTimeCompare(overlapEnd, overlapStart) > 0 else { return nil }
+          return CMTimeRange(
+            start: CMTimeSubtract(overlapStart, effectiveTrim.start),
+            end: CMTimeSubtract(overlapEnd, effectiveTrim.start)
+          )
+        }
       )
 
       let videoComposition = AVMutableVideoComposition()
