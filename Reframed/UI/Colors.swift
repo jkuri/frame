@@ -148,10 +148,6 @@ enum ReframedColors {
   static let systemAudioColor = Color(red: 0.925, green: 0.282, blue: 0.600)
   static let micAudioColor = Color(red: 0.94, green: 0.27, blue: 0.27)
 
-  static let zoomAutoColor = Color(red: 0.45, green: 0.30, blue: 0.75)
-  static let zoomAutoEaseColor = Color(red: 0.45, green: 0.30, blue: 0.75).opacity(0.5)
-
-  static let zoomManualColor = Color(red: 0.96, green: 0.55, blue: 0.15)
-  static let zoomManualEaseColor = Color(red: 0.96, green: 0.55, blue: 0.15).opacity(0.5)
-
+  static let zoomColor = Color(red: 0.45, green: 0.30, blue: 0.75)
+  static let zoomEaseColor = Color(red: 0.45, green: 0.30, blue: 0.75).opacity(0.5)
 }

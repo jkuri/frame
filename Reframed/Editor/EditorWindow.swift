@@ -5,6 +5,7 @@ import SwiftUI
 final class EditorWindow: NSObject, NSWindowDelegate {
   private var window: NSWindow?
   private var editorState: EditorState?
+  private var keyboardMonitor: Any?
   var onSave: ((URL) -> Void)?
   var onCancel: (() -> Void)?
   var onDelete: (() -> Void)?
@@ -73,6 +74,45 @@ final class EditorWindow: NSObject, NSWindowDelegate {
     }
 
     self.window = window
+    setupKeyboardMonitor()
+  }
+
+  private func setupKeyboardMonitor() {
+    removeKeyboardMonitor()
+    keyboardMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+      guard let self, let window = self.window, event.window == window else { return event }
+      guard let state = self.editorState else { return event }
+
+      if window.firstResponder is NSTextView {
+        return event
+      }
+
+      let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+      if modifiers.contains(.command) || modifiers.contains(.option) || modifiers.contains(.control) {
+        return event
+      }
+
+      switch event.keyCode {
+      case 49, 36:
+        state.togglePlayPause()
+        return nil
+      case 123:
+        state.skipBackward()
+        return nil
+      case 124:
+        state.skipForward()
+        return nil
+      default:
+        return event
+      }
+    }
+  }
+
+  private func removeKeyboardMonitor() {
+    if let monitor = keyboardMonitor {
+      NSEvent.removeMonitor(monitor)
+      keyboardMonitor = nil
+    }
   }
 
   func bringToFront() {
@@ -81,6 +121,7 @@ final class EditorWindow: NSObject, NSWindowDelegate {
   }
 
   func close() {
+    removeKeyboardMonitor()
     editorState?.teardown()
     window?.delegate = nil
     window?.close()
@@ -89,6 +130,7 @@ final class EditorWindow: NSObject, NSWindowDelegate {
   }
 
   func windowWillClose(_ notification: Notification) {
+    removeKeyboardMonitor()
     editorState?.teardown()
     editorState = nil
     window = nil

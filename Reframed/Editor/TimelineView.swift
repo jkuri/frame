@@ -10,8 +10,8 @@ struct TimelineView: View {
   let onScrub: (CMTime) -> Void
 
   private let sidebarWidth: CGFloat = 70
-  private let rulerHeight: CGFloat = 28
-  private let trackHeight: CGFloat = 42
+  private let rulerHeight: CGFloat = 32
+  private let trackHeight: CGFloat = 32
 
   private var totalSeconds: Double {
     max(CMTimeGetSeconds(editorState.duration), 0.001)
@@ -35,7 +35,7 @@ struct TimelineView: View {
 
   var body: some View {
     ZStack(alignment: .top) {
-      VStack(spacing: 0) {
+      VStack(spacing: 8) {
         HStack(spacing: 0) {
           Color.clear
             .frame(width: sidebarWidth, height: rulerHeight)
@@ -154,19 +154,19 @@ struct TimelineView: View {
               p.move(to: CGPoint(x: x, y: size.height - 10))
               p.addLine(to: CGPoint(x: x, y: size.height))
             }
-            context.stroke(tickPath, with: .color(ReframedColors.tertiaryText), lineWidth: 1)
+            context.stroke(tickPath, with: .color(ReframedColors.primaryText), lineWidth: 1)
 
             let label = formatRulerTime(t)
             let text = Text(label)
-              .font(.system(size: 9, design: .monospaced))
-              .foregroundStyle(ReframedColors.secondaryText)
+              .font(.system(size: 11, design: .monospaced))
+              .foregroundStyle(ReframedColors.primaryText)
             context.draw(context.resolve(text), at: CGPoint(x: x, y: size.height - 16), anchor: .bottom)
           } else {
             let tickPath = Path { p in
               p.move(to: CGPoint(x: x, y: size.height - 5))
               p.addLine(to: CGPoint(x: x, y: size.height))
             }
-            context.stroke(tickPath, with: .color(ReframedColors.tertiaryText.opacity(0.5)), lineWidth: 0.5)
+            context.stroke(tickPath, with: .color(ReframedColors.primaryText.opacity(0.5)), lineWidth: 0.5)
           }
           t += minorInterval
         }
@@ -262,11 +262,11 @@ struct TimelineView: View {
   private func trackSidebar(label: String, icon: String) -> some View {
     VStack(spacing: 2) {
       Image(systemName: icon)
-        .font(.system(size: 12))
+        .font(.system(size: 14))
       Text(label)
-        .font(.system(size: 9))
+        .font(.system(size: 10))
     }
-    .foregroundStyle(ReframedColors.secondaryText)
+    .foregroundStyle(ReframedColors.primaryText)
   }
 
   // MARK: - Video Content
@@ -337,7 +337,7 @@ struct TimelineView: View {
           }
         }
         .frame(width: width, height: h)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .clipped()
         .coordinateSpace(name: trackType)
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { location in
@@ -456,9 +456,9 @@ struct TimelineView: View {
       .clipShape(RoundedRectangle(cornerRadius: 6))
 
       RoundedRectangle(cornerRadius: 6)
-        .stroke(accentColor, lineWidth: 2)
+        .strokeBorder(accentColor, lineWidth: 2)
     }
-    .frame(width: regionWidth, height: height - 6)
+    .frame(width: regionWidth, height: height)
     .contentShape(Rectangle())
     .overlay {
       RightClickOverlay {
@@ -721,14 +721,14 @@ struct TimelineView: View {
       let centerX = sidebarWidth + contentWidth * playheadFraction
 
       Rectangle()
-        .fill(ReframedColors.controlAccentColor.opacity(0.5))
+        .fill(ReframedColors.controlAccentColor.opacity(0.9))
         .frame(width: 2, height: geo.size.height - rulerHeight)
         .position(x: centerX, y: rulerHeight + (geo.size.height - rulerHeight) / 2)
         .allowsHitTesting(false)
 
       RoundedRectangle(cornerRadius: 6)
         .fill(ReframedColors.controlAccentColor.opacity(0.9))
-        .frame(width: 12, height: 28)
+        .frame(width: 12, height: 32)
         .position(x: centerX, y: rulerHeight / 2)
         .gesture(
           DragGesture(minimumDistance: 0)
@@ -740,5 +740,6 @@ struct TimelineView: View {
             }
         )
     }
+    .animation(editorState.isPlaying ? .linear(duration: 1.0 / 30.0) : .none, value: playheadFraction)
   }
 }

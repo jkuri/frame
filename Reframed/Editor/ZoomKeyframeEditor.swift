@@ -469,8 +469,8 @@ struct ZoomKeyframeEditor: View {
     let startX = max(0, (times.start / duration) * width)
     let endX = min(width, (times.end / duration) * width)
     let regionWidth = max(4, endX - startX)
-    let fillColor = region.isAuto ? ReframedColors.zoomAutoColor : ReframedColors.zoomManualColor
-    let easeColor = region.isAuto ? ReframedColors.zoomAutoEaseColor : ReframedColors.zoomManualEaseColor
+    let fillColor = ReframedColors.zoomColor
+    let easeColor = ReframedColors.zoomEaseColor
 
     let zoomStartX = (times.zoomStart / duration) * width
     let zoomEndX = (times.zoomEnd / duration) * width
@@ -485,25 +485,25 @@ struct ZoomKeyframeEditor: View {
       if leadTransWidth > 0 {
         Rectangle()
           .fill(easeColor)
-          .frame(width: leadTransWidth, height: height - 6)
+          .frame(width: leadTransWidth, height: height)
       }
 
       Rectangle()
         .fill(fillColor)
-        .frame(width: holdWidth, height: height - 6)
+        .frame(width: holdWidth, height: height)
 
       if trailTransWidth > 0 {
         Rectangle()
           .fill(easeColor)
-          .frame(width: trailTransWidth, height: height - 6)
+          .frame(width: trailTransWidth, height: height)
       }
     }
     .clipShape(RoundedRectangle(cornerRadius: 10))
     .overlay(
       RoundedRectangle(cornerRadius: 10)
-        .stroke(fillColor, lineWidth: 2)
+        .strokeBorder(fillColor, lineWidth: 2)
     )
-    .frame(width: regionWidth, height: height - 6)
+    .frame(width: regionWidth, height: height)
     .contentShape(Rectangle())
     .overlay {
       if !region.isAuto {

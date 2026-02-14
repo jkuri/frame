@@ -9,11 +9,7 @@ struct EditorBottomBar: View {
     let _ = colorScheme
     HStack(spacing: 12) {
       Button(action: {
-        if editorState.isPlaying {
-          editorState.pause()
-        } else {
-          editorState.play()
-        }
+        editorState.togglePlayPause()
       }) {
         Image(systemName: editorState.isPlaying ? "pause.fill" : "play.fill")
           .font(.system(size: 14))
