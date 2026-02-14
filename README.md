@@ -28,10 +28,17 @@ Grab the latest `.dmg` from the [Releases](https://github.com/jkuri/reframed/rel
 
 - Built-in editor opens automatically after recording
 - Timeline with trim handles for precise start/end selection
+- Camera fullscreen regions — add time segments where the webcam goes fullscreen (talking head mode)
 - Background styles: solid color, gradient presets, or none
 - Adjustable padding and video corner radius
 - Webcam PiP positioning (corner presets or drag to reposition)
 - Webcam PiP customizable size, corner radius, and border
+- Cursor overlay with multiple styles, adjustable size, and click highlights
+- Zoom & pan with manual keyframes or auto-detection based on cursor dwell time
+- Audio region editing for system audio and microphone tracks
+- Transport bar with precise timestamp display (centisecond accuracy)
+- Preview mode — fullscreen canvas view toggled via button or Escape key
+- Recording info panel showing resolution, FPS, duration, and track details
 - Live preview of all effects before exporting
 - Multiple editor windows can be open simultaneously
 
@@ -41,6 +48,8 @@ Grab the latest `.dmg` from the [Releases](https://github.com/jkuri/reframed/rel
 - H.264 and H.265 (HEVC) codec options
 - Configurable export FPS (24, 30, 40, 50, 60, or original)
 - Resolution options: Original, 4K, 1080p, 720p
+- Camera fullscreen regions rendered in export (webcam fills canvas during marked segments)
+- Progress bar in the top bar during export
 
 ### Project Management
 
