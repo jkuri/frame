@@ -252,6 +252,7 @@
 				D1000000000000000000000D /* CaptureModes */,
 				D10000000000000000000008 /* Recording */,
 				D20000000000000000000001 /* Editor */,
+				D40000000000000000000001 /* Compositor */,
 				D30000000000000000000001 /* Project */,
 				D10000000000000000000009 /* Utilities */,
 				D1000000000000000000000C /* UI */,
@@ -436,24 +437,15 @@
 			isa = PBXGroup;
 			children = (
 				B2000000000000000000000B /* AudioWaveformGenerator.swift */,
-				B20000000000000000000013 /* BackgroundStyle.swift */,
-				B2000000000000000000001A /* CompositionInstruction.swift */,
 				B20000000000000000000019 /* EditorBottomBar.swift */,
 				B20000000000000000000006 /* EditorState.swift */,
 				B20000000000000000000016 /* EditorTopBar.swift */,
 				B2000000000000000000000C /* EditorView.swift */,
 				B2000000000000000000000D /* EditorWindow.swift */,
-				B20000000000000000000015 /* ExportSettings.swift */,
-				B20000000000000000000017 /* ExportSheet.swift */,
-				B20000000000000000000014 /* GradientPresets.swift */,
-				B20000000000000000000004 /* CameraLayout.swift */,
-				B2000000000000000000000F /* CameraVideoCompositor.swift */,
 				B20000000000000000000018 /* PropertiesPanel.swift */,
 				B20000000000000000000005 /* SyncedPlayerController.swift */,
-
 				B20000000000000000000009 /* TimelineView.swift */,
 				B2000000000000000000000A /* TrimHandle.swift */,
-				B20000000000000000000010 /* VideoCompositor.swift */,
 				B20000000000000000000008 /* VideoPreviewView.swift */,
 				B90000000000000000000001 /* CursorMetadata.swift */,
 				B90000000000000000000003 /* CursorMetadataProvider.swift */,
@@ -464,6 +456,21 @@
 				B90000000000000000000008 /* ZoomKeyframeEditor.swift */,
 			);
 			path = Editor;
+			sourceTree = "<group>";
+		};
+		D40000000000000000000001 /* Compositor */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000013 /* BackgroundStyle.swift */,
+				B20000000000000000000004 /* CameraLayout.swift */,
+				B2000000000000000000000F /* CameraVideoCompositor.swift */,
+				B2000000000000000000001A /* CompositionInstruction.swift */,
+				B20000000000000000000015 /* ExportSettings.swift */,
+				B20000000000000000000017 /* ExportSheet.swift */,
+				B20000000000000000000014 /* GradientPresets.swift */,
+				B20000000000000000000010 /* VideoCompositor.swift */,
+			);
+			path = Compositor;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

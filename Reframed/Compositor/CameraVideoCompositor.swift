@@ -94,7 +94,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
         let scaleY = videoRect.height / (zr.height * srcH)
         let drawRect = CGRect(
           x: videoRect.origin.x - zr.origin.x * srcW * scaleX,
-          y: videoRect.origin.y - zr.origin.y * srcH * scaleY,
+          y: videoRect.origin.y - (1 - zr.origin.y - zr.height) * srcH * scaleY,
           width: srcW * scaleX,
           height: srcH * scaleY
         )
