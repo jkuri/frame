@@ -59,11 +59,11 @@ enum ReframedColors {
   static let crosshair = NSColor.white.withAlphaComponent(0.3)
 
   static var panelBackground: Color {
-    isDark ? Color(white: 0.1) : Color(white: 1)
+    isDark ? Color(white: 0) : Color(white: 1)
   }
 
   static var panelBackgroundNS: NSColor {
-    isDark ? NSColor(white: 0.1, alpha: 1) : NSColor(white: 1, alpha: 1)
+    isDark ? NSColor(white: 0, alpha: 1) : NSColor(white: 1, alpha: 1)
   }
 
   static var secondaryTextNS: NSColor {
@@ -87,7 +87,7 @@ enum ReframedColors {
   }
 
   static var primaryText: Color {
-    isDark ? .white : Color(white: 0.1)
+    isDark ? .white : Color(white: 0)
   }
 
   static var secondaryText: Color {
@@ -107,7 +107,7 @@ enum ReframedColors {
   }
 
   static var hoverBackground: Color {
-    isDark ? Color.white.opacity(0.1) : Color.black.opacity(0.06)
+    isDark ? Color.white.opacity(0.2) : Color.black.opacity(0.06)
   }
 
   static var selectedBackground: Color {
