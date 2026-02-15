@@ -28,14 +28,39 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
       return
     }
 
+    var webcamBuffer: CVPixelBuffer?
+    if let webcamTrackID = instruction.webcamTrackID {
+      webcamBuffer = request.sourceFrame(byTrackID: webcamTrackID)
+    }
+
+    CameraVideoCompositor.renderFrame(
+      screenBuffer: screenBuffer,
+      webcamBuffer: webcamBuffer,
+      outputBuffer: outputBuffer,
+      compositionTime: request.compositionTime,
+      instruction: instruction
+    )
+
+    request.finish(withComposedVideoFrame: outputBuffer)
+  }
+
+  static func renderFrame(
+    screenBuffer: CVPixelBuffer,
+    webcamBuffer: CVPixelBuffer?,
+    outputBuffer: CVPixelBuffer,
+    compositionTime: CMTime,
+    instruction: CompositionInstruction
+  ) {
     let width = CVPixelBufferGetWidth(outputBuffer)
     let height = CVPixelBufferGetHeight(outputBuffer)
 
     CVPixelBufferLockBaseAddress(screenBuffer, .readOnly)
     CVPixelBufferLockBaseAddress(outputBuffer, [])
+    if let wb = webcamBuffer { CVPixelBufferLockBaseAddress(wb, .readOnly) }
     defer {
       CVPixelBufferUnlockBaseAddress(screenBuffer, .readOnly)
       CVPixelBufferUnlockBaseAddress(outputBuffer, [])
+      if let wb = webcamBuffer { CVPixelBufferUnlockBaseAddress(wb, .readOnly) }
     }
 
     let colorSpace = CGColorSpaceCreateDeviceRGB()
@@ -50,7 +75,6 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
         bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
       )
     else {
-      request.finish(with: NSError(domain: "CameraVideoCompositor", code: -4))
       return
     }
 
@@ -70,7 +94,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
       let screenAspect = CGSize(width: img.width, height: img.height)
       let videoRect = AVMakeRect(aspectRatio: screenAspect, insideRect: paddedArea)
 
-      let metadataTime = CMTimeGetSeconds(request.compositionTime) + instruction.trimStartSeconds
+      let metadataTime = CMTimeGetSeconds(compositionTime) + instruction.trimStartSeconds
       var zoomRect = instruction.zoomTimeline?.zoomRect(at: metadataTime)
       if instruction.zoomFollowCursor, let zr = zoomRect, zr.width < 1.0 || zr.height < 1.0,
         let snapshot = instruction.cursorSnapshot
@@ -177,14 +201,9 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
       }
     }
 
-    if let webcamTrackID = instruction.webcamTrackID,
-      let webcamBuffer = request.sourceFrame(byTrackID: webcamTrackID)
-    {
-      CVPixelBufferLockBaseAddress(webcamBuffer, .readOnly)
-      defer { CVPixelBufferUnlockBaseAddress(webcamBuffer, .readOnly) }
-
+    if let webcamBuffer {
       let isCamFullscreen = instruction.cameraFullscreenRegions.contains {
-        $0.containsTime(request.compositionTime)
+        $0.containsTime(compositionTime)
       }
 
       if let webcamImage = createImage(from: webcamBuffer, colorSpace: colorSpace) {
@@ -249,11 +268,9 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
         }
       }
     }
-
-    request.finish(withComposedVideoFrame: outputBuffer)
   }
 
-  private func drawBackground(
+  private static func drawBackground(
     in context: CGContext,
     rect: CGRect,
     instruction: CompositionInstruction,
@@ -306,7 +323,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
     context.restoreGState()
   }
 
-  private func createImage(from pixelBuffer: CVPixelBuffer, colorSpace: CGColorSpace) -> CGImage? {
+  private static func createImage(from pixelBuffer: CVPixelBuffer, colorSpace: CGColorSpace) -> CGImage? {
     let width = CVPixelBufferGetWidth(pixelBuffer)
     let height = CVPixelBufferGetHeight(pixelBuffer)
     let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)

@@ -72,6 +72,21 @@ struct ExportSheet: View {
           .pickerStyle(.segmented)
           .labelsHidden()
         }
+
+        settingsRow(label: "Renderer") {
+          Picker("", selection: $settings.mode) {
+            ForEach(ExportMode.allCases) { mode in
+              Text(mode.label).tag(mode)
+            }
+          }
+          .pickerStyle(.segmented)
+          .labelsHidden()
+        }
+
+        Text(settings.mode.description)
+          .font(.system(size: 11))
+          .foregroundStyle(ReframedColors.dimLabel)
+          .padding(.top, -10)
       }
       .padding(.horizontal, 28)
 

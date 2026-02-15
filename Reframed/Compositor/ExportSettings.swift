@@ -6,6 +6,28 @@ struct ExportSettings: Sendable {
   var fps: ExportFPS = .original
   var resolution: ExportResolution = .original
   var codec: ExportCodec = .h265
+  var mode: ExportMode = .normal
+}
+
+enum ExportMode: Sendable, CaseIterable, Identifiable {
+  case normal
+  case parallel
+
+  var id: Self { self }
+
+  var label: String {
+    switch self {
+    case .normal: "Normal"
+    case .parallel: "Parallel"
+    }
+  }
+
+  var description: String {
+    switch self {
+    case .normal: "Standard export pipeline."
+    case .parallel: "Multi-core parallel rendering. Faster export."
+    }
+  }
 }
 
 enum ExportFormat: Sendable, CaseIterable, Identifiable {
