@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.8.0](https://github.com/jkuri/Reframed/compare/v0.7.0...v0.8.0) (2026-02-15)
+
+### Features
+
+- **shortcuts:** implement keyboard shortcuts for recording actions and make keystrokes customizable and configurable in settings ([6b2f7d8](https://github.com/jkuri/Reframed/commit/6b2f7d80780d6eeabc4b6d4f18ab52ca2f5b35c0))
+
+### Styling
+
+- **ui:** set dark mode panel backgrounds and light mode primary text to pure black. ([d16f48f](https://github.com/jkuri/Reframed/commit/d16f48f74607c998e349fa3b8652c6a9d4e0d09a))
+
+### Chores
+
+- specifically set recording border window sharingType to .none ([ea1244b](https://github.com/jkuri/Reframed/commit/ea1244bfe4d9aa8104efc700fc916d26b3c9f382))
+- put window sharing type into constants and read it from there ([16a2b87](https://github.com/jkuri/Reframed/commit/16a2b87f7c7aaf3bb769fad28b2c000b01031479))
+
 ## [v0.7.0](https://github.com/jkuri/Reframed/compare/v0.6.0...v0.7.0) (2026-02-15)
 
 ### Features
