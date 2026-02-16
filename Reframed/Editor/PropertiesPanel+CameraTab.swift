@@ -5,13 +5,7 @@ extension PropertiesPanel {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
       sectionHeader(icon: "pip", title: "Camera")
 
-      Toggle(isOn: $editorState.webcamEnabled) {
-        Text("Enabled")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.primaryText)
-      }
-      .toggleStyle(.switch)
-      .controlSize(.mini)
+      toggleRow("Enabled", isOn: $editorState.webcamEnabled)
 
       Group {
         HStack(spacing: 4) {

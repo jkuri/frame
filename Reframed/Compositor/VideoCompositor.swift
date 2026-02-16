@@ -427,8 +427,8 @@ enum VideoCompositor {
         nonisolated(unsafe) var continued = false
 
         let group = DispatchGroup()
-        let videoQueue = DispatchQueue(label: "eu.jankuri.reframed.export.video")
-        let audioQueue = DispatchQueue(label: "eu.jankuri.reframed.export.audio")
+        let videoQueue = DispatchQueue(label: "eu.jankuri.reframed.export.video", qos: .userInitiated)
+        let audioQueue = DispatchQueue(label: "eu.jankuri.reframed.export.audio", qos: .userInitiated)
 
         func finishIfNeeded() {
           guard !continued else { return }
@@ -798,7 +798,7 @@ enum VideoCompositor {
             nonisolated(unsafe) let safeAudioOutput = aOut
             nonisolated(unsafe) let safeAudioInput = aIn
             audioGroup.enter()
-            let audioQueue = DispatchQueue(label: "eu.jankuri.reframed.audio")
+            let audioQueue = DispatchQueue(label: "eu.jankuri.reframed.audio", qos: .userInitiated)
             safeAudioInput.requestMediaDataWhenReady(on: audioQueue) {
               while safeAudioInput.isReadyForMoreMediaData {
                 if cancelled.pointee {
