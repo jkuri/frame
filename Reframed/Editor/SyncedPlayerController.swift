@@ -119,6 +119,14 @@ final class SyncedPlayerController {
     currentTime = time
   }
 
+  func setSystemAudioVolume(_ volume: Float) {
+    systemAudioPlayer?.volume = volume
+  }
+
+  func setMicAudioVolume(_ volume: Float) {
+    micAudioPlayer?.volume = volume
+  }
+
   func teardown() {
     if let obs = timeObserver {
       screenPlayer.removeTimeObserver(obs)

@@ -127,6 +127,17 @@ final class EditorState {
   private let logger = Logger(label: "eu.jankuri.reframed.editor-state")
   private var pendingSaveTask: Task<Void, Never>?
 
+  var systemAudioVolume: Float = 1.0
+  var micAudioVolume: Float = 1.0
+  var systemAudioMuted: Bool = false
+  var micAudioMuted: Bool = false
+
+  var hasSystemAudio: Bool { result.systemAudioURL != nil }
+  var hasMicAudio: Bool { result.microphoneAudioURL != nil }
+
+  var effectiveSystemAudioVolume: Float { systemAudioMuted ? 0 : systemAudioVolume }
+  var effectiveMicAudioVolume: Float { micAudioMuted ? 0 : micAudioVolume }
+
   var isPlaying: Bool { playerController.isPlaying }
   var currentTime: CMTime { playerController.currentTime }
   var duration: CMTime { playerController.duration }
@@ -219,7 +230,14 @@ final class EditorState {
       if let savedCameraRegions = saved.cameraFullscreenRegions, !savedCameraRegions.isEmpty {
         cameraFullscreenRegions = savedCameraRegions
       }
+      if let audioSettings = saved.audioSettings {
+        systemAudioVolume = audioSettings.systemAudioVolume
+        micAudioVolume = audioSettings.micAudioVolume
+        systemAudioMuted = audioSettings.systemAudioMuted
+        micAudioMuted = audioSettings.micAudioMuted
+      }
       syncAudioRegionsToPlayer()
+      syncAudioVolumes()
       regenerateSmoothedCursor()
     } else if hasWebcam {
       setCameraCorner(.bottomRight)
@@ -365,6 +383,11 @@ final class EditorState {
         end: CMTime(seconds: region.endSeconds, preferredTimescale: 600)
       )
     }
+  }
+
+  func syncAudioVolumes() {
+    playerController.setSystemAudioVolume(effectiveSystemAudioVolume)
+    playerController.setMicAudioVolume(effectiveMicAudioVolume)
   }
 
   func isCameraFullscreen(at time: Double) -> Bool {
@@ -550,6 +573,8 @@ final class EditorState {
       clickHighlightSize: clickHighlightSize,
       zoomFollowCursor: zoomFollowCursor,
       zoomTimeline: zoomTimeline,
+      systemAudioVolume: effectiveSystemAudioVolume,
+      micAudioVolume: effectiveMicAudioVolume,
       progressHandler: { progress, eta in
         state.exportProgress = progress
         state.exportETA = eta
@@ -642,6 +667,15 @@ final class EditorState {
         cursorMovementSpeed: cursorMovementSpeed
       )
     }
+    var audioSettings: AudioSettingsData?
+    if hasSystemAudio || hasMicAudio {
+      audioSettings = AudioSettingsData(
+        systemAudioVolume: systemAudioVolume,
+        micAudioVolume: micAudioVolume,
+        systemAudioMuted: systemAudioMuted,
+        micAudioMuted: micAudioMuted
+      )
+    }
     let data = EditorStateData(
       trimStartSeconds: CMTimeGetSeconds(trimStart),
       trimEndSeconds: CMTimeGetSeconds(trimEnd),
@@ -658,6 +692,7 @@ final class EditorState {
       cursorSettings: cursorSettings,
       zoomSettings: zoomSettings,
       animationSettings: animationSettings,
+      audioSettings: audioSettings,
       systemAudioRegions: systemAudioRegions.isEmpty ? nil : systemAudioRegions,
       micAudioRegions: micAudioRegions.isEmpty ? nil : micAudioRegions,
       cameraFullscreenRegions: cameraFullscreenRegions.isEmpty ? nil : cameraFullscreenRegions
@@ -834,6 +869,10 @@ final class EditorState {
       _ = self.systemAudioRegions
       _ = self.micAudioRegions
       _ = self.cameraFullscreenRegions
+      _ = self.systemAudioVolume
+      _ = self.micAudioVolume
+      _ = self.systemAudioMuted
+      _ = self.micAudioMuted
     } onChange: {
       Task { @MainActor [weak self] in
         self?.scheduleSave()

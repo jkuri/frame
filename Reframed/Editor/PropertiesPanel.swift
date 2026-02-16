@@ -38,6 +38,8 @@ struct PropertiesPanel: View {
           backgroundSection
         case .camera:
           cameraSection
+        case .audio:
+          audioSection
         case .cursor:
           cursorSection
           if editorState.showCursor {

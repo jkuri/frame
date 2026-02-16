@@ -2,7 +2,7 @@ import CoreMedia
 import SwiftUI
 
 enum EditorTab: String, CaseIterable, Identifiable {
-  case general, video, camera, cursor, zoom, animations
+  case general, video, camera, audio, cursor, zoom, animations
 
   var id: String { rawValue }
 
@@ -11,6 +11,7 @@ enum EditorTab: String, CaseIterable, Identifiable {
     case .general: "General"
     case .video: "Video"
     case .camera: "Camera"
+    case .audio: "Audio"
     case .cursor: "Cursor"
     case .zoom: "Zoom"
     case .animations: "Animate"
@@ -22,6 +23,7 @@ enum EditorTab: String, CaseIterable, Identifiable {
     case .general: "slider.horizontal.3"
     case .video: "play.rectangle"
     case .camera: "web.camera"
+    case .audio: "speaker.wave.2"
     case .cursor: "cursorarrow"
     case .zoom: "plus.magnifyingglass"
     case .animations: "wand.and.stars"
@@ -133,7 +135,9 @@ struct EditorView: View {
       HoverEffectScope {
         VStack(spacing: 2) {
           ForEach(EditorTab.allCases) { tab in
-            let disabled = tab == .camera && !editorState.hasWebcam
+            let disabled =
+              (tab == .camera && !editorState.hasWebcam)
+              || (tab == .audio && !editorState.hasSystemAudio && !editorState.hasMicAudio)
             Button {
               selectedTab = tab
             } label: {

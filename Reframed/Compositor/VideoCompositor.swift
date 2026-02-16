@@ -10,6 +10,7 @@ enum VideoCompositor {
   private struct AudioSource {
     let url: URL
     let regions: [CMTimeRange]
+    let volume: Float
   }
 
   static func export(
@@ -37,6 +38,8 @@ enum VideoCompositor {
     clickHighlightSize: CGFloat = 36,
     zoomFollowCursor: Bool = true,
     zoomTimeline: ZoomTimeline? = nil,
+    systemAudioVolume: Float = 1.0,
+    micAudioVolume: Float = 1.0,
     progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)? = nil
   ) async throws -> URL {
     let composition = AVMutableComposition()
@@ -63,11 +66,15 @@ enum VideoCompositor {
     try compScreenTrack?.insertTimeRange(effectiveTrim, of: screenVideoTrack, at: .zero)
 
     var audioSources: [AudioSource] = []
-    if let sysURL = result.systemAudioURL {
-      audioSources.append(AudioSource(url: sysURL, regions: systemAudioRegions ?? [effectiveTrim]))
+    if let sysURL = result.systemAudioURL, systemAudioVolume > 0 {
+      audioSources.append(
+        AudioSource(url: sysURL, regions: systemAudioRegions ?? [effectiveTrim], volume: systemAudioVolume)
+      )
     }
-    if let micURL = result.microphoneAudioURL {
-      audioSources.append(AudioSource(url: micURL, regions: micAudioRegions ?? [effectiveTrim]))
+    if let micURL = result.microphoneAudioURL, micAudioVolume > 0 {
+      audioSources.append(
+        AudioSource(url: micURL, regions: micAudioRegions ?? [effectiveTrim], volume: micAudioVolume)
+      )
     }
 
     let hasNonDefaultBackground: Bool = {
@@ -210,6 +217,7 @@ enum VideoCompositor {
       videoComposition.instructions = [instruction]
 
       try await addAudioTracks(to: composition, sources: audioSources, videoTrimRange: effectiveTrim)
+      let audioMix = buildAudioMix(for: composition, sources: audioSources)
 
       let outputURL = FileManager.default.tempRecordingURL()
 
@@ -223,6 +231,7 @@ enum VideoCompositor {
           outputURL: outputURL,
           fileType: exportSettings.format.fileType,
           codec: exportSettings.codec,
+          audioMix: audioMix,
           progressHandler: progressHandler
         )
       } else {
@@ -235,6 +244,7 @@ enum VideoCompositor {
           exportFPS: Double(exportFPS),
           to: outputURL,
           fileType: exportSettings.format.fileType,
+          audioMix: audioMix,
           progressHandler: progressHandler
         )
       }
@@ -261,6 +271,9 @@ enum VideoCompositor {
     }
 
     exportSession.timeRange = CMTimeRange(start: .zero, duration: effectiveTrim.duration)
+    if let audioMix = buildAudioMix(for: composition, sources: audioSources) {
+      exportSession.audioMix = audioMix
+    }
     try await runExport(exportSession, to: outputURL, fileType: exportSettings.format.fileType, progressHandler: progressHandler)
 
     let destination = await MainActor.run {
@@ -314,6 +327,7 @@ enum VideoCompositor {
     exportFPS: Double,
     to url: URL,
     fileType: AVFileType,
+    audioMix: AVAudioMix? = nil,
     progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)?
   ) async throws {
     nonisolated(unsafe) let reader = try AVAssetReader(asset: asset)
@@ -331,6 +345,9 @@ enum VideoCompositor {
     nonisolated(unsafe) var audioOutput: AVAssetReaderAudioMixOutput?
     if !audioTracks.isEmpty {
       let aOutput = AVAssetReaderAudioMixOutput(audioTracks: audioTracks, audioSettings: nil)
+      if let audioMix {
+        aOutput.audioMix = audioMix
+      }
       reader.add(aOutput)
       audioOutput = aOutput
     }
@@ -599,6 +616,7 @@ enum VideoCompositor {
     outputURL: URL,
     fileType: AVFileType,
     codec: ExportCodec,
+    audioMix: AVAudioMix? = nil,
     progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)?
   ) async throws {
     let reader = try AVAssetReader(asset: composition)
@@ -635,16 +653,17 @@ enum VideoCompositor {
     let audioTracks = composition.tracks(withMediaType: .audio)
 
     var audioReader: AVAssetReader?
-    var audioOutputs: [AVAssetReaderTrackOutput] = []
+    var audioOutput: AVAssetReaderAudioMixOutput?
     if !audioTracks.isEmpty {
       let aReader = try AVAssetReader(asset: composition)
       aReader.timeRange = CMTimeRange(start: .zero, duration: trimDuration)
-      for track in audioTracks {
-        let output = AVAssetReaderTrackOutput(track: track, outputSettings: nil)
-        output.alwaysCopiesSampleData = false
-        aReader.add(output)
-        audioOutputs.append(output)
+      let mixOutput = AVAssetReaderAudioMixOutput(audioTracks: audioTracks, audioSettings: nil)
+      if let audioMix {
+        mixOutput.audioMix = audioMix
       }
+      mixOutput.alwaysCopiesSampleData = false
+      aReader.add(mixOutput)
+      audioOutput = mixOutput
       audioReader = aReader
     }
 
@@ -689,17 +708,20 @@ enum VideoCompositor {
     )
     assetWriter.add(videoInput)
 
-    var audioInputs: [AVAssetWriterInput] = []
-    for track in audioTracks {
-      let formatHint = track.formatDescriptions.first.map { $0 as! CMFormatDescription }
-      let audioInput = AVAssetWriterInput(
+    var audioWriterInput: AVAssetWriterInput?
+    if !audioTracks.isEmpty {
+      let aInput = AVAssetWriterInput(
         mediaType: .audio,
-        outputSettings: nil,
-        sourceFormatHint: formatHint
+        outputSettings: [
+          AVFormatIDKey: kAudioFormatMPEG4AAC,
+          AVNumberOfChannelsKey: 2,
+          AVSampleRateKey: 44100,
+          AVEncoderBitRateKey: 128_000,
+        ]
       )
-      audioInput.expectsMediaDataInRealTime = false
-      assetWriter.add(audioInput)
-      audioInputs.append(audioInput)
+      aInput.expectsMediaDataInRealTime = false
+      assetWriter.add(aInput)
+      audioWriterInput = aInput
     }
 
     reader.startReading()
@@ -733,8 +755,8 @@ enum VideoCompositor {
     nonisolated(unsafe) let pipelineScreenOutput = screenOutput
     nonisolated(unsafe) let pipelineWebcamOutput = webcamOutput
     nonisolated(unsafe) let pipelineAudioReader = audioReader
-    nonisolated(unsafe) let pipelineAudioOutputs = audioOutputs
-    nonisolated(unsafe) let pipelineAudioInputs = audioInputs
+    nonisolated(unsafe) let pipelineAudioOutput = audioOutput
+    nonisolated(unsafe) let pipelineAudioWriterInput = audioWriterInput
     nonisolated(unsafe) let pipelineOutputPool = outputPool
     nonisolated(unsafe) let pipelineWriter = assetWriter
     nonisolated(unsafe) let pipelineVideoInput = videoInput
@@ -748,34 +770,31 @@ enum VideoCompositor {
       try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, any Error>) in
         DispatchQueue.global(qos: .userInitiated).async {
           let audioGroup = DispatchGroup()
-          if pipelineAudioReader?.status == .reading {
-            for i in 0..<pipelineAudioOutputs.count {
-              nonisolated(unsafe) let aOut = pipelineAudioOutputs[i]
-              nonisolated(unsafe) let aIn = pipelineAudioInputs[i]
-              audioGroup.enter()
-
-              let audioQueue = DispatchQueue(label: "eu.jankuri.reframed.audio-\(i)")
-              aIn.requestMediaDataWhenReady(on: audioQueue) {
-                while aIn.isReadyForMoreMediaData {
-                  if cancelled.pointee {
-                    aIn.markAsFinished()
-                    audioGroup.leave()
-                    return
-                  }
-                  if let sample = aOut.copyNextSampleBuffer() {
-                    aIn.append(sample)
-                  } else {
-                    aIn.markAsFinished()
-                    audioGroup.leave()
-                    break
-                  }
+          if let aOut = pipelineAudioOutput, let aIn = pipelineAudioWriterInput,
+            pipelineAudioReader?.status == .reading
+          {
+            nonisolated(unsafe) let safeAudioOutput = aOut
+            nonisolated(unsafe) let safeAudioInput = aIn
+            audioGroup.enter()
+            let audioQueue = DispatchQueue(label: "eu.jankuri.reframed.audio")
+            safeAudioInput.requestMediaDataWhenReady(on: audioQueue) {
+              while safeAudioInput.isReadyForMoreMediaData {
+                if cancelled.pointee {
+                  safeAudioInput.markAsFinished()
+                  audioGroup.leave()
+                  return
+                }
+                if let sample = safeAudioOutput.copyNextSampleBuffer() {
+                  safeAudioInput.append(sample)
+                } else {
+                  safeAudioInput.markAsFinished()
+                  audioGroup.leave()
+                  break
                 }
               }
             }
           } else {
-            for audioInput in pipelineAudioInputs {
-              audioInput.markAsFinished()
-            }
+            pipelineAudioWriterInput?.markAsFinished()
           }
 
           let sem = DispatchSemaphore(value: maxInFlight)
@@ -968,5 +987,31 @@ enum VideoCompositor {
         try compTrack?.insertTimeRange(sourceRange, of: audioTrack, at: insertionTime)
       }
     }
+  }
+
+  private static func buildAudioMix(
+    for composition: AVComposition,
+    sources: [AudioSource]
+  ) -> AVMutableAudioMix? {
+    let audioTracks = composition.tracks(withMediaType: .audio)
+    guard !audioTracks.isEmpty else { return nil }
+
+    let needsMix = sources.contains { $0.volume != 1.0 }
+    guard needsMix else { return nil }
+
+    let mix = AVMutableAudioMix()
+    var params: [AVMutableAudioMixInputParameters] = []
+
+    for (index, track) in audioTracks.enumerated() {
+      guard index < sources.count else { break }
+      let source = sources[index]
+      let inputParams = AVMutableAudioMixInputParameters(track: track)
+      inputParams.trackID = track.trackID
+      inputParams.setVolume(source.volume, at: .zero)
+      params.append(inputParams)
+    }
+
+    mix.inputParameters = params
+    return mix
   }
 }

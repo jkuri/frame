@@ -1,0 +1,66 @@
+import SwiftUI
+
+extension PropertiesPanel {
+  var audioSection: some View {
+    VStack(alignment: .leading, spacing: Layout.sectionSpacing) {
+      if editorState.hasSystemAudio {
+        systemAudioSection
+      }
+      if editorState.hasMicAudio {
+        micAudioSection
+      }
+    }
+  }
+
+  private var systemAudioSection: some View {
+    VStack(alignment: .leading, spacing: Layout.itemSpacing) {
+      sectionHeader(icon: "speaker.wave.2", title: "System Audio")
+
+      toggleRow("Mute", isOn: $editorState.systemAudioMuted)
+        .onChange(of: editorState.systemAudioMuted) { _, _ in
+          editorState.syncAudioVolumes()
+        }
+
+      SliderRow(
+        label: "Volume",
+        labelWidth: Layout.labelWidth,
+        value: $editorState.systemAudioVolume,
+        range: 0...2,
+        step: 0.01,
+        formattedValue: "\(Int(editorState.systemAudioVolume * 100))%",
+        valueWidth: 40
+      )
+      .onChange(of: editorState.systemAudioVolume) { _, _ in
+        editorState.syncAudioVolumes()
+      }
+      .opacity(editorState.systemAudioMuted ? 0.4 : 1.0)
+      .disabled(editorState.systemAudioMuted)
+    }
+  }
+
+  private var micAudioSection: some View {
+    VStack(alignment: .leading, spacing: Layout.itemSpacing) {
+      sectionHeader(icon: "mic", title: "Microphone")
+
+      toggleRow("Mute", isOn: $editorState.micAudioMuted)
+        .onChange(of: editorState.micAudioMuted) { _, _ in
+          editorState.syncAudioVolumes()
+        }
+
+      SliderRow(
+        label: "Volume",
+        labelWidth: Layout.labelWidth,
+        value: $editorState.micAudioVolume,
+        range: 0...2,
+        step: 0.01,
+        formattedValue: "\(Int(editorState.micAudioVolume * 100))%",
+        valueWidth: 40
+      )
+      .onChange(of: editorState.micAudioVolume) { _, _ in
+        editorState.syncAudioVolumes()
+      }
+      .opacity(editorState.micAudioMuted ? 0.4 : 1.0)
+      .disabled(editorState.micAudioMuted)
+    }
+  }
+}

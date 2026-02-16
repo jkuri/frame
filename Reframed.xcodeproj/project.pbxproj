@@ -131,6 +131,7 @@
 		A10000000000000000000043 /* ShortcutCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000043 /* ShortcutCaptureView.swift */; };
 		A9000000000000000000000C /* CursorSmoothing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9000000000000000000000C /* CursorSmoothing.swift */; };
 		A20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift */; };
+		A20000000000000000000021 /* PropertiesPanel+AudioTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000021 /* PropertiesPanel+AudioTab.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -260,6 +261,7 @@
 		B10000000000000000000043 /* ShortcutCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutCaptureView.swift; sourceTree = "<group>"; };
 		B9000000000000000000000C /* CursorSmoothing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorSmoothing.swift; sourceTree = "<group>"; };
 		B20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+AnimationsTab.swift"; sourceTree = "<group>"; };
+		B20000000000000000000021 /* PropertiesPanel+AudioTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+AudioTab.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -526,6 +528,7 @@
 				B2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift */,
 				B9000000000000000000000C /* CursorSmoothing.swift */,
 				B20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift */,
+				B20000000000000000000021 /* PropertiesPanel+AudioTab.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -736,6 +739,7 @@
 				A10000000000000000000043 /* ShortcutCaptureView.swift in Sources */,
 				A9000000000000000000000C /* CursorSmoothing.swift in Sources */,
 				A20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift in Sources */,
+				A20000000000000000000021 /* PropertiesPanel+AudioTab.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */
