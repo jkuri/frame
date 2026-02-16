@@ -208,9 +208,9 @@ struct EditorView: View {
 
         VideoPreviewView(
           screenPlayer: editorState.playerController.screenPlayer,
-          webcamPlayer: editorState.playerController.webcamPlayer,
+          webcamPlayer: editorState.webcamEnabled ? editorState.playerController.webcamPlayer : nil,
           cameraLayout: $editorState.cameraLayout,
-          webcamSize: editorState.result.webcamSize,
+          webcamSize: editorState.webcamEnabled ? editorState.result.webcamSize : nil,
           screenSize: screenSize,
           canvasSize: editorState.canvasSize(for: screenSize),
           padding: editorState.padding,
@@ -230,7 +230,8 @@ struct EditorView: View {
           zoomFollowCursor: editorState.zoomFollowCursor,
           currentTime: CMTimeGetSeconds(editorState.currentTime),
           zoomTimeline: editorState.zoomTimeline,
-          cameraFullscreenRegions: editorState.cameraFullscreenRegions.map { (start: $0.startSeconds, end: $0.endSeconds) }
+          cameraFullscreenRegions: editorState.webcamEnabled
+            ? editorState.cameraFullscreenRegions.map { (start: $0.startSeconds, end: $0.endSeconds) } : []
         )
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)

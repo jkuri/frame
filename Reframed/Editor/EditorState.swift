@@ -134,6 +134,8 @@ final class EditorState {
   var micNoiseReductionEnabled: Bool = false
   var micNoiseReductionIntensity: Float = 0.5
 
+  var webcamEnabled: Bool = true
+
   var hasSystemAudio: Bool { result.systemAudioURL != nil }
   var hasMicAudio: Bool { result.microphoneAudioURL != nil }
 
@@ -162,6 +164,7 @@ final class EditorState {
       self.videoShadow = saved.videoShadow ?? 0
       self.cameraShadow = saved.cameraShadow ?? 0
       self.cameraLayout = saved.cameraLayout
+      self.webcamEnabled = saved.webcamEnabled ?? true
     }
   }
 
@@ -559,9 +562,25 @@ final class EditorState {
       )
     }
 
+    let exportResult: RecordingResult
+    if webcamEnabled {
+      exportResult = result
+    } else {
+      exportResult = RecordingResult(
+        screenVideoURL: result.screenVideoURL,
+        webcamVideoURL: nil,
+        systemAudioURL: result.systemAudioURL,
+        microphoneAudioURL: result.microphoneAudioURL,
+        cursorMetadataURL: result.cursorMetadataURL,
+        screenSize: result.screenSize,
+        webcamSize: nil,
+        fps: result.fps
+      )
+    }
+
     let state = self
     let url = try await VideoCompositor.export(
-      result: result,
+      result: exportResult,
       cameraLayout: cameraLayout,
       cameraAspect: cameraAspect,
       trimRange: CMTimeRange(start: trimStart, end: trimEnd),
@@ -705,6 +724,7 @@ final class EditorState {
       videoShadow: videoShadow,
       cameraShadow: cameraShadow,
       cameraLayout: cameraLayout,
+      webcamEnabled: webcamEnabled,
       cursorSettings: cursorSettings,
       zoomSettings: zoomSettings,
       animationSettings: animationSettings,
@@ -865,6 +885,7 @@ final class EditorState {
       _ = self.videoShadow
       _ = self.cameraShadow
       _ = self.cameraLayout
+      _ = self.webcamEnabled
       _ = self.showCursor
       _ = self.cursorStyle
       _ = self.cursorSize

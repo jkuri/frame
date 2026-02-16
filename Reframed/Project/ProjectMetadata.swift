@@ -68,6 +68,7 @@ struct EditorStateData: Codable, Sendable {
   var videoShadow: CGFloat?
   var cameraShadow: CGFloat?
   var cameraLayout: CameraLayout
+  var webcamEnabled: Bool?
   var cursorSettings: CursorSettingsData?
   var zoomSettings: ZoomSettingsData?
   var animationSettings: AnimationSettingsData?
