@@ -28,6 +28,7 @@ struct VideoPreviewView: NSViewRepresentable {
   var currentTime: Double = 0
   var zoomTimeline: ZoomTimeline?
   var cameraFullscreenRegions: [(start: Double, end: Double)] = []
+  var processedWebcamFrame: CGImage?
 
   func makeNSView(context: Context) -> VideoPreviewContainer {
     let container = VideoPreviewContainer()
@@ -43,6 +44,7 @@ struct VideoPreviewView: NSViewRepresentable {
   func updateNSView(_ nsView: VideoPreviewContainer, context: Context) {
     let isFullscreen = cameraFullscreenRegions.contains { currentTime >= $0.start && currentTime <= $0.end }
     nsView.isCameraFullscreen = isFullscreen
+    nsView.updateProcessedWebcamFrame(processedWebcamFrame)
 
     nsView.updateCameraLayout(
       cameraLayout,
@@ -120,6 +122,7 @@ struct VideoPreviewView: NSViewRepresentable {
 final class VideoPreviewContainer: NSView {
   let screenPlayerLayer = AVPlayerLayer()
   let webcamPlayerLayer = AVPlayerLayer()
+  private let processedWebcamLayer = CALayer()
   private let webcamWrapper = NSView()
   private let webcamView = WebcamCameraView()
   private let cursorOverlay = CursorOverlayLayer()
@@ -174,6 +177,11 @@ final class VideoPreviewContainer: NSView {
     webcamPlayerLayer.videoGravity = .resizeAspectFill
     webcamView.layer?.addSublayer(webcamPlayerLayer)
     webcamPlayerLayer.isHidden = true
+
+    processedWebcamLayer.contentsGravity = .resizeAspectFill
+    processedWebcamLayer.masksToBounds = true
+    processedWebcamLayer.isHidden = true
+    webcamView.layer?.addSublayer(processedWebcamLayer)
 
     webcamWrapper.addSubview(webcamView)
     addSubview(webcamWrapper)
@@ -299,6 +307,21 @@ final class VideoPreviewContainer: NSView {
     )
   }
 
+  func updateProcessedWebcamFrame(_ frame: CGImage?) {
+    CATransaction.begin()
+    CATransaction.setDisableActions(true)
+    if let frame {
+      processedWebcamLayer.isHidden = false
+      processedWebcamLayer.contents = frame
+      webcamPlayerLayer.isHidden = true
+    } else {
+      processedWebcamLayer.isHidden = true
+      processedWebcamLayer.contents = nil
+      webcamPlayerLayer.isHidden = false
+    }
+    CATransaction.commit()
+  }
+
   func updateZoomRect(_ rect: CGRect) {
     CATransaction.begin()
     CATransaction.setDisableActions(true)
@@ -400,6 +423,7 @@ final class VideoPreviewContainer: NSView {
       webcamPlayerLayer.setAffineTransform(
         currentCameraMirrored ? CGAffineTransform(scaleX: -1, y: 1) : .identity
       )
+      processedWebcamLayer.frame = webcamView.bounds
       CATransaction.commit()
       return
     }
@@ -432,6 +456,7 @@ final class VideoPreviewContainer: NSView {
     webcamPlayerLayer.setAffineTransform(
       currentCameraMirrored ? CGAffineTransform(scaleX: -1, y: 1) : .identity
     )
+    processedWebcamLayer.frame = webcamView.bounds
 
     if currentCameraShadow > 0 {
       let camBlur = minDim * currentCameraShadow / 2000.0

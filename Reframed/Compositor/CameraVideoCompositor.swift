@@ -1,5 +1,7 @@
 import AVFoundation
+import CoreImage
 import CoreVideo
+import Vision
 
 final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendable {
   var sourcePixelBufferAttributes: [String: any Sendable]? {
@@ -234,14 +236,31 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
         $0.containsTime(compositionTime)
       }
 
-      if let webcamImage = createImage(from: webcamBuffer, colorSpace: colorSpace) {
+      let rawWebcamImage = createImage(from: webcamBuffer, colorSpace: colorSpace)
+      var mirrorHandledBySegmentation = false
+      let webcamImage: CGImage? = {
+        guard let raw = rawWebcamImage else { return nil }
+        if case .none = instruction.cameraBackgroundStyle { return raw }
+        if let segmented = processWebcamSegmentation(
+          webcamBuffer: webcamBuffer,
+          webcamImage: raw,
+          instruction: instruction,
+          colorSpace: colorSpace
+        ) {
+          mirrorHandledBySegmentation = true
+          return segmented
+        }
+        return raw
+      }()
+
+      if let webcamImage {
         if isCamFullscreen {
           let fullRect = CGRect(x: 0, y: 0, width: width, height: height)
           let webcamAspect = CGSize(width: webcamImage.width, height: webcamImage.height)
           let fitRect = AVMakeRect(aspectRatio: webcamAspect, insideRect: fullRect)
           context.saveGState()
           drawBackground(in: context, rect: fullRect, instruction: instruction, colorSpace: colorSpace)
-          if instruction.cameraMirrored {
+          if instruction.cameraMirrored && !mirrorHandledBySegmentation {
             context.translateBy(x: fitRect.midX, y: 0)
             context.scaleBy(x: -1, y: 1)
             context.translateBy(x: -fitRect.midX, y: 0)
@@ -302,7 +321,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
             context.saveGState()
             context.addPath(innerPath)
             context.clip()
-            if instruction.cameraMirrored {
+            if instruction.cameraMirrored && !mirrorHandledBySegmentation {
               context.translateBy(x: insetRect.midX, y: 0)
               context.scaleBy(x: -1, y: 1)
               context.translateBy(x: -insetRect.midX, y: 0)
@@ -320,7 +339,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
             context.saveGState()
             context.addPath(path)
             context.clip()
-            if instruction.cameraMirrored {
+            if instruction.cameraMirrored && !mirrorHandledBySegmentation {
               context.translateBy(x: drawRect.midX, y: 0)
               context.scaleBy(x: -1, y: 1)
               context.translateBy(x: -drawRect.midX, y: 0)
@@ -332,6 +351,64 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
         }
       }
     }
+  }
+
+  private static func processWebcamSegmentation(
+    webcamBuffer: CVPixelBuffer,
+    webcamImage: CGImage,
+    instruction: CompositionInstruction,
+    colorSpace: CGColorSpace
+  ) -> CGImage? {
+    let request = VNGeneratePersonSegmentationRequest()
+    request.qualityLevel = .accurate
+
+    let handler = VNImageRequestHandler(cvPixelBuffer: webcamBuffer, options: [:])
+    try? handler.perform([request])
+
+    guard let maskBuffer = request.results?.first?.pixelBuffer else { return nil }
+
+    let ciContext = CIContext(options: [.useSoftwareRenderer: false])
+    let foreground = CIImage(cvPixelBuffer: webcamBuffer)
+    let maskImage = CIImage(cvPixelBuffer: maskBuffer).resized(to: foreground.extent.size)
+    let size = foreground.extent.size
+
+    let background: CIImage
+    switch instruction.cameraBackgroundStyle {
+    case .none:
+      return nil
+    case .transparent:
+      background = CIImage(color: CIColor(red: 0, green: 0, blue: 0, alpha: 0)).cropped(to: foreground.extent)
+    case .solidColor(let color):
+      background = CIImage(color: CIColor(red: color.r, green: color.g, blue: color.b, alpha: color.a)).cropped(to: foreground.extent)
+    case .gradient(let id):
+      if let grad = CIImage.renderGradientCIImage(presetId: id, size: size) {
+        background = grad
+      } else {
+        background = CIImage(color: CIColor.black).cropped(to: foreground.extent)
+      }
+    case .image:
+      if let bgCGImage = instruction.cameraBackgroundImage {
+        background = CIImage(cgImage: bgCGImage).resizedToFill(size)
+      } else {
+        background = CIImage(color: CIColor.black).cropped(to: foreground.extent)
+      }
+    }
+
+    guard let blendFilter = CIFilter(name: "CIBlendWithMask") else { return nil }
+    blendFilter.setValue(foreground, forKey: kCIInputImageKey)
+    blendFilter.setValue(background, forKey: kCIInputBackgroundImageKey)
+    blendFilter.setValue(maskImage, forKey: kCIInputMaskImageKey)
+
+    guard var output = blendFilter.outputImage else { return nil }
+
+    if instruction.cameraMirrored {
+      output =
+        output
+        .transformed(by: CGAffineTransform(scaleX: -1, y: 1))
+        .transformed(by: CGAffineTransform(translationX: size.width, y: 0))
+    }
+
+    return ciContext.createCGImage(output, from: output.extent)
   }
 
   private static func aspectFillRect(imageSize: CGSize, in rect: CGRect) -> CGRect {

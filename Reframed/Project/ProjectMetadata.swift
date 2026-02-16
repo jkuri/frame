@@ -77,6 +77,7 @@ struct EditorStateData: Codable, Sendable {
   var systemAudioRegions: [AudioRegionData]?
   var micAudioRegions: [AudioRegionData]?
   var cameraFullscreenRegions: [AudioRegionData]?
+  var cameraBackgroundStyle: CameraBackgroundStyle?
 }
 
 struct CodableSize: Codable, Sendable {

@@ -67,6 +67,8 @@ extension PropertiesPanel {
           range: 0...100,
           formattedValue: "\(Int(editorState.cameraShadow))"
         )
+
+        cameraBackgroundSection
       }
       .disabled(!editorState.webcamEnabled)
       .opacity(editorState.webcamEnabled ? 1 : 0.5)

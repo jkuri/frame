@@ -232,7 +232,8 @@ struct EditorView: View {
           currentTime: CMTimeGetSeconds(editorState.currentTime),
           zoomTimeline: editorState.zoomTimeline,
           cameraFullscreenRegions: editorState.webcamEnabled
-            ? editorState.cameraFullscreenRegions.map { (start: $0.startSeconds, end: $0.endSeconds) } : []
+            ? editorState.cameraFullscreenRegions.map { (start: $0.startSeconds, end: $0.endSeconds) } : [],
+          processedWebcamFrame: editorState.latestProcessedWebcamFrame
         )
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
