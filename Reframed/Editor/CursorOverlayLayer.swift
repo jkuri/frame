@@ -56,20 +56,21 @@ final class CursorOverlayLayer: CALayer {
 
     cursorLayer.isHidden = false
 
+    let pad = size * 0.5
     let cursorRect: CGRect
     if style.isCentered {
       cursorRect = CGRect(
-        x: pixelPosition.x - size * 0.75,
-        y: pixelPosition.y - size * 0.75,
-        width: size * 1.5,
-        height: size * 1.5
+        x: pixelPosition.x - size - pad,
+        y: pixelPosition.y - size - pad,
+        width: (size + pad) * 2,
+        height: (size + pad) * 2
       )
     } else {
       cursorRect = CGRect(
-        x: pixelPosition.x,
-        y: pixelPosition.y - size * 1.5,
-        width: size * 1.5,
-        height: size * 1.5
+        x: pixelPosition.x - pad,
+        y: pixelPosition.y - size * 1.5 - pad,
+        width: size * 1.5 + pad * 2,
+        height: size * 1.5 + pad * 2
       )
     }
     cursorLayer.frame = cursorRect
@@ -78,8 +79,9 @@ final class CursorOverlayLayer: CALayer {
     cursorLayer.contentsScale = scale
     let imgW = Int(cursorRect.width * scale)
     let imgH = Int(cursorRect.height * scale)
+    let padPx = pad * scale
 
-    if let cgImage = renderCursorImage(style: style, size: size * scale, width: imgW, height: imgH) {
+    if let cgImage = renderCursorImage(style: style, size: size * scale, padPx: padPx, width: imgW, height: imgH) {
       cursorLayer.contents = cgImage
     }
 
@@ -91,6 +93,7 @@ final class CursorOverlayLayer: CALayer {
   private func renderCursorImage(
     style: CursorStyle,
     size: CGFloat,
+    padPx: CGFloat,
     width: Int,
     height: Int
   )
@@ -118,7 +121,7 @@ final class CursorOverlayLayer: CALayer {
     if style.isCentered {
       drawPoint = CGPoint(x: CGFloat(width) / 2, y: CGFloat(height) / 2)
     } else {
-      drawPoint = CGPoint(x: 0, y: 0)
+      drawPoint = CGPoint(x: padPx, y: padPx)
     }
     CursorRenderer.drawCursor(in: ctx, position: drawPoint, style: style, size: size, scale: 1.0)
     return ctx.makeImage()

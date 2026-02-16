@@ -279,15 +279,18 @@ final class VideoPreviewContainer: NSView {
       return (pixel, click.progress)
     }
 
+    let zoomScale: CGFloat = isZoomed ? 1.0 / zr.width : 1.0
+    let baseScale = min(scaleX, scaleY)
+
     cursorOverlay.update(
       pixelPosition: cursorPixel,
       style: style,
-      size: size * min(scaleX, scaleY),
+      size: size * baseScale * zoomScale,
       visible: visible && cursorVisible,
       containerSize: bounds.size,
       clicks: adjustedClicks,
       highlightColor: clickHighlightColor,
-      highlightSize: clickHighlightSize * min(scaleX, scaleY)
+      highlightSize: clickHighlightSize * baseScale * zoomScale
     )
   }
 

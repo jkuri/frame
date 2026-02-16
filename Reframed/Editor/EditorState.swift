@@ -118,9 +118,14 @@ final class EditorState {
   var zoomFollowCursor: Bool = true
   var zoomLevel: Double = 2.0
   var zoomTransitionSpeed: Double = 1.0
-  var zoomDwellThreshold: Double = 2.5
+  var zoomDwellThreshold: Double = 4.0
+
+  var cursorMovementEnabled: Bool = false
+  var cursorMovementSpeed: CursorMovementSpeed = .medium
+  private(set) var smoothedCursorProvider: CursorMetadataProvider?
 
   private let logger = Logger(label: "eu.jankuri.reframed.editor-state")
+  private var pendingSaveTask: Task<Void, Never>?
 
   var isPlaying: Bool { playerController.isPlaying }
   var currentTime: CMTime { playerController.currentTime }
@@ -201,6 +206,10 @@ final class EditorState {
           zoomTimeline = ZoomTimeline(keyframes: zoomSettings.keyframes)
         }
       }
+      if let animSettings = saved.animationSettings {
+        cursorMovementEnabled = animSettings.cursorMovementEnabled
+        cursorMovementSpeed = animSettings.cursorMovementSpeed
+      }
       if let savedSysRegions = saved.systemAudioRegions, !savedSysRegions.isEmpty {
         systemAudioRegions = savedSysRegions
       }
@@ -211,9 +220,11 @@ final class EditorState {
         cameraFullscreenRegions = savedCameraRegions
       }
       syncAudioRegionsToPlayer()
+      regenerateSmoothedCursor()
     } else if hasWebcam {
       setCameraCorner(.bottomRight)
     }
+    startAutoSave()
   }
 
   func play() { playerController.play() }
@@ -492,7 +503,7 @@ final class EditorState {
       exportTask = nil
     }
 
-    let cursorSnapshot = showCursor ? cursorMetadataProvider?.makeSnapshot() : nil
+    let cursorSnapshot = showCursor ? activeCursorProvider?.makeSnapshot() : nil
 
     let sysRegions = systemAudioRegions.map {
       CMTimeRange(
@@ -624,6 +635,13 @@ final class EditorState {
         keyframes: zoomTimeline?.allKeyframes ?? []
       )
     }
+    var animationSettings: AnimationSettingsData?
+    if cursorMetadataProvider != nil {
+      animationSettings = AnimationSettingsData(
+        cursorMovementEnabled: cursorMovementEnabled,
+        cursorMovementSpeed: cursorMovementSpeed
+      )
+    }
     let data = EditorStateData(
       trimStartSeconds: CMTimeGetSeconds(trimStart),
       trimEndSeconds: CMTimeGetSeconds(trimEnd),
@@ -639,6 +657,7 @@ final class EditorState {
       cameraLayout: cameraLayout,
       cursorSettings: cursorSettings,
       zoomSettings: zoomSettings,
+      animationSettings: animationSettings,
       systemAudioRegions: systemAudioRegions.isEmpty ? nil : systemAudioRegions,
       micAudioRegions: micAudioRegions.isEmpty ? nil : micAudioRegions,
       cameraFullscreenRegions: cameraFullscreenRegions.isEmpty ? nil : cameraFullscreenRegions
@@ -748,7 +767,83 @@ final class EditorState {
     zoomTimeline = ZoomTimeline(keyframes: kfs)
   }
 
+  var activeCursorProvider: CursorMetadataProvider? {
+    cursorMovementEnabled ? smoothedCursorProvider : cursorMetadataProvider
+  }
+
+  func regenerateSmoothedCursor() {
+    guard let provider = cursorMetadataProvider else {
+      smoothedCursorProvider = nil
+      return
+    }
+    guard cursorMovementEnabled else {
+      smoothedCursorProvider = nil
+      return
+    }
+    let smoothedSamples = CursorSmoothing.smooth(
+      samples: provider.metadata.samples,
+      speed: cursorMovementSpeed
+    )
+    var smoothedMetadata = provider.metadata
+    smoothedMetadata.samples = smoothedSamples
+    smoothedCursorProvider = CursorMetadataProvider(metadata: smoothedMetadata)
+  }
+
+  func scheduleSave() {
+    pendingSaveTask?.cancel()
+    pendingSaveTask = Task {
+      try? await Task.sleep(for: .seconds(1))
+      guard !Task.isCancelled else { return }
+      saveState()
+    }
+  }
+
+  private func startAutoSave() {
+    observeChanges()
+  }
+
+  private func observeChanges() {
+    withObservationTracking {
+      _ = self.backgroundStyle
+      _ = self.canvasAspect
+      _ = self.padding
+      _ = self.videoCornerRadius
+      _ = self.cameraAspect
+      _ = self.cameraCornerRadius
+      _ = self.cameraBorderWidth
+      _ = self.videoShadow
+      _ = self.cameraShadow
+      _ = self.cameraLayout
+      _ = self.showCursor
+      _ = self.cursorStyle
+      _ = self.cursorSize
+      _ = self.showClickHighlights
+      _ = self.clickHighlightColor
+      _ = self.clickHighlightSize
+      _ = self.zoomEnabled
+      _ = self.autoZoomEnabled
+      _ = self.zoomFollowCursor
+      _ = self.zoomLevel
+      _ = self.zoomTransitionSpeed
+      _ = self.zoomDwellThreshold
+      _ = self.zoomTimeline
+      _ = self.cursorMovementEnabled
+      _ = self.cursorMovementSpeed
+      _ = self.trimStart
+      _ = self.trimEnd
+      _ = self.systemAudioRegions
+      _ = self.micAudioRegions
+      _ = self.cameraFullscreenRegions
+    } onChange: {
+      Task { @MainActor [weak self] in
+        self?.scheduleSave()
+        self?.observeChanges()
+      }
+    }
+  }
+
   func teardown() {
+    pendingSaveTask?.cancel()
     saveState()
     playerController.teardown()
   }

@@ -142,7 +142,7 @@ extension PropertiesPanel {
             label: "Speed",
             labelWidth: Layout.labelWidth,
             value: $editorState.zoomTransitionSpeed,
-            range: 0.1...2.0,
+            range: 0.1...4.0,
             step: 0.05,
             formattedValue: String(format: "%.2fs", editorState.zoomTransitionSpeed),
             valueWidth: 40
@@ -155,7 +155,7 @@ extension PropertiesPanel {
             label: "Hold",
             labelWidth: Layout.labelWidth,
             value: $editorState.zoomDwellThreshold,
-            range: 0.5...5.0,
+            range: 0.5...10.0,
             step: 0.1,
             formattedValue: String(format: "%.1fs", editorState.zoomDwellThreshold),
             valueWidth: 40

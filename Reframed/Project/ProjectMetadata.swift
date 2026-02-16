@@ -35,6 +35,11 @@ struct ZoomSettingsData: Codable, Sendable {
   var keyframes: [ZoomKeyframe]
 }
 
+struct AnimationSettingsData: Codable, Sendable {
+  var cursorMovementEnabled: Bool = false
+  var cursorMovementSpeed: CursorMovementSpeed = .medium
+}
+
 struct AudioRegionData: Codable, Sendable, Identifiable {
   var id: UUID = UUID()
   var startSeconds: Double
@@ -56,6 +61,7 @@ struct EditorStateData: Codable, Sendable {
   var cameraLayout: CameraLayout
   var cursorSettings: CursorSettingsData?
   var zoomSettings: ZoomSettingsData?
+  var animationSettings: AnimationSettingsData?
   var systemAudioRegions: [AudioRegionData]?
   var micAudioRegions: [AudioRegionData]?
   var cameraFullscreenRegions: [AudioRegionData]?

@@ -187,12 +187,16 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
         }
 
         let drawScale = flippedVideoRect.width / max(CGFloat(img.width), 1)
+        let zoomScale: CGFloat = {
+          if let zr = zoomRect, zr.width < 1.0 { return 1.0 / zr.width }
+          return 1.0
+        }()
 
         CursorRenderer.drawCursor(
           in: context,
           position: CGPoint(x: pixelX, y: pixelY),
           style: instruction.cursorStyle,
-          size: instruction.cursorSize * drawScale
+          size: instruction.cursorSize * drawScale * zoomScale
         )
 
         if instruction.showClickHighlights {
@@ -215,7 +219,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
               in: context,
               position: CGPoint(x: clickPixelX, y: clickPixelY),
               progress: progress,
-              size: instruction.clickHighlightSize * drawScale,
+              size: instruction.clickHighlightSize * drawScale * zoomScale,
               color: instruction.clickHighlightColor
             )
           }

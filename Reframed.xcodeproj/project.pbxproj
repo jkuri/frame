@@ -129,6 +129,8 @@
 		A10000000000000000000041 /* ShortcutRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000041 /* ShortcutRow.swift */; };
 		A10000000000000000000042 /* ShortcutRecorderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000042 /* ShortcutRecorderButton.swift */; };
 		A10000000000000000000043 /* ShortcutCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000043 /* ShortcutCaptureView.swift */; };
+		A9000000000000000000000C /* CursorSmoothing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9000000000000000000000C /* CursorSmoothing.swift */; };
+		A20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -256,6 +258,8 @@
 		B10000000000000000000041 /* ShortcutRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRow.swift; sourceTree = "<group>"; };
 		B10000000000000000000042 /* ShortcutRecorderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderButton.swift; sourceTree = "<group>"; };
 		B10000000000000000000043 /* ShortcutCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutCaptureView.swift; sourceTree = "<group>"; };
+		B9000000000000000000000C /* CursorSmoothing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorSmoothing.swift; sourceTree = "<group>"; };
+		B20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+AnimationsTab.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -520,6 +524,8 @@
 				B2000000000000000000001D /* PropertiesPanel+VideoTab.swift */,
 				B2000000000000000000001E /* PropertiesPanel+CameraTab.swift */,
 				B2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift */,
+				B9000000000000000000000C /* CursorSmoothing.swift */,
+				B20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -728,6 +734,8 @@
 				A10000000000000000000041 /* ShortcutRow.swift in Sources */,
 				A10000000000000000000042 /* ShortcutRecorderButton.swift in Sources */,
 				A10000000000000000000043 /* ShortcutCaptureView.swift in Sources */,
+				A9000000000000000000000C /* CursorSmoothing.swift in Sources */,
+				A20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

@@ -45,6 +45,8 @@ struct PropertiesPanel: View {
           }
         case .zoom:
           zoomSection
+        case .animations:
+          cursorMovementSection
         }
       }
       .padding(Layout.panelPadding)

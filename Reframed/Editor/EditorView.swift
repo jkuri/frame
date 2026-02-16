@@ -2,7 +2,7 @@ import CoreMedia
 import SwiftUI
 
 enum EditorTab: String, CaseIterable, Identifiable {
-  case general, video, camera, cursor, zoom
+  case general, video, camera, cursor, zoom, animations
 
   var id: String { rawValue }
 
@@ -13,6 +13,7 @@ enum EditorTab: String, CaseIterable, Identifiable {
     case .camera: "Camera"
     case .cursor: "Cursor"
     case .zoom: "Zoom"
+    case .animations: "Animate"
     }
   }
 
@@ -23,6 +24,7 @@ enum EditorTab: String, CaseIterable, Identifiable {
     case .camera: "web.camera"
     case .cursor: "cursorarrow"
     case .zoom: "plus.magnifyingglass"
+    case .animations: "wand.and.stars"
     }
   }
 }
@@ -206,7 +208,7 @@ struct EditorView: View {
           cameraBorderWidth: editorState.cameraBorderWidth,
           videoShadow: editorState.videoShadow,
           cameraShadow: editorState.cameraShadow,
-          cursorMetadataProvider: editorState.cursorMetadataProvider,
+          cursorMetadataProvider: editorState.activeCursorProvider,
           showCursor: editorState.showCursor,
           cursorStyle: editorState.cursorStyle,
           cursorSize: editorState.cursorSize,
