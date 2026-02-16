@@ -131,6 +131,8 @@ final class EditorState {
   var micAudioVolume: Float = 1.0
   var systemAudioMuted: Bool = false
   var micAudioMuted: Bool = false
+  var micNoiseReductionEnabled: Bool = false
+  var micNoiseReductionIntensity: Float = 0.5
 
   var hasSystemAudio: Bool { result.systemAudioURL != nil }
   var hasMicAudio: Bool { result.microphoneAudioURL != nil }
@@ -235,9 +237,12 @@ final class EditorState {
         micAudioVolume = audioSettings.micAudioVolume
         systemAudioMuted = audioSettings.systemAudioMuted
         micAudioMuted = audioSettings.micAudioMuted
+        micNoiseReductionEnabled = audioSettings.micNoiseReductionEnabled
+        micNoiseReductionIntensity = audioSettings.micNoiseReductionIntensity
       }
       syncAudioRegionsToPlayer()
       syncAudioVolumes()
+      syncNoiseReduction()
       regenerateSmoothedCursor()
     } else if hasWebcam {
       setCameraCorner(.bottomRight)
@@ -388,6 +393,13 @@ final class EditorState {
   func syncAudioVolumes() {
     playerController.setSystemAudioVolume(effectiveSystemAudioVolume)
     playerController.setMicAudioVolume(effectiveMicAudioVolume)
+  }
+
+  func syncNoiseReduction() {
+    playerController.setMicNoiseReduction(
+      enabled: micNoiseReductionEnabled,
+      intensity: micNoiseReductionIntensity
+    )
   }
 
   func isCameraFullscreen(at time: Double) -> Bool {
@@ -575,6 +587,8 @@ final class EditorState {
       zoomTimeline: zoomTimeline,
       systemAudioVolume: effectiveSystemAudioVolume,
       micAudioVolume: effectiveMicAudioVolume,
+      micNoiseReductionEnabled: micNoiseReductionEnabled,
+      micNoiseReductionIntensity: micNoiseReductionIntensity,
       progressHandler: { progress, eta in
         state.exportProgress = progress
         state.exportETA = eta
@@ -673,7 +687,9 @@ final class EditorState {
         systemAudioVolume: systemAudioVolume,
         micAudioVolume: micAudioVolume,
         systemAudioMuted: systemAudioMuted,
-        micAudioMuted: micAudioMuted
+        micAudioMuted: micAudioMuted,
+        micNoiseReductionEnabled: micNoiseReductionEnabled,
+        micNoiseReductionIntensity: micNoiseReductionIntensity
       )
     }
     let data = EditorStateData(
@@ -873,6 +889,8 @@ final class EditorState {
       _ = self.micAudioVolume
       _ = self.systemAudioMuted
       _ = self.micAudioMuted
+      _ = self.micNoiseReductionEnabled
+      _ = self.micNoiseReductionIntensity
     } onChange: {
       Task { @MainActor [weak self] in
         self?.scheduleSave()

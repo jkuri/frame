@@ -40,6 +40,8 @@ enum VideoCompositor {
     zoomTimeline: ZoomTimeline? = nil,
     systemAudioVolume: Float = 1.0,
     micAudioVolume: Float = 1.0,
+    micNoiseReductionEnabled: Bool = false,
+    micNoiseReductionIntensity: Float = 0.5,
     progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)? = nil
   ) async throws -> URL {
     let composition = AVMutableComposition()
@@ -65,6 +67,21 @@ enum VideoCompositor {
     )
     try compScreenTrack?.insertTimeRange(effectiveTrim, of: screenVideoTrack, at: .zero)
 
+    var processedMicURL: URL?
+    if let micURL = result.microphoneAudioURL, micNoiseReductionEnabled, micAudioVolume > 0 {
+      let tempURL = FileManager.default.temporaryDirectory
+        .appendingPathComponent("reframed-nr-\(UUID().uuidString).m4a")
+      try await AudioNoiseReducer.processFile(
+        inputURL: micURL,
+        outputURL: tempURL,
+        intensity: micNoiseReductionIntensity
+      )
+      processedMicURL = tempURL
+    }
+    defer {
+      if let url = processedMicURL { try? FileManager.default.removeItem(at: url) }
+    }
+
     var audioSources: [AudioSource] = []
     if let sysURL = result.systemAudioURL, systemAudioVolume > 0 {
       audioSources.append(
@@ -72,8 +89,13 @@ enum VideoCompositor {
       )
     }
     if let micURL = result.microphoneAudioURL, micAudioVolume > 0 {
+      let effectiveMicURL = processedMicURL ?? micURL
       audioSources.append(
-        AudioSource(url: micURL, regions: micAudioRegions ?? [effectiveTrim], volume: micAudioVolume)
+        AudioSource(
+          url: effectiveMicURL,
+          regions: micAudioRegions ?? [effectiveTrim],
+          volume: micAudioVolume
+        )
       )
     }
 

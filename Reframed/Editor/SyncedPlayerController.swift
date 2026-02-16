@@ -8,7 +8,6 @@ final class SyncedPlayerController {
   let screenPlayer: AVPlayer
   let webcamPlayer: AVPlayer?
   private let systemAudioPlayer: AVPlayer?
-  private let micAudioPlayer: AVPlayer?
   private(set) var currentTime: CMTime = .zero
   private(set) var duration: CMTime = .zero
   private(set) var isPlaying = false
@@ -17,6 +16,13 @@ final class SyncedPlayerController {
   var trimEnd: CMTime = .zero
   var systemAudioRegions: [(start: CMTime, end: CMTime)] = []
   var micAudioRegions: [(start: CMTime, end: CMTime)] = []
+
+  private var micAudioEngine: AVAudioEngine?
+  private var micPlayerNode: AVAudioPlayerNode?
+  private var micEQ: AVAudioUnitEQ?
+  private var micAudioFile: AVAudioFile?
+  private var micVolumeLevel: Float = 1.0
+  private var micIsMutedByRegion: Bool = true
 
   init(result: RecordingResult) {
     let screenAsset = AVURLAsset(url: result.screenVideoURL)
@@ -45,11 +51,42 @@ final class SyncedPlayerController {
     }
 
     if let micURL = result.microphoneAudioURL {
-      micAudioPlayer = AVPlayer(playerItem: AVPlayerItem(asset: AVURLAsset(url: micURL)))
-      micAudioPlayer?.actionAtItemEnd = .pause
-    } else {
-      micAudioPlayer = nil
+      setupMicEngine(url: micURL)
     }
+  }
+
+  private func setupMicEngine(url: URL) {
+    guard let audioFile = try? AVAudioFile(forReading: url) else { return }
+    micAudioFile = audioFile
+
+    let engine = AVAudioEngine()
+    let playerNode = AVAudioPlayerNode()
+    let eq = AVAudioUnitEQ(numberOfBands: 2)
+
+    let highPass = eq.bands[0]
+    highPass.filterType = .highPass
+    highPass.frequency = 80
+    highPass.bandwidth = 1.0
+    highPass.bypass = true
+
+    let lowPass = eq.bands[1]
+    lowPass.filterType = .lowPass
+    lowPass.frequency = 20000
+    lowPass.bandwidth = 1.0
+    lowPass.bypass = true
+
+    engine.attach(playerNode)
+    engine.attach(eq)
+
+    let format = audioFile.processingFormat
+    engine.connect(playerNode, to: eq, format: format)
+    engine.connect(eq, to: engine.mainMixerNode, format: format)
+
+    try? engine.start()
+
+    micAudioEngine = engine
+    micPlayerNode = playerNode
+    micEQ = eq
   }
 
   func loadDuration() async {
@@ -61,7 +98,8 @@ final class SyncedPlayerController {
 
   func setupTimeObserver() {
     let interval = CMTime(value: 1, timescale: 30)
-    timeObserver = screenPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
+    timeObserver = screenPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) {
+      [weak self] time in
       MainActor.assumeIsolated {
         guard let self else { return }
         self.currentTime = time
@@ -80,11 +118,12 @@ final class SyncedPlayerController {
       }
       sysPlayer.isMuted = !inRange
     }
-    if let micPlayer = micAudioPlayer {
+    if micPlayerNode != nil {
       let inRange = micAudioRegions.contains { region in
         CMTimeCompare(time, region.start) >= 0 && CMTimeCompare(time, region.end) < 0
       }
-      micPlayer.isMuted = !inRange
+      micIsMutedByRegion = !inRange
+      micPlayerNode?.volume = micIsMutedByRegion ? 0 : micVolumeLevel
     }
   }
 
@@ -96,7 +135,7 @@ final class SyncedPlayerController {
     screenPlayer.play()
     webcamPlayer?.play()
     systemAudioPlayer?.play()
-    micAudioPlayer?.play()
+    scheduleMicPlayback(from: currentTime)
     isPlaying = true
   }
 
@@ -104,7 +143,7 @@ final class SyncedPlayerController {
     screenPlayer.pause()
     webcamPlayer?.pause()
     systemAudioPlayer?.pause()
-    micAudioPlayer?.pause()
+    micPlayerNode?.stop()
     isPlaying = false
     syncAuxPlayers()
   }
@@ -115,7 +154,7 @@ final class SyncedPlayerController {
     screenPlayer.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter)
     webcamPlayer?.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter)
     systemAudioPlayer?.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter)
-    micAudioPlayer?.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter)
+    micPlayerNode?.stop()
     currentTime = time
   }
 
@@ -124,7 +163,22 @@ final class SyncedPlayerController {
   }
 
   func setMicAudioVolume(_ volume: Float) {
-    micAudioPlayer?.volume = volume
+    micVolumeLevel = volume
+    if !micIsMutedByRegion {
+      micPlayerNode?.volume = volume
+    }
+  }
+
+  func setMicNoiseReduction(enabled: Bool, intensity: Float) {
+    guard let eq = micEQ else { return }
+    let highPass = eq.bands[0]
+    let lowPass = eq.bands[1]
+    highPass.bypass = !enabled
+    lowPass.bypass = !enabled
+    if enabled {
+      highPass.frequency = 80 + (300 - 80) * intensity
+      lowPass.frequency = 20000 - (20000 - 8000) * intensity
+    }
   }
 
   func teardown() {
@@ -135,7 +189,25 @@ final class SyncedPlayerController {
     screenPlayer.pause()
     webcamPlayer?.pause()
     systemAudioPlayer?.pause()
-    micAudioPlayer?.pause()
+    micPlayerNode?.stop()
+    micAudioEngine?.stop()
+  }
+
+  private func scheduleMicPlayback(from time: CMTime) {
+    guard let playerNode = micPlayerNode, let audioFile = micAudioFile else { return }
+    playerNode.stop()
+    let sampleRate = audioFile.processingFormat.sampleRate
+    let startFrame = AVAudioFramePosition(CMTimeGetSeconds(time) * sampleRate)
+    let totalFrames = AVAudioFramePosition(audioFile.length)
+    guard startFrame < totalFrames else { return }
+    let frameCount = AVAudioFrameCount(totalFrames - startFrame)
+    playerNode.scheduleSegment(
+      audioFile,
+      startingFrame: startFrame,
+      frameCount: frameCount,
+      at: nil
+    )
+    playerNode.play()
   }
 
   private func syncAuxPlayers() {
@@ -143,6 +215,5 @@ final class SyncedPlayerController {
     let tolerance = CMTime(value: 1, timescale: 600)
     webcamPlayer?.seek(to: screenTime, toleranceBefore: tolerance, toleranceAfter: tolerance)
     systemAudioPlayer?.seek(to: screenTime, toleranceBefore: tolerance, toleranceAfter: tolerance)
-    micAudioPlayer?.seek(to: screenTime, toleranceBefore: tolerance, toleranceAfter: tolerance)
   }
 }

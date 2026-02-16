@@ -45,6 +45,8 @@ struct AudioSettingsData: Codable, Sendable {
   var micAudioVolume: Float = 1.0
   var systemAudioMuted: Bool = false
   var micAudioMuted: Bool = false
+  var micNoiseReductionEnabled: Bool = false
+  var micNoiseReductionIntensity: Float = 0.5
 }
 
 struct AudioRegionData: Codable, Sendable, Identifiable {

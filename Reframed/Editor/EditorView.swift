@@ -1,3 +1,4 @@
+import AVFoundation
 import CoreMedia
 import SwiftUI
 
@@ -36,6 +37,7 @@ struct EditorView: View {
   @State private var systemWaveformGenerator = AudioWaveformGenerator()
   @State private var micWaveformGenerator = AudioWaveformGenerator()
   @State private var selectedTab: EditorTab = .general
+  @State private var micWaveformTask: Task<Void, Never>?
   @Environment(\.colorScheme) private var colorScheme
 
   let onSave: (URL) -> Void
@@ -100,6 +102,12 @@ struct EditorView: View {
         if let url = micURL { await micWaveformGenerator.generate(from: url) }
       }()
       _ = await (sysTask, micTask)
+    }
+    .onChange(of: editorState.micNoiseReductionEnabled) { _, _ in
+      regenerateMicWaveform()
+    }
+    .onChange(of: editorState.micNoiseReductionIntensity) { _, _ in
+      regenerateMicWaveform()
     }
     .sheet(isPresented: $editorState.showExportSheet) {
       ExportSheet(isPresented: $editorState.showExportSheet, sourceFPS: editorState.result.fps) { settings in
@@ -304,6 +312,38 @@ struct EditorView: View {
     let nativeRadius: CGFloat = 10
     let scale = min(viewSize.width / max(screenSize.width, 1), viewSize.height / max(screenSize.height, 1))
     return nativeRadius * scale
+  }
+
+  private func regenerateMicWaveform() {
+    guard let url = editorState.result.microphoneAudioURL else { return }
+    micWaveformTask?.cancel()
+    micWaveformTask = Task {
+      try? await Task.sleep(for: .milliseconds(500))
+      guard !Task.isCancelled else { return }
+
+      var params: NoiseReductionParams?
+      if editorState.micNoiseReductionEnabled {
+        let intensity = editorState.micNoiseReductionIntensity
+        let highPass = 80 + (300 - 80) * intensity
+        let lowPass = 20000 - (20000 - 8000) * intensity
+        let asset = AVURLAsset(url: url)
+        let tracks = (try? await asset.loadTracks(withMediaType: .audio)) ?? []
+        var sampleRate = 44100.0
+        if let track = tracks.first,
+          let descriptions = try? await track.load(.formatDescriptions),
+          let desc = descriptions.first
+        {
+          let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(desc)
+          if let rate = asbd?.pointee.mSampleRate, rate > 0 {
+            sampleRate = rate
+          }
+        }
+        params = NoiseReductionParams(highPassFreq: highPass, lowPassFreq: lowPass, sampleRate: sampleRate)
+      }
+
+      guard !Task.isCancelled else { return }
+      await micWaveformGenerator.generate(from: url, noiseReduction: params)
+    }
   }
 
   private func handleExport(settings: ExportSettings) {

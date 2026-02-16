@@ -87,7 +87,14 @@ struct TimelineView: View {
             )
           }
 
-          if !micAudioSamples.isEmpty {
+          if let progress = micAudioProgress {
+            audioLoadingLane(
+              label: "Mic",
+              icon: "mic",
+              progress: progress,
+              accentColor: ReframedColors.micAudioColor
+            )
+          } else if !micAudioSamples.isEmpty {
             audioTrackLane(
               label: "Mic",
               icon: "mic",
@@ -99,13 +106,6 @@ struct TimelineView: View {
               }(),
               trackType: .mic,
               samples: micAudioSamples,
-              accentColor: ReframedColors.micAudioColor
-            )
-          } else if let progress = micAudioProgress {
-            audioLoadingLane(
-              label: "Mic",
-              icon: "mic",
-              progress: progress,
               accentColor: ReframedColors.micAudioColor
             )
           }
