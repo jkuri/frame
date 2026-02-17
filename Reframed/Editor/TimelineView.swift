@@ -87,7 +87,7 @@ struct TimelineView: View {
             )
           }
 
-          if !micAudioSamples.isEmpty {
+          if !micAudioSamples.isEmpty && !editorState.isMicProcessing {
             audioTrackLane(
               label: "Mic",
               icon: "mic",
@@ -106,6 +106,9 @@ struct TimelineView: View {
               label: "Mic",
               icon: "mic",
               progress: micAudioProgress ?? 0,
+              message: editorState.isMicProcessing
+                ? "Denoising… \(Int(editorState.micProcessingProgress * 100))%"
+                : nil,
               accentColor: ReframedColors.micAudioColor
             )
           }

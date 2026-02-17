@@ -136,6 +136,7 @@
 		A20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift */; };
 		A20000000000000000000021 /* PropertiesPanel+AudioTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000021 /* PropertiesPanel+AudioTab.swift */; };
 		CA0000000000000000000002 /* CIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0000000000000000000002 /* CIImageExtensions.swift */; };
+		DB000000000000000000000A /* RNNoiseProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA000000000000000000001D /* RNNoiseProcessor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -270,6 +271,7 @@
 		B20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+AnimationsTab.swift"; sourceTree = "<group>"; };
 		B20000000000000000000021 /* PropertiesPanel+AudioTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+AudioTab.swift"; sourceTree = "<group>"; };
 		CB0000000000000000000002 /* CIImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CIImageExtensions.swift; sourceTree = "<group>"; };
+		DA000000000000000000001D /* RNNoiseProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNNoiseProcessor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -390,6 +392,7 @@
 				B40000000000000000000002 /* TimeFormatting.swift */,
 				B60000000000000000000001 /* CodableColor.swift */,
 				D90000000000000000000001 /* AudioNoiseReducer.swift */,
+				DA000000000000000000001D /* RNNoiseProcessor.swift */,
 				CB0000000000000000000002 /* CIImageExtensions.swift */,
 				B1000000000000000000003E /* KeyboardShortcut.swift */,
 			);
@@ -577,6 +580,7 @@
 			packageProductDependencies = (
 				E10000000000000000000001 /* Logging */,
 				E10000000000000000000002 /* MenuBarExtraAccess */,
+				E10000000000000000000006 /* RNNoise */,
 			);
 			productName = Reframed;
 			productReference = B1000000000000000000001B /* Reframed.app */;
@@ -608,6 +612,7 @@
 			packageReferences = (
 				E10000000000000000000003 /* XCRemoteSwiftPackageReference "swift-log" */,
 				E10000000000000000000004 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */,
+				E10000000000000000000005 /* XCRemoteSwiftPackageReference "rnnoise-spm" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = D1000000000000000000000B /* Products */;
@@ -756,6 +761,7 @@
 				A20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift in Sources */,
 				A20000000000000000000021 /* PropertiesPanel+AudioTab.swift in Sources */,
 				CA0000000000000000000002 /* CIImageExtensions.swift in Sources */,
+				DB000000000000000000000A /* RNNoiseProcessor.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */
@@ -1005,6 +1011,14 @@
 				minimumVersion = 1.2.0;
 			};
 		};
+		E10000000000000000000005 /* XCRemoteSwiftPackageReference "rnnoise-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jkuri/rnnoise-spm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1017,6 +1031,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E10000000000000000000004 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */;
 			productName = MenuBarExtraAccess;
+		};
+		E10000000000000000000006 /* RNNoise */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E10000000000000000000005 /* XCRemoteSwiftPackageReference "rnnoise-spm" */;
+			productName = RNNoise;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -2,12 +2,6 @@ import AVFoundation
 import Accelerate
 import Foundation
 
-struct NoiseReductionParams: Sendable {
-  let highPassFreq: Float
-  let lowPassFreq: Float
-  let sampleRate: Double
-}
-
 @MainActor
 @Observable
 final class AudioWaveformGenerator {
@@ -15,7 +9,7 @@ final class AudioWaveformGenerator {
   private(set) var isGenerating = false
   private(set) var progress: Double = 0
 
-  func generate(from url: URL, count: Int = 200, noiseReduction: NoiseReductionParams? = nil) async {
+  func generate(from url: URL, count: Int = 200) async {
     isGenerating = true
     progress = 0
     samples = []
@@ -27,7 +21,7 @@ final class AudioWaveformGenerator {
     }
 
     let result = await Task.detached(priority: .userInitiated) {
-      await Self.extractSamples(from: url, count: count, noiseReduction: noiseReduction, onProgress: handler)
+      await Self.extractSamples(from: url, count: count, onProgress: handler)
     }.value
 
     samples = result
@@ -37,7 +31,6 @@ final class AudioWaveformGenerator {
   nonisolated private static func extractSamples(
     from url: URL,
     count: Int,
-    noiseReduction: NoiseReductionParams? = nil,
     onProgress: (@MainActor @Sendable (Double) -> Void)? = nil
   ) async -> [Float] {
     let asset = AVURLAsset(url: url)
@@ -99,39 +92,6 @@ final class AudioWaveformGenerator {
     }
 
     guard !allSamples.isEmpty else { return [] }
-
-    if let nr = noiseReduction {
-      let n = allSamples.count
-      var floats = [Float](repeating: 0, count: n)
-      vDSP_vflt16(allSamples, 1, &floats, 1, vDSP_Length(n))
-
-      let dt = Float(1.0 / nr.sampleRate)
-
-      let hpRC = 1.0 / (2.0 * Float.pi * nr.highPassFreq)
-      let hpAlpha = hpRC / (hpRC + dt)
-      var prevX = floats[0]
-      var prevY = floats[0]
-      for i in 1..<n {
-        let x = floats[i]
-        prevY = hpAlpha * (prevY + x - prevX)
-        prevX = x
-        floats[i] = prevY
-      }
-
-      let lpRC = 1.0 / (2.0 * Float.pi * nr.lowPassFreq)
-      let lpAlpha = dt / (lpRC + dt)
-      var lpPrev = floats[0]
-      for i in 1..<n {
-        lpPrev = lpAlpha * floats[i] + (1.0 - lpAlpha) * lpPrev
-        floats[i] = lpPrev
-      }
-
-      var filtered = [Int16](repeating: 0, count: n)
-      for i in 0..<n {
-        filtered[i] = Int16(clamping: Int32(floats[i]))
-      }
-      return downsample(filtered, to: count)
-    }
 
     return downsample(allSamples, to: count)
   }

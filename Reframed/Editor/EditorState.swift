@@ -140,6 +140,11 @@ final class EditorState {
 
   var webcamEnabled: Bool = true
 
+  private(set) var processedMicAudioURL: URL?
+  private(set) var isMicProcessing: Bool = false
+  private(set) var micProcessingProgress: Double = 0
+  private var micProcessingTask: Task<Void, Never>?
+
   var hasSystemAudio: Bool { result.systemAudioURL != nil }
   var hasMicAudio: Bool { result.microphoneAudioURL != nil }
 
@@ -440,10 +445,61 @@ final class EditorState {
   }
 
   func syncNoiseReduction() {
-    playerController.setMicNoiseReduction(
-      enabled: micNoiseReductionEnabled,
-      intensity: micNoiseReductionIntensity
-    )
+    regenerateProcessedMicAudio()
+  }
+
+  func regenerateProcessedMicAudio() {
+    micProcessingTask?.cancel()
+    guard let micURL = result.microphoneAudioURL, micNoiseReductionEnabled else {
+      if let old = processedMicAudioURL {
+        try? FileManager.default.removeItem(at: old)
+        processedMicAudioURL = nil
+      }
+      isMicProcessing = false
+      if let micURL = result.microphoneAudioURL {
+        playerController.swapMicAudioFile(url: micURL)
+      }
+      return
+    }
+
+    isMicProcessing = true
+    micProcessingProgress = 0
+    let intensity = micNoiseReductionIntensity
+    let state = self
+    micProcessingTask = Task {
+      try? await Task.sleep(for: .milliseconds(500))
+      guard !Task.isCancelled else { return }
+
+      let tempURL = FileManager.default.temporaryDirectory
+        .appendingPathComponent("reframed-nr-preview-\(UUID().uuidString).m4a")
+
+      do {
+        try await RNNoiseProcessor.processFile(
+          inputURL: micURL,
+          outputURL: tempURL,
+          intensity: intensity,
+          onProgress: { progress in
+            state.micProcessingProgress = progress
+          }
+        )
+        guard !Task.isCancelled else {
+          try? FileManager.default.removeItem(at: tempURL)
+          return
+        }
+        let oldURL = processedMicAudioURL
+        processedMicAudioURL = tempURL
+        isMicProcessing = false
+        playerController.swapMicAudioFile(url: tempURL)
+        if let oldURL { try? FileManager.default.removeItem(at: oldURL) }
+      } catch {
+        guard !Task.isCancelled else {
+          try? FileManager.default.removeItem(at: tempURL)
+          return
+        }
+        isMicProcessing = false
+        logger.error("Mic noise reduction failed: \(error)")
+      }
+    }
   }
 
   func isCameraFullscreen(at time: Double) -> Bool {
@@ -975,8 +1031,14 @@ final class EditorState {
 
   func teardown() {
     pendingSaveTask?.cancel()
+    micProcessingTask?.cancel()
+    micProcessingTask = nil
     saveState()
     playerController.teardown()
+    if let url = processedMicAudioURL {
+      try? FileManager.default.removeItem(at: url)
+      processedMicAudioURL = nil
+    }
   }
 }
 

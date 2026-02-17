@@ -1,5 +1,5 @@
 {
-  "originHash" : "ef7326fbf41577e5790d3fe0fee96699ea4a556a85c082174299b6d994eca70d",
+  "originHash" : "9ecb60ae6b97f9b66bd963a9d15c0269d6f472130e4502d5665b3ae3293feb2c",
   "pins" : [
     {
       "identity" : "menubarextraaccess",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "707dff6f55217b3ef5b6be84ced3e83511d4df5c",
         "version" : "1.2.2"
+      }
+    },
+    {
+      "identity" : "rnnoise-spm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jkuri/rnnoise-spm",
+      "state" : {
+        "revision" : "7b88186f6d8ec3212713fe2f1748066b47f4b96d",
+        "version" : "1.0.0"
       }
     },
     {

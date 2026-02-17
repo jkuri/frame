@@ -1,4 +1,3 @@
-import AVFoundation
 import CoreMedia
 import SwiftUI
 
@@ -104,9 +103,13 @@ struct EditorView: View {
     }
     .onChange(of: editorState.micNoiseReductionEnabled) { _, _ in
       guard didFinishSetup else { return }
-      regenerateMicWaveform()
+      editorState.syncNoiseReduction()
     }
     .onChange(of: editorState.micNoiseReductionIntensity) { _, _ in
+      guard didFinishSetup else { return }
+      editorState.syncNoiseReduction()
+    }
+    .onChange(of: editorState.processedMicAudioURL) { _, _ in
       guard didFinishSetup else { return }
       regenerateMicWaveform()
     }
@@ -325,7 +328,9 @@ struct EditorView: View {
       systemAudioSamples: systemWaveformGenerator.samples,
       micAudioSamples: micWaveformGenerator.samples,
       systemAudioProgress: systemWaveformGenerator.isGenerating ? systemWaveformGenerator.progress : nil,
-      micAudioProgress: micWaveformGenerator.isGenerating ? micWaveformGenerator.progress : nil,
+      micAudioProgress: editorState.isMicProcessing
+        ? editorState.micProcessingProgress * 0.5
+        : (micWaveformGenerator.isGenerating ? 0.5 + micWaveformGenerator.progress * 0.5 : nil),
       onScrub: { time in
         editorState.pause()
         editorState.seek(to: time)
@@ -340,34 +345,12 @@ struct EditorView: View {
   }
 
   private func regenerateMicWaveform() {
-    guard let url = editorState.result.microphoneAudioURL else { return }
+    let url = editorState.processedMicAudioURL ?? editorState.result.microphoneAudioURL
+    guard let url else { return }
     micWaveformTask?.cancel()
     micWaveformTask = Task {
-      try? await Task.sleep(for: .milliseconds(500))
       guard !Task.isCancelled else { return }
-
-      var params: NoiseReductionParams?
-      if editorState.micNoiseReductionEnabled {
-        let intensity = editorState.micNoiseReductionIntensity
-        let highPass = 80 + (300 - 80) * intensity
-        let lowPass = 20000 - (20000 - 8000) * intensity
-        let asset = AVURLAsset(url: url)
-        let tracks = (try? await asset.loadTracks(withMediaType: .audio)) ?? []
-        var sampleRate = 44100.0
-        if let track = tracks.first,
-          let descriptions = try? await track.load(.formatDescriptions),
-          let desc = descriptions.first
-        {
-          let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(desc)
-          if let rate = asbd?.pointee.mSampleRate, rate > 0 {
-            sampleRate = rate
-          }
-        }
-        params = NoiseReductionParams(highPassFreq: highPass, lowPassFreq: lowPass, sampleRate: sampleRate)
-      }
-
-      guard !Task.isCancelled else { return }
-      await micWaveformGenerator.generate(from: url, noiseReduction: params)
+      await micWaveformGenerator.generate(from: url)
     }
   }
 

@@ -63,9 +63,6 @@ extension PropertiesPanel {
       .disabled(editorState.micAudioMuted)
 
       toggleRow("Noise Reduction", isOn: $editorState.micNoiseReductionEnabled)
-        .onChange(of: editorState.micNoiseReductionEnabled) { _, _ in
-          editorState.syncNoiseReduction()
-        }
         .opacity(editorState.micAudioMuted ? 0.4 : 1.0)
         .disabled(editorState.micAudioMuted)
 
@@ -79,9 +76,6 @@ extension PropertiesPanel {
           formattedValue: "\(Int(editorState.micNoiseReductionIntensity * 100))%",
           valueWidth: 40
         )
-        .onChange(of: editorState.micNoiseReductionIntensity) { _, _ in
-          editorState.syncNoiseReduction()
-        }
         .opacity(editorState.micAudioMuted ? 0.4 : 1.0)
         .disabled(editorState.micAudioMuted)
       }

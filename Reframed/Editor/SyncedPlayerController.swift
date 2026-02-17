@@ -19,7 +19,6 @@ final class SyncedPlayerController {
 
   private var micAudioEngine: AVAudioEngine?
   private var micPlayerNode: AVAudioPlayerNode?
-  private var micEQ: AVAudioUnitEQ?
   private var micAudioFile: AVAudioFile?
   private var micVolumeLevel: Float = 1.0
   private var micIsMutedByRegion: Bool = true
@@ -61,32 +60,36 @@ final class SyncedPlayerController {
 
     let engine = AVAudioEngine()
     let playerNode = AVAudioPlayerNode()
-    let eq = AVAudioUnitEQ(numberOfBands: 2)
-
-    let highPass = eq.bands[0]
-    highPass.filterType = .highPass
-    highPass.frequency = 80
-    highPass.bandwidth = 1.0
-    highPass.bypass = true
-
-    let lowPass = eq.bands[1]
-    lowPass.filterType = .lowPass
-    lowPass.frequency = 20000
-    lowPass.bandwidth = 1.0
-    lowPass.bypass = true
 
     engine.attach(playerNode)
-    engine.attach(eq)
 
     let format = audioFile.processingFormat
-    engine.connect(playerNode, to: eq, format: format)
-    engine.connect(eq, to: engine.mainMixerNode, format: format)
+    engine.connect(playerNode, to: engine.mainMixerNode, format: format)
 
     try? engine.start()
 
     micAudioEngine = engine
     micPlayerNode = playerNode
-    micEQ = eq
+  }
+
+  func swapMicAudioFile(url: URL) {
+    let wasPlaying = isPlaying
+    let time = currentTime
+    micPlayerNode?.stop()
+
+    guard let engine = micAudioEngine, let playerNode = micPlayerNode else { return }
+
+    engine.disconnectNodeOutput(playerNode)
+
+    guard let audioFile = try? AVAudioFile(forReading: url) else { return }
+    micAudioFile = audioFile
+
+    let format = audioFile.processingFormat
+    engine.connect(playerNode, to: engine.mainMixerNode, format: format)
+
+    if wasPlaying {
+      scheduleMicPlayback(from: time)
+    }
   }
 
   func loadDuration() async {
@@ -169,18 +172,6 @@ final class SyncedPlayerController {
     }
   }
 
-  func setMicNoiseReduction(enabled: Bool, intensity: Float) {
-    guard let eq = micEQ else { return }
-    let highPass = eq.bands[0]
-    let lowPass = eq.bands[1]
-    highPass.bypass = !enabled
-    lowPass.bypass = !enabled
-    if enabled {
-      highPass.frequency = 80 + (300 - 80) * intensity
-      lowPass.frequency = 20000 - (20000 - 8000) * intensity
-    }
-  }
-
   func teardown() {
     if let obs = timeObserver {
       screenPlayer.removeTimeObserver(obs)
@@ -193,11 +184,9 @@ final class SyncedPlayerController {
       micPlayerNode?.stop()
       engine.stop()
       if let node = micPlayerNode { engine.detach(node) }
-      if let eq = micEQ { engine.detach(eq) }
       engine.reset()
     }
     micPlayerNode = nil
-    micEQ = nil
     micAudioEngine = nil
     micAudioFile = nil
   }

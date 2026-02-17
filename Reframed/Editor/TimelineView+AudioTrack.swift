@@ -71,6 +71,7 @@ extension TimelineView {
     label: String,
     icon: String,
     progress: Double,
+    message: String? = nil,
     accentColor: Color
   ) -> some View {
     HStack(spacing: 0) {
@@ -92,7 +93,7 @@ extension TimelineView {
                 .frame(width: 100 * max(0, min(1, progress)), height: 5)
             }
 
-            Text("Generating waveform… \(Int(progress * 100))%")
+            Text(message ?? "Generating waveform… \(Int(progress * 100))%")
               .font(.system(size: 10))
               .foregroundStyle(ReframedColors.dimLabel)
           }
