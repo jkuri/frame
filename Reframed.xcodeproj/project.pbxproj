@@ -123,6 +123,8 @@
 		A1000000000000000000003A /* SliderRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003A /* SliderRow.swift */; };
 		A1000000000000000000003B /* TailwindColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003B /* TailwindColorPicker.swift */; };
 		A1000000000000000000003C /* SegmentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003C /* SegmentPicker.swift */; };
+		A10000000000000000000044 /* FullWidthSegmentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000044 /* FullWidthSegmentPicker.swift */; };
+		A10000000000000000000045 /* SwatchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000045 /* SwatchButton.swift */; };
 		A1000000000000000000003D /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003D /* Constants.swift */; };
 		A1000000000000000000003E /* KeyboardShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003E /* KeyboardShortcut.swift */; };
 		A1000000000000000000003F /* KeyboardShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003F /* KeyboardShortcutManager.swift */; };
@@ -256,6 +258,8 @@
 		B1000000000000000000003A /* SliderRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderRow.swift; sourceTree = "<group>"; };
 		B1000000000000000000003B /* TailwindColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailwindColorPicker.swift; sourceTree = "<group>"; };
 		B1000000000000000000003C /* SegmentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentPicker.swift; sourceTree = "<group>"; };
+		B10000000000000000000044 /* FullWidthSegmentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullWidthSegmentPicker.swift; sourceTree = "<group>"; };
+		B10000000000000000000045 /* SwatchButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwatchButton.swift; sourceTree = "<group>"; };
 		B1000000000000000000003E /* KeyboardShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcut.swift; sourceTree = "<group>"; };
 		B1000000000000000000003F /* KeyboardShortcutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutManager.swift; sourceTree = "<group>"; };
 		B10000000000000000000040 /* SettingsShortcutsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsShortcutsTab.swift; sourceTree = "<group>"; };
@@ -435,11 +439,13 @@
 				B1000000000000000000003A /* SliderRow.swift */,
 				B1000000000000000000003B /* TailwindColorPicker.swift */,
 				B1000000000000000000003C /* SegmentPicker.swift */,
+				B10000000000000000000044 /* FullWidthSegmentPicker.swift */,
 				B1000000000000000000003D /* Constants.swift */,
 				B10000000000000000000040 /* SettingsShortcutsTab.swift */,
 				B10000000000000000000041 /* ShortcutRow.swift */,
 				B10000000000000000000042 /* ShortcutRecorderButton.swift */,
 				B10000000000000000000043 /* ShortcutCaptureView.swift */,
+				B10000000000000000000045 /* SwatchButton.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -738,6 +744,8 @@
 				A1000000000000000000003A /* SliderRow.swift in Sources */,
 				A1000000000000000000003B /* TailwindColorPicker.swift in Sources */,
 				A1000000000000000000003C /* SegmentPicker.swift in Sources */,
+				A10000000000000000000044 /* FullWidthSegmentPicker.swift in Sources */,
+				A10000000000000000000045 /* SwatchButton.swift in Sources */,
 				A1000000000000000000003E /* KeyboardShortcut.swift in Sources */,
 				A1000000000000000000003F /* KeyboardShortcutManager.swift in Sources */,
 				A10000000000000000000040 /* SettingsShortcutsTab.swift in Sources */,

@@ -5,13 +5,11 @@ extension PropertiesPanel {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
       sectionHeader(icon: "paintbrush.fill", title: "Background")
 
-      Picker("", selection: $backgroundMode) {
-        ForEach(BackgroundMode.allCases, id: \.rawValue) { mode in
-          Text(mode.label).tag(mode)
-        }
-      }
-      .pickerStyle(.segmented)
-      .labelsHidden()
+      FullWidthSegmentPicker(
+        items: BackgroundMode.allCases,
+        label: { $0.label },
+        selection: $backgroundMode
+      )
 
       switch backgroundMode {
       case .color:
@@ -31,25 +29,16 @@ extension PropertiesPanel {
   var gradientGrid: some View {
     LazyVGrid(columns: swatchColumns, spacing: 6) {
       ForEach(GradientPresets.all) { preset in
-        Button {
+        SwatchButton(
+          fill: LinearGradient(
+            colors: preset.colors,
+            startPoint: preset.startPoint,
+            endPoint: preset.endPoint
+          ),
+          isSelected: selectedGradientId == preset.id
+        ) {
           selectedGradientId = preset.id
-        } label: {
-          RoundedRectangle(cornerRadius: 10)
-            .fill(
-              LinearGradient(
-                colors: preset.colors,
-                startPoint: preset.startPoint,
-                endPoint: preset.endPoint
-              )
-            )
-            .aspectRatio(1.0, contentMode: .fit)
-            .overlay(
-              RoundedRectangle(cornerRadius: 10)
-                .stroke(selectedGradientId == preset.id ? Color.blue : Color.clear, lineWidth: 2)
-                .padding(1)
-            )
         }
-        .buttonStyle(.plain)
       }
     }
   }
@@ -82,13 +71,11 @@ extension PropertiesPanel {
         VStack(alignment: .leading, spacing: Layout.itemSpacing) {
           sectionHeader(icon: "arrow.up.left.and.arrow.down.right", title: "Fill Mode")
 
-          Picker("", selection: $editorState.backgroundImageFillMode) {
-            ForEach(BackgroundImageFillMode.allCases) { mode in
-              Text(mode.label).tag(mode)
-            }
-          }
-          .pickerStyle(.segmented)
-          .labelsHidden()
+          FullWidthSegmentPicker(
+            items: BackgroundImageFillMode.allCases,
+            label: { $0.label },
+            selection: $editorState.backgroundImageFillMode
+          )
         }
       }
     }
@@ -97,19 +84,12 @@ extension PropertiesPanel {
   var solidColorGrid: some View {
     LazyVGrid(columns: swatchColumns, spacing: 6) {
       ForEach(TailwindColors.all) { preset in
-        Button {
+        SwatchButton(
+          fill: preset.swiftUIColor,
+          isSelected: selectedColorId == preset.id
+        ) {
           selectedColorId = preset.id
-        } label: {
-          RoundedRectangle(cornerRadius: 10)
-            .fill(preset.swiftUIColor)
-            .aspectRatio(1.0, contentMode: .fit)
-            .overlay(
-              RoundedRectangle(cornerRadius: 10)
-                .stroke(selectedColorId == preset.id ? Color.blue : Color.clear, lineWidth: 2)
-                .padding(1)
-            )
         }
-        .buttonStyle(.plain)
       }
     }
   }
@@ -131,7 +111,7 @@ extension PropertiesPanel {
 
       SliderRow(
         value: $editorState.padding,
-        range: 0...0.20,
+        range: 0...0.50,
         step: 0.01,
         formattedValue: "\(Int(editorState.padding * 100))%"
       )
@@ -155,7 +135,7 @@ extension PropertiesPanel {
 
       SliderRow(
         value: $editorState.videoCornerRadius,
-        range: 0...20,
+        range: 0...50,
         formattedValue: "\(Int(editorState.videoCornerRadius))%"
       )
     }

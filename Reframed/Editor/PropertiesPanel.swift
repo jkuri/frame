@@ -6,7 +6,8 @@ struct PropertiesPanel: View {
   let selectedTab: EditorTab
   @Environment(\.colorScheme) private var colorScheme
 
-  enum BackgroundMode: Int, CaseIterable {
+  enum BackgroundMode: Int, CaseIterable, Identifiable {
+    var id: Int { rawValue }
     case color, gradient, image
 
     var label: String {
@@ -122,10 +123,15 @@ struct PropertiesPanel: View {
             }
             .onAppear { editingProjectName = editorState.projectName }
 
-          Button("Rename") { commitProjectRename() }
-            .font(.system(size: 12, weight: .medium))
-            .disabled(isRenameDisabled)
-            .opacity(isRenameDisabled ? 0.4 : 1.0)
+          Button("Rename") {
+            commitProjectRename()
+            projectNameFocused = false
+          }
+          .font(.system(size: 12, weight: .medium))
+          .foregroundStyle(.white)
+          .background(ReframedColors.controlAccentColor)
+          .clipShape(RoundedRectangle(cornerRadius: 6))
+          .disabled(isRenameDisabled)
         }
       }
 
@@ -161,11 +167,11 @@ struct PropertiesPanel: View {
   private func infoRow(_ label: String, value: String) -> some View {
     HStack {
       Text(label)
-        .font(.system(size: 11))
+        .font(.system(size: 12))
         .foregroundStyle(ReframedColors.dimLabel)
       Spacer()
       Text(value)
-        .font(.system(size: 11, design: .monospaced))
+        .font(.system(size: 12, design: .monospaced))
         .foregroundStyle(ReframedColors.secondaryText)
     }
   }

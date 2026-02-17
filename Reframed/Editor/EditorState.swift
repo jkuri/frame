@@ -95,7 +95,7 @@ final class EditorState {
   var cameraAspect: CameraAspect = .original
   var cameraCornerRadius: CGFloat = 8
   var cameraBorderWidth: CGFloat = 0
-  var cameraBorderColor: CodableColor = CodableColor(r: 1, g: 1, b: 1, a: 0.3)
+  var cameraBorderColor: CodableColor = CodableColor(r: 0, g: 0, b: 0, a: 1)
   var videoShadow: CGFloat = 0
   var cameraShadow: CGFloat = 0
   var cameraMirrored: Bool = false
@@ -165,7 +165,7 @@ final class EditorState {
       self.cameraAspect = saved.cameraAspect ?? .original
       self.cameraCornerRadius = saved.cameraCornerRadius
       self.cameraBorderWidth = saved.cameraBorderWidth
-      self.cameraBorderColor = saved.cameraBorderColor ?? CodableColor(r: 1, g: 1, b: 1, a: 0.3)
+      self.cameraBorderColor = saved.cameraBorderColor ?? CodableColor(r: 0, g: 0, b: 0, a: 1)
       self.videoShadow = saved.videoShadow ?? 0
       self.cameraShadow = saved.cameraShadow ?? 0
       self.cameraMirrored = saved.cameraMirrored ?? false

@@ -81,7 +81,7 @@ enum ReframedColors {
   }
 
   static var dimLabel: Color {
-    isDark ? Color.white.opacity(0.4) : Color.black.opacity(0.45)
+    isDark ? Color.white.opacity(0.6) : Color.black.opacity(0.6)
   }
 
   static var textSelection: Color {

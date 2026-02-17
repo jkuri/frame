@@ -4,6 +4,7 @@ struct ExportSheet: View {
   @Binding var isPresented: Bool
   @State private var settings = ExportSettings()
   let sourceFPS: Int
+  let hasAudio: Bool
   let onExport: (ExportSettings) -> Void
 
   var body: some View {
@@ -73,14 +74,16 @@ struct ExportSheet: View {
           .labelsHidden()
         }
 
-        settingsRow(label: "Audio Bitrate (kbps)") {
-          Picker("", selection: $settings.audioBitrate) {
-            ForEach(ExportAudioBitrate.allCases) { bitrate in
-              Text(bitrate.label).tag(bitrate)
+        if hasAudio {
+          settingsRow(label: "Audio Bitrate (kbps)") {
+            Picker("", selection: $settings.audioBitrate) {
+              ForEach(ExportAudioBitrate.allCases) { bitrate in
+                Text(bitrate.label).tag(bitrate)
+              }
             }
+            .pickerStyle(.segmented)
+            .labelsHidden()
           }
-          .pickerStyle(.segmented)
-          .labelsHidden()
         }
 
         settingsRow(label: "Renderer") {

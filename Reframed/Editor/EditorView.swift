@@ -111,7 +111,12 @@ struct EditorView: View {
       regenerateMicWaveform()
     }
     .sheet(isPresented: $editorState.showExportSheet) {
-      ExportSheet(isPresented: $editorState.showExportSheet, sourceFPS: editorState.result.fps) { settings in
+      ExportSheet(
+        isPresented: $editorState.showExportSheet,
+        sourceFPS: editorState.result.fps,
+        hasAudio: (editorState.hasSystemAudio && !editorState.systemAudioMuted)
+          || (editorState.hasMicAudio && !editorState.micAudioMuted)
+      ) { settings in
         handleExport(settings: settings)
       }
     }
@@ -240,6 +245,10 @@ struct EditorView: View {
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .aspectRatio(hasEffects ? canvasAspect : screenSize.width / max(screenSize.height, 1), contentMode: .fit)
       .clipShape(RoundedRectangle(cornerRadius: hasEffects ? 0 : previewCornerRadius(screenSize: screenSize, viewSize: geo.size)))
+      .overlay(
+        RoundedRectangle(cornerRadius: hasEffects ? 0 : previewCornerRadius(screenSize: screenSize, viewSize: geo.size))
+          .stroke(ReframedColors.divider, lineWidth: 1)
+      )
       .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     .padding(.horizontal, 16)

@@ -16,25 +16,13 @@ extension PropertiesPanel {
             .font(.system(size: 12))
             .foregroundStyle(ReframedColors.secondaryText)
 
-          HStack(spacing: 4) {
-            ForEach(CursorMovementSpeed.allCases) { speed in
-              let isSelected = editorState.cursorMovementSpeed == speed
-              Button {
-                editorState.cursorMovementSpeed = speed
-                editorState.regenerateSmoothedCursor()
-              } label: {
-                Text(speed.label)
-                  .font(.system(size: 11, weight: isSelected ? .semibold : .regular))
-                  .foregroundStyle(isSelected ? ReframedColors.primaryText : ReframedColors.secondaryText)
-                  .frame(maxWidth: .infinity)
-                  .padding(.vertical, 6)
-                  .background(
-                    isSelected ? ReframedColors.selectedBackground : ReframedColors.fieldBackground,
-                    in: RoundedRectangle(cornerRadius: 6)
-                  )
-              }
-              .buttonStyle(.plain)
-            }
+          FullWidthSegmentPicker(
+            items: CursorMovementSpeed.allCases,
+            label: { $0.label },
+            selection: $editorState.cursorMovementSpeed
+          )
+          .onChange(of: editorState.cursorMovementSpeed) { _, _ in
+            editorState.regenerateSmoothedCursor()
           }
         }
 
