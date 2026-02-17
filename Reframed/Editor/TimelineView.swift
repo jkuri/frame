@@ -352,30 +352,37 @@ struct TimelineView: View {
   }
 
   private var playheadOverlay: some View {
-    GeometryReader { geo in
-      let contentWidth = geo.size.width - sidebarWidth - 8
-      let centerX = sidebarWidth + contentWidth * playheadFraction
+    SwiftUI.TimelineView(.animation(paused: !editorState.isPlaying)) { _ in
+      GeometryReader { geo in
+        let contentWidth = geo.size.width - sidebarWidth - 8
+        let fraction: Double =
+          if editorState.isPlaying {
+            max(0, min(1, CMTimeGetSeconds(editorState.playerController.screenPlayer.currentTime()) / totalSeconds))
+          } else {
+            playheadFraction
+          }
+        let centerX = sidebarWidth + contentWidth * fraction
 
-      Rectangle()
-        .fill(ReframedColors.controlAccentColor.opacity(0.9))
-        .frame(width: 2, height: geo.size.height - rulerHeight)
-        .position(x: centerX, y: rulerHeight + (geo.size.height - rulerHeight) / 2)
-        .allowsHitTesting(false)
+        Rectangle()
+          .fill(ReframedColors.controlAccentColor.opacity(0.9))
+          .frame(width: 2, height: geo.size.height - rulerHeight)
+          .position(x: centerX, y: rulerHeight + (geo.size.height - rulerHeight) / 2)
+          .allowsHitTesting(false)
 
-      RoundedRectangle(cornerRadius: 6)
-        .fill(ReframedColors.controlAccentColor.opacity(0.9))
-        .frame(width: 12, height: 32)
-        .position(x: centerX, y: rulerHeight / 2)
-        .gesture(
-          DragGesture(minimumDistance: 0)
-            .onChanged { value in
-              let x = value.location.x - sidebarWidth
-              let fraction = max(0, min(1, x / contentWidth))
-              let time = CMTime(seconds: fraction * totalSeconds, preferredTimescale: 600)
-              onScrub(time)
-            }
-        )
+        RoundedRectangle(cornerRadius: 6)
+          .fill(ReframedColors.controlAccentColor.opacity(0.9))
+          .frame(width: 12, height: 32)
+          .position(x: centerX, y: rulerHeight / 2)
+          .gesture(
+            DragGesture(minimumDistance: 0)
+              .onChanged { value in
+                let x = value.location.x - sidebarWidth
+                let fraction = max(0, min(1, x / contentWidth))
+                let time = CMTime(seconds: fraction * totalSeconds, preferredTimescale: 600)
+                onScrub(time)
+              }
+          )
+      }
     }
-    .animation(editorState.isPlaying ? .linear(duration: 1.0 / 30.0) : .none, value: playheadFraction)
   }
 }
