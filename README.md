@@ -36,6 +36,7 @@ Grab the latest `.dmg` from the [Releases](https://github.com/jkuri/reframed/rel
 - Cursor overlay with multiple styles, adjustable size, and click highlights
 - Zoom & pan with manual keyframes or auto-detection based on cursor dwell time
 - Audio region editing for system audio and microphone tracks
+- Microphone noise reduction powered by [RNNoise](https://github.com/xiph/rnnoise) (neural network spectral denoiser) with adjustable intensity
 - Transport bar with precise timestamp display (centisecond accuracy)
 - Preview mode — fullscreen canvas view toggled via button or Escape key
 - Recording info panel showing resolution, FPS, duration, and track details
