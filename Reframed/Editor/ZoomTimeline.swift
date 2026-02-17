@@ -1,7 +1,7 @@
 import CoreGraphics
 import Foundation
 
-struct ZoomKeyframe: Codable, Sendable {
+struct ZoomKeyframe: Codable, Sendable, Equatable {
   var t: Double
   var zoomLevel: Double
   var centerX: Double

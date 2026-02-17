@@ -16,7 +16,7 @@ struct ProjectMetadata: Codable, Sendable {
   var editorState: EditorStateData?
 }
 
-struct CursorSettingsData: Codable, Sendable {
+struct CursorSettingsData: Codable, Sendable, Equatable {
   var showCursor: Bool
   var cursorStyleRaw: Int
   var cursorSize: CGFloat
@@ -25,7 +25,7 @@ struct CursorSettingsData: Codable, Sendable {
   var clickHighlightSize: CGFloat = 36
 }
 
-struct ZoomSettingsData: Codable, Sendable {
+struct ZoomSettingsData: Codable, Sendable, Equatable {
   var zoomEnabled: Bool = false
   var autoZoomEnabled: Bool
   var zoomFollowCursor: Bool = true
@@ -35,12 +35,12 @@ struct ZoomSettingsData: Codable, Sendable {
   var keyframes: [ZoomKeyframe]
 }
 
-struct AnimationSettingsData: Codable, Sendable {
+struct AnimationSettingsData: Codable, Sendable, Equatable {
   var cursorMovementEnabled: Bool = false
   var cursorMovementSpeed: CursorMovementSpeed = .medium
 }
 
-struct AudioSettingsData: Codable, Sendable {
+struct AudioSettingsData: Codable, Sendable, Equatable {
   var systemAudioVolume: Float = 1.0
   var micAudioVolume: Float = 1.0
   var systemAudioMuted: Bool = false

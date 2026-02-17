@@ -38,6 +38,7 @@ struct EditorView: View {
   @State private var selectedTab: EditorTab = .general
   @State private var micWaveformTask: Task<Void, Never>?
   @State private var didFinishSetup = false
+  @State private var showHistoryPopover = false
   @Environment(\.colorScheme) private var colorScheme
 
   let onSave: (URL) -> Void
@@ -307,6 +308,17 @@ struct EditorView: View {
         .foregroundStyle(ReframedColors.secondaryText)
 
       Spacer()
+
+      Button(action: { showHistoryPopover.toggle() }) {
+        Image(systemName: "clock.arrow.circlepath")
+          .font(.system(size: 14))
+          .frame(width: 28, height: 28)
+      }
+      .buttonStyle(.plain)
+      .foregroundStyle(ReframedColors.primaryText)
+      .popover(isPresented: $showHistoryPopover, arrowEdge: .top) {
+        HistoryPopover(editorState: editorState)
+      }
 
       Button(action: { editorState.undo() }) {
         Image(systemName: "arrow.uturn.backward")

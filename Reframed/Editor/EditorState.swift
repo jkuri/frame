@@ -1129,10 +1129,15 @@ final class EditorState {
     restoreFromSnapshot(snapshot)
   }
 
+  func jumpToHistory(index: Int) {
+    guard let snapshot = history.jumpTo(index: index) else { return }
+    restoreFromSnapshot(snapshot)
+  }
+
   func scheduleUndoSnapshot() {
     pendingUndoTask?.cancel()
     pendingUndoTask = Task {
-      try? await Task.sleep(for: .milliseconds(500))
+      try? await Task.sleep(for: .seconds(1.5))
       guard !Task.isCancelled else { return }
       history.pushSnapshot(createSnapshot())
     }
