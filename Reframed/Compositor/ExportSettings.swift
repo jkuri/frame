@@ -131,10 +131,10 @@ enum ExportResolution: Sendable, CaseIterable, Identifiable {
 }
 
 enum ExportAudioBitrate: Sendable, CaseIterable, Identifiable {
-  case kbps128
-  case kbps192
-  case kbps256
   case kbps320
+  case kbps256
+  case kbps192
+  case kbps128
 
   var id: Self { self }
 
