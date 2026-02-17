@@ -18,6 +18,7 @@ final class AudioWaveformGenerator {
   func generate(from url: URL, count: Int = 200, noiseReduction: NoiseReductionParams? = nil) async {
     isGenerating = true
     progress = 0
+    samples = []
     defer { isGenerating = false }
 
     let gen = self
