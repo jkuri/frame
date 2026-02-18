@@ -29,6 +29,10 @@ extension FileManager {
     reframedTempDir().appendingPathComponent("\(label)-\(timestamp()).m4a")
   }
 
+  func tempGIFURL() -> URL {
+    reframedTempDir().appendingPathComponent("reframed-\(timestamp()).gif")
+  }
+
   @MainActor
   func projectSaveDirectory() -> URL {
     let folderPath = ConfigService.shared.projectFolder

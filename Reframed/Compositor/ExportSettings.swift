@@ -8,6 +8,43 @@ struct ExportSettings: Sendable {
   var codec: ExportCodec = .h265
   var audioBitrate: ExportAudioBitrate = .kbps320
   var mode: ExportMode = .normal
+  var gifQuality: GIFQuality = .high
+}
+
+enum GIFQuality: Sendable, CaseIterable, Identifiable {
+  case low
+  case medium
+  case high
+  case maximum
+
+  var id: Self { self }
+
+  var label: String {
+    switch self {
+    case .low: "Low"
+    case .medium: "Medium"
+    case .high: "High"
+    case .maximum: "Maximum"
+    }
+  }
+
+  var description: String {
+    switch self {
+    case .low: "Smallest file size. Noticeable quality loss."
+    case .medium: "Good balance of size and quality."
+    case .high: "High quality. Recommended for most use cases."
+    case .maximum: "Best quality. Larger file size."
+    }
+  }
+
+  var value: UInt8 {
+    switch self {
+    case .low: 50
+    case .medium: 70
+    case .high: 90
+    case .maximum: 100
+    }
+  }
 }
 
 enum ExportMode: Sendable, CaseIterable, Identifiable {
@@ -34,6 +71,7 @@ enum ExportMode: Sendable, CaseIterable, Identifiable {
 enum ExportFormat: Sendable, CaseIterable, Identifiable {
   case mp4
   case mov
+  case gif
 
   var id: Self { self }
 
@@ -41,6 +79,7 @@ enum ExportFormat: Sendable, CaseIterable, Identifiable {
     switch self {
     case .mp4: "MP4"
     case .mov: "MOV"
+    case .gif: "GIF"
     }
   }
 
@@ -48,6 +87,7 @@ enum ExportFormat: Sendable, CaseIterable, Identifiable {
     switch self {
     case .mp4: .mp4
     case .mov: .mov
+    case .gif: .mp4
     }
   }
 
@@ -55,7 +95,12 @@ enum ExportFormat: Sendable, CaseIterable, Identifiable {
     switch self {
     case .mp4: "mp4"
     case .mov: "mov"
+    case .gif: "gif"
     }
+  }
+
+  var isGIF: Bool {
+    self == .gif
   }
 }
 

@@ -26,24 +26,41 @@ struct ExportSheet: View {
           .labelsHidden()
         }
 
-        settingsRow(label: "Codec") {
-          Picker("", selection: $settings.codec) {
-            ForEach(ExportCodec.allCases) { codec in
-              Text(codec.label).tag(codec)
+        if settings.format.isGIF {
+          settingsRow(label: "Quality") {
+            Picker("", selection: $settings.gifQuality) {
+              ForEach(GIFQuality.allCases) { quality in
+                Text(quality.label).tag(quality)
+              }
             }
+            .pickerStyle(.segmented)
+            .labelsHidden()
           }
-          .pickerStyle(.segmented)
-          .labelsHidden()
-        }
 
-        Text(settings.codec.description)
-          .font(.system(size: 11))
-          .foregroundStyle(ReframedColors.dimLabel)
-          .padding(.top, -10)
+          Text(settings.gifQuality.description)
+            .font(.system(size: 11))
+            .foregroundStyle(ReframedColors.dimLabel)
+            .padding(.top, -10)
+        } else {
+          settingsRow(label: "Codec") {
+            Picker("", selection: $settings.codec) {
+              ForEach(ExportCodec.allCases) { codec in
+                Text(codec.label).tag(codec)
+              }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+          }
+
+          Text(settings.codec.description)
+            .font(.system(size: 11))
+            .foregroundStyle(ReframedColors.dimLabel)
+            .padding(.top, -10)
+        }
 
         settingsRow(label: "Frame Rate") {
           Picker("", selection: $settings.fps) {
-            ForEach(ExportFPS.allCases) { fps in
+            ForEach(gifAllowedFPSCases) { fps in
               Text(fps.label).tag(fps)
             }
           }
@@ -74,7 +91,7 @@ struct ExportSheet: View {
           .labelsHidden()
         }
 
-        if hasAudio {
+        if hasAudio && !settings.format.isGIF {
           settingsRow(label: "Audio Bitrate (kbps)") {
             Picker("", selection: $settings.audioBitrate) {
               ForEach(ExportAudioBitrate.allCases) { bitrate in
@@ -86,22 +103,31 @@ struct ExportSheet: View {
           }
         }
 
-        settingsRow(label: "Renderer") {
-          Picker("", selection: $settings.mode) {
-            ForEach(ExportMode.allCases) { mode in
-              Text(mode.label).tag(mode)
+        if !settings.format.isGIF {
+          settingsRow(label: "Renderer") {
+            Picker("", selection: $settings.mode) {
+              ForEach(ExportMode.allCases) { mode in
+                Text(mode.label).tag(mode)
+              }
             }
+            .pickerStyle(.segmented)
+            .labelsHidden()
           }
-          .pickerStyle(.segmented)
-          .labelsHidden()
-        }
 
-        Text(settings.mode.description)
-          .font(.system(size: 11))
-          .foregroundStyle(ReframedColors.dimLabel)
-          .padding(.top, -10)
+          Text(settings.mode.description)
+            .font(.system(size: 11))
+            .foregroundStyle(ReframedColors.dimLabel)
+            .padding(.top, -10)
+        }
       }
       .padding(.horizontal, 28)
+      .onChange(of: settings.format) { _, newFormat in
+        if newFormat.isGIF {
+          if let fpsVal = settings.fps.numericValue, fpsVal > 30 {
+            settings.fps = .fps24
+          }
+        }
+      }
 
       Spacer().frame(height: 28)
 
@@ -121,6 +147,16 @@ struct ExportSheet: View {
     }
     .frame(width: 520)
     .background(ReframedColors.panelBackground)
+  }
+
+  private var gifAllowedFPSCases: [ExportFPS] {
+    if settings.format.isGIF {
+      return ExportFPS.allCases.filter { fps in
+        guard let val = fps.numericValue else { return true }
+        return val <= 30
+      }
+    }
+    return ExportFPS.allCases
   }
 
   private func settingsRow<Content: View>(label: String, @ViewBuilder content: () -> Content) -> some View {
