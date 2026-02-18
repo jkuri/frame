@@ -84,6 +84,7 @@ final class EditorState {
   var exportProgress: Double = 0
   var exportETA: Double?
   var exportTask: Task<Void, Never>?
+  var exportStatusMessage: String?
   var isPreviewMode = false
 
   var backgroundStyle: BackgroundStyle = .solidColor(CodableColor(r: 0, g: 0, b: 0))
@@ -463,7 +464,9 @@ final class EditorState {
     micProcessingTask?.cancel()
     guard let micURL = result.microphoneAudioURL, micNoiseReductionEnabled else {
       if let old = processedMicAudioURL {
-        try? FileManager.default.removeItem(at: old)
+        if !isURLInsideProjectBundle(old) {
+          try? FileManager.default.removeItem(at: old)
+        }
         processedMicAudioURL = nil
       }
       isMicProcessing = false
@@ -473,9 +476,25 @@ final class EditorState {
       return
     }
 
+    let intensity = micNoiseReductionIntensity
+
+    if let proj = project,
+      let cachedURL = proj.denoisedMicAudioURL,
+      let cachedIntensity = proj.metadata.editorState?.audioSettings?.cachedNoiseReductionIntensity,
+      abs(cachedIntensity - intensity) < 0.001
+    {
+      let oldURL = processedMicAudioURL
+      processedMicAudioURL = cachedURL
+      isMicProcessing = false
+      playerController.swapMicAudioFile(url: cachedURL)
+      if let oldURL, oldURL != cachedURL, !isURLInsideProjectBundle(oldURL) {
+        try? FileManager.default.removeItem(at: oldURL)
+      }
+      return
+    }
+
     isMicProcessing = true
     micProcessingProgress = 0
-    let intensity = micNoiseReductionIntensity
     let state = self
     micProcessingTask = Task {
       try? await Task.sleep(for: .milliseconds(500))
@@ -497,20 +516,42 @@ final class EditorState {
           try? FileManager.default.removeItem(at: tempURL)
           return
         }
-        let oldURL = processedMicAudioURL
-        processedMicAudioURL = tempURL
-        isMicProcessing = false
-        playerController.swapMicAudioFile(url: tempURL)
-        if let oldURL { try? FileManager.default.removeItem(at: oldURL) }
+
+        var finalURL = tempURL
+        if let proj = state.project {
+          let destURL = proj.denoisedMicAudioDestinationURL
+          try? FileManager.default.removeItem(at: destURL)
+          do {
+            try FileManager.default.copyItem(at: tempURL, to: destURL)
+            try? FileManager.default.removeItem(at: tempURL)
+            finalURL = destURL
+          } catch {
+            state.logger.warning("Failed to cache denoised audio in bundle: \(error)")
+          }
+        }
+
+        let oldURL = state.processedMicAudioURL
+        state.processedMicAudioURL = finalURL
+        state.isMicProcessing = false
+        state.playerController.swapMicAudioFile(url: finalURL)
+        if let oldURL, oldURL != finalURL, !state.isURLInsideProjectBundle(oldURL) {
+          try? FileManager.default.removeItem(at: oldURL)
+        }
+        state.scheduleSave()
       } catch {
         guard !Task.isCancelled else {
           try? FileManager.default.removeItem(at: tempURL)
           return
         }
-        isMicProcessing = false
-        logger.error("Mic noise reduction failed: \(error)")
+        state.isMicProcessing = false
+        state.logger.error("Mic noise reduction failed: \(error)")
       }
     }
+  }
+
+  private func isURLInsideProjectBundle(_ url: URL) -> Bool {
+    guard let bundleURL = project?.bundleURL else { return false }
+    return url.path.hasPrefix(bundleURL.path)
   }
 
   func isCameraFullscreen(at time: Double) -> Bool {
@@ -646,9 +687,22 @@ final class EditorState {
     isExporting = true
     exportProgress = 0
     exportETA = nil
+    exportStatusMessage = nil
     defer {
       isExporting = false
       exportTask = nil
+      exportStatusMessage = nil
+    }
+
+    if isMicProcessing {
+      exportStatusMessage =
+        "Waiting for noise reduction… \(Int(micProcessingProgress * 100))%"
+      while isMicProcessing {
+        try await Task.sleep(for: .milliseconds(100))
+        exportStatusMessage =
+          "Waiting for noise reduction… \(Int(micProcessingProgress * 100))%"
+      }
+      exportStatusMessage = nil
     }
 
     let cursorSnapshot = showCursor ? activeCursorProvider?.makeSnapshot() : nil
@@ -722,6 +776,7 @@ final class EditorState {
       micAudioVolume: effectiveMicAudioVolume,
       micNoiseReductionEnabled: micNoiseReductionEnabled,
       micNoiseReductionIntensity: micNoiseReductionIntensity,
+      processedMicAudioURL: processedMicAudioURL,
       progressHandler: { progress, eta in
         state.exportProgress = progress
         state.exportETA = eta
@@ -953,13 +1008,21 @@ final class EditorState {
     }
     var audioSettings: AudioSettingsData?
     if hasSystemAudio || hasMicAudio {
+      var cachedIntensity: Float?
+      if micNoiseReductionEnabled,
+        let proj = project,
+        proj.denoisedMicAudioURL != nil
+      {
+        cachedIntensity = micNoiseReductionIntensity
+      }
       audioSettings = AudioSettingsData(
         systemAudioVolume: systemAudioVolume,
         micAudioVolume: micAudioVolume,
         systemAudioMuted: systemAudioMuted,
         micAudioMuted: micAudioMuted,
         micNoiseReductionEnabled: micNoiseReductionEnabled,
-        micNoiseReductionIntensity: micNoiseReductionIntensity
+        micNoiseReductionIntensity: micNoiseReductionIntensity,
+        cachedNoiseReductionIntensity: cachedIntensity
       )
     }
     return EditorStateData(
@@ -1212,7 +1275,9 @@ final class EditorState {
     }
     playerController.teardown()
     if let url = processedMicAudioURL {
-      try? FileManager.default.removeItem(at: url)
+      if !isURLInsideProjectBundle(url) {
+        try? FileManager.default.removeItem(at: url)
+      }
       processedMicAudioURL = nil
     }
   }

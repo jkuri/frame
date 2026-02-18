@@ -10,17 +10,23 @@ struct EditorTopBar: View {
     let _ = colorScheme
     ZStack {
       if editorState.isExporting {
-        HStack(spacing: 8) {
-          ProgressView(value: editorState.exportProgress)
-            .frame(width: 200)
-          Text("\(Int(editorState.exportProgress * 100))%")
-            .font(.system(size: 11).monospacedDigit())
+        if let statusMessage = editorState.exportStatusMessage {
+          Text(statusMessage)
+            .font(.system(size: 12, weight: .medium).monospacedDigit())
             .foregroundStyle(ReframedColors.secondaryText)
-            .frame(width: 32, alignment: .trailing)
-          Text(editorState.exportETA.map { $0 > 0 ? "ETA \(formatDuration(seconds: Int(ceil($0))))" : "" } ?? "")
-            .font(.system(size: 11).monospacedDigit())
-            .foregroundStyle(ReframedColors.secondaryText)
-            .frame(width: 72, alignment: .leading)
+        } else {
+          HStack(spacing: 8) {
+            ProgressView(value: editorState.exportProgress)
+              .frame(width: 200)
+            Text("\(Int(editorState.exportProgress * 100))%")
+              .font(.system(size: 11).monospacedDigit())
+              .foregroundStyle(ReframedColors.secondaryText)
+              .frame(width: 32, alignment: .trailing)
+            Text(editorState.exportETA.map { $0 > 0 ? "ETA \(formatDuration(seconds: Int(ceil($0))))" : "" } ?? "")
+              .font(.system(size: 11).monospacedDigit())
+              .foregroundStyle(ReframedColors.secondaryText)
+              .frame(width: 72, alignment: .leading)
+          }
         }
       } else {
         Text(editorState.projectName)

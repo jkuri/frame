@@ -46,6 +46,7 @@ enum VideoCompositor {
     micAudioVolume: Float = 1.0,
     micNoiseReductionEnabled: Bool = false,
     micNoiseReductionIntensity: Float = 0.5,
+    processedMicAudioURL: URL? = nil,
     progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)? = nil
   ) async throws -> URL {
     let composition = AVMutableComposition()
@@ -72,18 +73,26 @@ enum VideoCompositor {
     try compScreenTrack?.insertTimeRange(effectiveTrim, of: screenVideoTrack, at: .zero)
 
     var processedMicURL: URL?
+    var shouldCleanupProcessedMic = false
     if let micURL = result.microphoneAudioURL, micNoiseReductionEnabled, micAudioVolume > 0 {
-      let tempURL = FileManager.default.temporaryDirectory
-        .appendingPathComponent("reframed-nr-\(UUID().uuidString).m4a")
-      try await RNNoiseProcessor.processFile(
-        inputURL: micURL,
-        outputURL: tempURL,
-        intensity: micNoiseReductionIntensity
-      )
-      processedMicURL = tempURL
+      if let cachedURL = processedMicAudioURL, FileManager.default.fileExists(atPath: cachedURL.path) {
+        processedMicURL = cachedURL
+      } else {
+        let tempURL = FileManager.default.temporaryDirectory
+          .appendingPathComponent("reframed-nr-\(UUID().uuidString).m4a")
+        try await RNNoiseProcessor.processFile(
+          inputURL: micURL,
+          outputURL: tempURL,
+          intensity: micNoiseReductionIntensity
+        )
+        processedMicURL = tempURL
+        shouldCleanupProcessedMic = true
+      }
     }
     defer {
-      if let url = processedMicURL { try? FileManager.default.removeItem(at: url) }
+      if shouldCleanupProcessedMic, let url = processedMicURL {
+        try? FileManager.default.removeItem(at: url)
+      }
     }
 
     var audioSources: [AudioSource] = []

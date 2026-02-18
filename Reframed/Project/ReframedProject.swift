@@ -28,6 +28,15 @@ struct ReframedProject: Sendable {
     return FileManager.default.fileExists(atPath: url.path) ? url : nil
   }
 
+  var denoisedMicAudioURL: URL? {
+    let url = bundleURL.appendingPathComponent("denoised-mic.m4a")
+    return FileManager.default.fileExists(atPath: url.path) ? url : nil
+  }
+
+  var denoisedMicAudioDestinationURL: URL {
+    bundleURL.appendingPathComponent("denoised-mic.m4a")
+  }
+
   var cursorMetadataURL: URL? {
     let url = bundleURL.appendingPathComponent("cursor-metadata.json")
     return FileManager.default.fileExists(atPath: url.path) ? url : nil
