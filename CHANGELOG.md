@@ -1,5 +1,31 @@
 # Changelog
 
+## [v0.9.1](https://github.com/jkuri/Reframed/compare/v0.9.0...v0.9.1) (2026-02-18)
+
+### Features
+
+- **export:** add ProRes 4444 and ProRes 422 codec options ([efe06a3](https://github.com/jkuri/Reframed/commit/efe06a36d95d66451749f3245b786e185f923aab))
+- **export:** add gif export option available using gifski lib, progressbar and eta also implemented ([4ce7a62](https://github.com/jkuri/Reframed/commit/4ce7a62e183b8ec54f3402ce3262b054e73c0429))
+- **export:** make export dialog when done restyles and with copy to clipboard action ([22abde3](https://github.com/jkuri/Reframed/commit/22abde38b462c63c8684f5013fc2153fef809294))
+- **camera:** make full-screen mode options like aspect ratio and fill mode for webcam ([eb38282](https://github.com/jkuri/Reframed/commit/eb38282ac3c8f46d6fa475b155dbf931d41faa78))
+
+### Refactoring
+
+- **ui:** make components and view reusable where possible and don't repeat the code ([5cbd82b](https://github.com/jkuri/Reframed/commit/5cbd82b439d124dcb90808916dd2c0063de99679))
+
+### Styling
+
+- **colors:** make editor colors apply on change and make history popover match styles of other popovers in the app ([dd8b3d5](https://github.com/jkuri/Reframed/commit/dd8b3d5ec665a3fbb95885e61a36a777b51b77a9))
+- **appearance:** make sure all colors are updated when switch appearance (light/dark) mode ([e654bbb](https://github.com/jkuri/Reframed/commit/e654bbb487b30feddc57400c68cb55df7b924f3a))
+
+### Documentation
+
+- **readme:** add Homebrew install command to download section ([d31a031](https://github.com/jkuri/Reframed/commit/d31a0314cf481cea6c362ed573669e6fe7f10feb))
+- **readme:** add editor screencast gif ([20c1f46](https://github.com/jkuri/Reframed/commit/20c1f4603e9a21a234cc4451af5ed3aca0652fa4))
+- **readme:** add cursor metadata, zoom & pan, and GIF export sections ([9302678](https://github.com/jkuri/Reframed/commit/9302678173ad40da98d60aae11bb3ca053726531))
+- **readme:** add ProRes 422 and ProRes 4444 to export codec list ([93bc8e8](https://github.com/jkuri/Reframed/commit/93bc8e861bdc571acfb646a646ec793b7936baa8))
+- **claude:** update CLAUDE.md specs ([d6cf4d9](https://github.com/jkuri/Reframed/commit/d6cf4d9187d5b6fed2120bc5b28ec48b270e88ca))
+
 ## [v0.9.0](https://github.com/jkuri/Reframed/compare/v0.8.2...v0.9.0) (2026-02-18)
 
 ### Features
