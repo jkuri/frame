@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jkuri/rnnoise-spm",
       "state" : {
-        "revision" : "7b88186f6d8ec3212713fe2f1748066b47f4b96d",
-        "version" : "1.0.0"
+        "revision" : "9bb6d4c4971a8594f9306cdb1acb6b4013b6ef05",
+        "version" : "1.1.0"
       }
     },
     {

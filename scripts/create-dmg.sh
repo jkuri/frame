@@ -35,6 +35,19 @@ if [ ! -d "${APP_BUNDLE}" ]; then
     error "App bundle not found at ${APP_BUNDLE}. Run 'make release' first."
 fi
 
+# Verify universal binary (arm64 + x86_64)
+BINARY_PATH="${APP_BUNDLE}/Contents/MacOS/${APP_NAME}"
+if [ -f "${BINARY_PATH}" ]; then
+    ARCHS=$(lipo -archs "${BINARY_PATH}" 2>/dev/null || echo "unknown")
+    if [[ "$ARCHS" == *"x86_64"* ]] && [[ "$ARCHS" == *"arm64"* ]]; then
+        info "✓ Universal binary confirmed (${ARCHS})"
+    else
+        warn "Binary is NOT universal. Architectures found: ${ARCHS}"
+        warn "Build with: swift build -c release --arch arm64 --arch x86_64"
+        warn "The DMG will only work on ${ARCHS} machines."
+    fi
+fi
+
 info "Creating DMG for ${APP_NAME} v${VERSION}..."
 
 # Clean up any previous temp directory
@@ -124,6 +137,6 @@ rm -rf "${DMG_TEMP}"
 rm -f "${DMG_TEMP_IMG}"
 
 # Get final size
-FINAL_SIZE=$(du -h "${DMG_FINAL}" | cut -f1)
+FINAL_SIZE=$(du -h "${DMG_FINAL}" | cut -f1 | xargs)
 
 info "✓ Successfully created ${DMG_FINAL} (${FINAL_SIZE})"
