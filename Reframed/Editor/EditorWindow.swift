@@ -87,7 +87,7 @@ final class EditorWindow: NSObject, NSWindowDelegate {
       guard let self, let window = self.window, event.window == window else { return event }
       guard let state = self.editorState else { return event }
 
-      if window.firstResponder is NSTextView {
+      if let textView = window.firstResponder as? NSTextView, textView.isFieldEditor {
         return event
       }
 

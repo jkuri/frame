@@ -17,7 +17,7 @@ struct TimelineView: View {
   private let playheadInset: CGFloat = 7
   let trackHeight: CGFloat = 32
 
-  @State private var scrollOffset: CGFloat = 0
+  @State var scrollOffset: CGFloat = 0
   @State private var scrollPosition = ScrollPosition(edge: .leading)
 
   var totalSeconds: Double {
@@ -151,6 +151,7 @@ struct TimelineView: View {
               }
             }
             .padding(.horizontal, playheadInset)
+            .padding(.bottom, timelineZoom > 1 ? 10 : 0)
 
             playheadOverlay(contentWidth: cw, inset: playheadInset)
           }
@@ -344,6 +345,8 @@ struct TimelineView: View {
       duration: totalSeconds,
       width: width,
       height: trackHeight,
+      scrollOffset: scrollOffset,
+      timelineZoom: timelineZoom,
       onAddKeyframe: { time in
         if let provider = editorState.cursorMetadataProvider {
           let pos = provider.sample(at: time)

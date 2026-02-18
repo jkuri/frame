@@ -5,6 +5,8 @@ struct ZoomKeyframeEditor: View {
   let duration: Double
   let width: CGFloat
   let height: CGFloat
+  let scrollOffset: CGFloat
+  let timelineZoom: CGFloat
   let onAddKeyframe: (Double) -> Void
   let onRemoveRegion: (Int, Int) -> Void
   let onUpdateRegion: (Int, Int, [ZoomKeyframe]) -> Void
@@ -38,10 +40,13 @@ struct ZoomKeyframeEditor: View {
         }
 
       if regions.isEmpty {
+        let viewportWidth = width / timelineZoom
+        let visibleCenterX = scrollOffset + viewportWidth / 2
         Text("Double-click to add zoom region")
           .font(.system(size: 11))
           .foregroundStyle(ReframedColors.dimLabel)
-          .frame(width: width, height: height)
+          .fixedSize()
+          .position(x: visibleCenterX, y: height / 2)
           .allowsHitTesting(false)
       }
 

@@ -15,10 +15,13 @@ extension TimelineView {
       }
 
       if regions.isEmpty {
+        let viewportWidth = width / timelineZoom
+        let visibleCenterX = scrollOffset + viewportWidth / 2
         Text("Double-click to add fullscreen region")
           .font(.system(size: 11))
           .foregroundStyle(ReframedColors.dimLabel)
-          .frame(width: width, height: h)
+          .fixedSize()
+          .position(x: visibleCenterX, y: h / 2)
           .allowsHitTesting(false)
       }
     }

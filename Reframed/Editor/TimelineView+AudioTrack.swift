@@ -29,10 +29,13 @@ extension TimelineView {
       }
 
       if regions.isEmpty {
+        let viewportWidth = width / timelineZoom
+        let visibleCenterX = scrollOffset + viewportWidth / 2
         Text("Double-click to add audio region")
           .font(.system(size: 11))
           .foregroundStyle(ReframedColors.dimLabel)
-          .frame(width: width, height: h)
+          .fixedSize()
+          .position(x: visibleCenterX, y: h / 2)
           .allowsHitTesting(false)
       }
     }
@@ -62,6 +65,9 @@ extension TimelineView {
   ) -> some View {
     let h = trackHeight
 
+    let viewportWidth = width / timelineZoom
+    let visibleCenterX = scrollOffset + viewportWidth / 2
+
     return ZStack {
       RoundedRectangle(cornerRadius: 10)
         .fill(accentColor.opacity(0.06))
@@ -83,6 +89,7 @@ extension TimelineView {
           .frame(width: 160, alignment: .leading)
       }
       .fixedSize()
+      .position(x: visibleCenterX, y: h / 2)
     }
     .frame(width: width, height: h)
     .clipShape(RoundedRectangle(cornerRadius: 10))
