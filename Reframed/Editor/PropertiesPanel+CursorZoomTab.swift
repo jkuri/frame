@@ -30,9 +30,9 @@ extension PropertiesPanel {
 
   var cursorSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "cursorarrow", title: "Cursor")
+      SectionHeader(icon: "cursorarrow", title: "Cursor")
 
-      toggleRow("Show Cursor", isOn: $editorState.showCursor)
+      ToggleRow(label: "Show Cursor", isOn: $editorState.showCursor)
 
       if editorState.showCursor {
         cursorStyleGrid
@@ -51,9 +51,9 @@ extension PropertiesPanel {
 
   var clickHighlightsSubsection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "cursorarrow.click.2", title: "Click Highlights")
+      SectionHeader(icon: "cursorarrow.click.2", title: "Click Highlights")
 
-      toggleRow("Show Highlights", isOn: $editorState.showClickHighlights)
+      ToggleRow(label: "Show Highlights", isOn: $editorState.showClickHighlights)
 
       if editorState.showClickHighlights {
         HStack(spacing: 8) {
@@ -87,24 +87,11 @@ extension PropertiesPanel {
     )
   }
 
-  func toggleRow(_ label: String, isOn: Binding<Bool>) -> some View {
-    HStack {
-      Text(label)
-        .font(.system(size: 12))
-        .foregroundStyle(ReframedColors.primaryText)
-      Spacer()
-      Toggle("", isOn: isOn)
-        .toggleStyle(.switch)
-        .controlSize(.mini)
-        .labelsHidden()
-    }
-  }
-
   var zoomSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "plus.magnifyingglass", title: "Zoom")
+      SectionHeader(icon: "plus.magnifyingglass", title: "Zoom")
 
-      toggleRow("Enable Zoom", isOn: $editorState.zoomEnabled)
+      ToggleRow(label: "Enable Zoom", isOn: $editorState.zoomEnabled)
         .onChange(of: editorState.zoomEnabled) { _, enabled in
           if !enabled {
             editorState.autoZoomEnabled = false
@@ -113,9 +100,9 @@ extension PropertiesPanel {
         }
 
       if editorState.zoomEnabled {
-        toggleRow("Follow Cursor", isOn: $editorState.zoomFollowCursor)
+        ToggleRow(label: "Follow Cursor", isOn: $editorState.zoomFollowCursor)
 
-        toggleRow("Auto Zoom", isOn: $editorState.autoZoomEnabled)
+        ToggleRow(label: "Auto Zoom", isOn: $editorState.autoZoomEnabled)
           .onChange(of: editorState.autoZoomEnabled) { _, enabled in
             if enabled {
               editorState.generateAutoZoom()

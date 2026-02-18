@@ -37,21 +37,9 @@ struct EditorTopBar: View {
       HStack(spacing: 8) {
         Spacer()
 
-        Button(action: onOpenFolder) {
-          Image(systemName: "folder")
-            .font(.system(size: 14))
-            .frame(width: 28, height: 28)
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(ReframedColors.secondaryText)
+        IconButton(systemName: "folder", color: ReframedColors.secondaryText, action: onOpenFolder)
 
-        Button(action: onDelete) {
-          Image(systemName: "trash")
-            .font(.system(size: 14))
-            .frame(width: 28, height: 28)
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(ReframedColors.secondaryText)
+        IconButton(systemName: "trash", color: ReframedColors.secondaryText, action: onDelete)
 
         if editorState.isExporting {
           Button(action: { editorState.cancelExport() }) {

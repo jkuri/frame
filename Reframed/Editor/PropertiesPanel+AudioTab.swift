@@ -14,9 +14,9 @@ extension PropertiesPanel {
 
   private var systemAudioSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "speaker.wave.2", title: "System Audio")
+      SectionHeader(icon: "speaker.wave.2", title: "System Audio")
 
-      toggleRow("Mute", isOn: $editorState.systemAudioMuted)
+      ToggleRow(label: "Mute", isOn: $editorState.systemAudioMuted)
         .onChange(of: editorState.systemAudioMuted) { _, _ in
           editorState.syncAudioVolumes()
         }
@@ -40,9 +40,9 @@ extension PropertiesPanel {
 
   private var micAudioSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "mic", title: "Microphone")
+      SectionHeader(icon: "mic", title: "Microphone")
 
-      toggleRow("Mute", isOn: $editorState.micAudioMuted)
+      ToggleRow(label: "Mute", isOn: $editorState.micAudioMuted)
         .onChange(of: editorState.micAudioMuted) { _, _ in
           editorState.syncAudioVolumes()
         }
@@ -62,7 +62,7 @@ extension PropertiesPanel {
       .opacity(editorState.micAudioMuted ? 0.4 : 1.0)
       .disabled(editorState.micAudioMuted)
 
-      toggleRow("Noise Reduction", isOn: $editorState.micNoiseReductionEnabled)
+      ToggleRow(label: "Noise Reduction", isOn: $editorState.micNoiseReductionEnabled)
         .opacity(editorState.micAudioMuted ? 0.4 : 1.0)
         .disabled(editorState.micAudioMuted)
 

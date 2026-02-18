@@ -3,7 +3,7 @@ import SwiftUI
 extension PropertiesPanel {
   var backgroundSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "paintbrush.fill", title: "Background")
+      SectionHeader(icon: "paintbrush.fill", title: "Background")
 
       FullWidthSegmentPicker(
         items: BackgroundMode.allCases,
@@ -69,7 +69,7 @@ extension PropertiesPanel {
       .foregroundStyle(ReframedColors.primaryText)
       if editorState.backgroundImage != nil {
         VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-          sectionHeader(icon: "arrow.up.left.and.arrow.down.right", title: "Fill Mode")
+          SectionHeader(icon: "arrow.up.left.and.arrow.down.right", title: "Fill Mode")
 
           FullWidthSegmentPicker(
             items: BackgroundImageFillMode.allCases,
@@ -97,7 +97,7 @@ extension PropertiesPanel {
   var paddingSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
       HStack {
-        sectionHeader(icon: "arrow.up.left.and.arrow.down.right", title: "Padding")
+        SectionHeader(icon: "arrow.up.left.and.arrow.down.right", title: "Padding")
         Spacer()
         if editorState.padding > 0 {
           Button("Reset") {
@@ -121,7 +121,7 @@ extension PropertiesPanel {
   var cornerRadiusSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
       HStack {
-        sectionHeader(icon: "rectangle.roundedtop", title: "Corner Radius")
+        SectionHeader(icon: "rectangle.roundedtop", title: "Corner Radius")
         Spacer()
         if editorState.videoCornerRadius > 0 {
           Button("Reset") {
@@ -144,7 +144,7 @@ extension PropertiesPanel {
   var videoShadowSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
       HStack {
-        sectionHeader(icon: "shadow", title: "Shadow")
+        SectionHeader(icon: "shadow", title: "Shadow")
         Spacer()
         if editorState.videoShadow > 0 {
           Button("Reset") {

@@ -3,11 +3,11 @@ import SwiftUI
 extension PropertiesPanel {
   var cameraSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "web.camera", title: "Camera")
+      SectionHeader(icon: "web.camera", title: "Camera")
 
-      toggleRow("Enabled", isOn: $editorState.webcamEnabled)
+      ToggleRow(label: "Enabled", isOn: $editorState.webcamEnabled)
 
-      toggleRow("Mirror", isOn: $editorState.cameraMirrored)
+      ToggleRow(label: "Mirror", isOn: $editorState.cameraMirrored)
         .disabled(!editorState.webcamEnabled)
         .opacity(editorState.webcamEnabled ? 1 : 0.5)
     }
@@ -15,7 +15,7 @@ extension PropertiesPanel {
 
   var cameraPositionSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "arrow.up.and.down.and.arrow.left.and.right", title: "Position")
+      SectionHeader(icon: "arrow.up.and.down.and.arrow.left.and.right", title: "Position")
 
       HStack(spacing: 4) {
         ForEach(
@@ -47,7 +47,7 @@ extension PropertiesPanel {
 
   var cameraAspectRatioSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "aspectratio", title: "Aspect Ratio")
+      SectionHeader(icon: "aspectratio", title: "Aspect Ratio")
 
       Picker("", selection: $editorState.cameraAspect) {
         ForEach(CameraAspect.allCases) { aspect in
@@ -66,7 +66,7 @@ extension PropertiesPanel {
 
   var cameraStyleSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "paintbrush", title: "Style")
+      SectionHeader(icon: "paintbrush", title: "Style")
 
       SliderRow(
         label: "Size",
@@ -108,7 +108,7 @@ extension PropertiesPanel {
 
   var cameraFullscreenSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "arrow.up.left.and.arrow.down.right", title: "Fullscreen")
+      SectionHeader(icon: "arrow.up.left.and.arrow.down.right", title: "Fullscreen")
 
       VStack(alignment: .leading, spacing: 4) {
         Text("Aspect Ratio")

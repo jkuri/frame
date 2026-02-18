@@ -110,12 +110,7 @@ struct RegionEditPopover: View {
     }
     .padding(.vertical, 8)
     .frame(width: 260)
-    .background(ReframedColors.panelBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 8))
-    .overlay(
-      RoundedRectangle(cornerRadius: 8)
-        .strokeBorder(ReframedColors.subtleBorder, lineWidth: 0.5)
-    )
+    .popoverContainerStyle()
     .onChange(of: zoomLevel) { commitChanges() }
     .onChange(of: easeIn) { commitChanges() }
     .onChange(of: easeOut) { commitChanges() }

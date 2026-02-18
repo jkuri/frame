@@ -48,12 +48,7 @@ struct DevicePopover: View {
     }
     .padding(.vertical, 8)
     .frame(width: 300)
-    .background(ReframedColors.panelBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 8))
-    .overlay(
-      RoundedRectangle(cornerRadius: 8)
-        .strokeBorder(ReframedColors.subtleBorder, lineWidth: 0.5)
-    )
+    .popoverContainerStyle()
     .onChange(of: devices) {
       if devices.count == 1 {
         selectedDeviceId = devices.first?.id

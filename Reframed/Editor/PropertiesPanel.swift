@@ -106,7 +106,7 @@ struct PropertiesPanel: View {
   private var projectSection: some View {
     VStack(alignment: .leading, spacing: 16) {
       VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-        sectionHeader(icon: "doc.text", title: "Project")
+        SectionHeader(icon: "doc.text", title: "Project")
 
         HStack(spacing: 6) {
           TextField("Project Name", text: $editingProjectName)
@@ -152,7 +152,7 @@ struct PropertiesPanel: View {
 
   private var recordingInfoSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "info.circle", title: "Recording Info")
+      SectionHeader(icon: "info.circle", title: "Recording Info")
 
       VStack(spacing: Layout.compactSpacing) {
         infoRow("Resolution", value: "\(Int(editorState.result.screenSize.width))x\(Int(editorState.result.screenSize.height))")
@@ -184,7 +184,7 @@ struct PropertiesPanel: View {
 
   var canvasSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "rectangle.dashed", title: "Canvas")
+      SectionHeader(icon: "rectangle.dashed", title: "Canvas")
 
       Picker("", selection: $editorState.canvasAspect) {
         ForEach(CanvasAspect.allCases) { aspect in
@@ -196,17 +196,6 @@ struct PropertiesPanel: View {
       .onChange(of: editorState.canvasAspect) { _, _ in
         editorState.clampCameraPosition()
       }
-    }
-  }
-
-  func sectionHeader(icon: String, title: String) -> some View {
-    HStack(spacing: 6) {
-      Image(systemName: icon)
-        .font(.system(size: 11))
-        .foregroundStyle(ReframedColors.dimLabel)
-      Text(title)
-        .font(.system(size: 12, weight: .semibold))
-        .foregroundStyle(ReframedColors.primaryText)
     }
   }
 

@@ -41,12 +41,7 @@ struct HistoryPopover: View {
     }
     .padding(.vertical, 8)
     .frame(width: 400)
-    .background(ReframedColors.panelBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 8))
-    .overlay(
-      RoundedRectangle(cornerRadius: 8)
-        .strokeBorder(ReframedColors.subtleBorder, lineWidth: 0.5)
-    )
+    .popoverContainerStyle()
   }
 
   private func historyRow(

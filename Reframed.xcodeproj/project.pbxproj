@@ -139,6 +139,12 @@
 
 		CA0000000000000000000002 /* CIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0000000000000000000002 /* CIImageExtensions.swift */; };
 		DB000000000000000000000A /* RNNoiseProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA000000000000000000001D /* RNNoiseProcessor.swift */; };
+		A10000000000000000000046 /* PopoverContainerStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000046 /* PopoverContainerStyle.swift */; };
+		A10000000000000000000047 /* ToggleRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000047 /* ToggleRow.swift */; };
+		A10000000000000000000048 /* CustomToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000048 /* CustomToggle.swift */; };
+		A10000000000000000000049 /* IconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000049 /* IconButton.swift */; };
+		A2000000000000000000002A /* EditorView+TransportBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002A /* EditorView+TransportBar.swift */; };
+		A2000000000000000000002B /* ResizePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002B /* ResizePopover.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -276,6 +282,12 @@
 
 		CB0000000000000000000002 /* CIImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CIImageExtensions.swift; sourceTree = "<group>"; };
 		DA000000000000000000001D /* RNNoiseProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNNoiseProcessor.swift; sourceTree = "<group>"; };
+		B10000000000000000000046 /* PopoverContainerStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverContainerStyle.swift; sourceTree = "<group>"; };
+		B10000000000000000000047 /* ToggleRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleRow.swift; sourceTree = "<group>"; };
+		B10000000000000000000048 /* CustomToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToggle.swift; sourceTree = "<group>"; };
+		B10000000000000000000049 /* IconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconButton.swift; sourceTree = "<group>"; };
+		B2000000000000000000002A /* EditorView+TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorView+TransportBar.swift"; sourceTree = "<group>"; };
+		B2000000000000000000002B /* ResizePopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizePopover.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -452,6 +464,10 @@
 				B10000000000000000000042 /* ShortcutRecorderButton.swift */,
 				B10000000000000000000043 /* ShortcutCaptureView.swift */,
 				B10000000000000000000045 /* SwatchButton.swift */,
+				B10000000000000000000046 /* PopoverContainerStyle.swift */,
+				B10000000000000000000047 /* ToggleRow.swift */,
+				B10000000000000000000048 /* CustomToggle.swift */,
+				B10000000000000000000049 /* IconButton.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -502,6 +518,7 @@
 				BDB41C1253D94BEF960FD7D2 /* WindowSelectionCoordinator.swift */,
 				A435021272D7425AB77F93DF /* WindowSelectionOverlay.swift */,
 				C4146D517F5E493F943D90D0 /* WindowSelectionView.swift */,
+				B2000000000000000000002B /* ResizePopover.swift */,
 			);
 			path = CaptureWindow;
 			sourceTree = "<group>";
@@ -549,6 +566,7 @@
 				B9000000000000000000000C /* CursorSmoothing.swift */,
 				B20000000000000000000020 /* PropertiesPanel+AnimationsTab.swift */,
 				B20000000000000000000021 /* PropertiesPanel+AudioTab.swift */,
+				B2000000000000000000002A /* EditorView+TransportBar.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -768,6 +786,12 @@
 				A20000000000000000000023 /* HistoryPopover.swift in Sources */,
 				CA0000000000000000000002 /* CIImageExtensions.swift in Sources */,
 				DB000000000000000000000A /* RNNoiseProcessor.swift in Sources */,
+				A10000000000000000000046 /* PopoverContainerStyle.swift in Sources */,
+				A10000000000000000000047 /* ToggleRow.swift in Sources */,
+				A10000000000000000000048 /* CustomToggle.swift in Sources */,
+				A10000000000000000000049 /* IconButton.swift in Sources */,
+				A2000000000000000000002A /* EditorView+TransportBar.swift in Sources */,
+				A2000000000000000000002B /* ResizePopover.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

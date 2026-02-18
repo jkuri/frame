@@ -3,9 +3,9 @@ import SwiftUI
 extension PropertiesPanel {
   var cursorMovementSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      sectionHeader(icon: "cursorarrow.motionlines", title: "Cursor Movement")
+      SectionHeader(icon: "cursorarrow.motionlines", title: "Cursor Movement")
 
-      toggleRow("Smooth Movement", isOn: $editorState.cursorMovementEnabled)
+      ToggleRow(label: "Smooth Movement", isOn: $editorState.cursorMovementEnabled)
         .onChange(of: editorState.cursorMovementEnabled) { _, _ in
           editorState.regenerateSmoothedCursor()
         }
