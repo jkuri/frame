@@ -161,6 +161,10 @@ final class EditorWindow: NSObject, NSWindowDelegate {
     StateService.shared.editorWindowFrame = frame
   }
 
+  func windowDidChangeEffectiveAppearance(_ notification: Notification) {
+    window?.backgroundColor = ReframedColors.panelBackgroundNS
+  }
+
   func windowWillClose(_ notification: Notification) {
     removeKeyboardMonitor()
     editorState?.teardown()

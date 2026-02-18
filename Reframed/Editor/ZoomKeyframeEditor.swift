@@ -22,6 +22,7 @@ struct ZoomKeyframeEditor: View {
   }
 
   var body: some View {
+    let _ = colorScheme
     ZStack(alignment: .leading) {
       RoundedRectangle(cornerRadius: 10)
         .fill(ReframedColors.panelBackground)
