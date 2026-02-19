@@ -150,6 +150,10 @@
 		A2000000000000000000002A /* EditorView+TransportBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002A /* EditorView+TransportBar.swift */; };
 		A2000000000000000000002B /* ResizePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002B /* ResizePopover.swift */; };
 		A2000000000000000000002C /* ExportResultSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002C /* ExportResultSheet.swift */; };
+		E30000000000000000000001 /* VideoCompositor+ManualExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* VideoCompositor+ManualExport.swift */; };
+		E30000000000000000000002 /* VideoCompositor+ParallelExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* VideoCompositor+ParallelExport.swift */; };
+		E30000000000000000000003 /* VideoCompositor+GIFExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000003 /* VideoCompositor+GIFExport.swift */; };
+		E30000000000000000000004 /* VideoCompositor+Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000004 /* VideoCompositor+Audio.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -298,6 +302,10 @@
 		B2000000000000000000002A /* EditorView+TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorView+TransportBar.swift"; sourceTree = "<group>"; };
 		B2000000000000000000002B /* ResizePopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizePopover.swift; sourceTree = "<group>"; };
 		B2000000000000000000002C /* ExportResultSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportResultSheet.swift; sourceTree = "<group>"; };
+		E20000000000000000000001 /* VideoCompositor+ManualExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoCompositor+ManualExport.swift"; sourceTree = "<group>"; };
+		E20000000000000000000002 /* VideoCompositor+ParallelExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoCompositor+ParallelExport.swift"; sourceTree = "<group>"; };
+		E20000000000000000000003 /* VideoCompositor+GIFExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoCompositor+GIFExport.swift"; sourceTree = "<group>"; };
+		E20000000000000000000004 /* VideoCompositor+Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoCompositor+Audio.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -597,6 +605,10 @@
 				B20000000000000000000017 /* ExportSheet.swift */,
 				B20000000000000000000014 /* GradientPresets.swift */,
 				B20000000000000000000010 /* VideoCompositor.swift */,
+				E20000000000000000000001 /* VideoCompositor+ManualExport.swift */,
+				E20000000000000000000002 /* VideoCompositor+ParallelExport.swift */,
+				E20000000000000000000003 /* VideoCompositor+GIFExport.swift */,
+				E20000000000000000000004 /* VideoCompositor+Audio.swift */,
 			);
 			path = Compositor;
 			sourceTree = "<group>";
@@ -748,6 +760,10 @@
 				A2000000000000000000000D /* EditorWindow.swift in Sources */,
 				A2000000000000000000000F /* CameraVideoCompositor.swift in Sources */,
 				A20000000000000000000010 /* VideoCompositor.swift in Sources */,
+				E30000000000000000000001 /* VideoCompositor+ManualExport.swift in Sources */,
+				E30000000000000000000002 /* VideoCompositor+ParallelExport.swift in Sources */,
+				E30000000000000000000003 /* VideoCompositor+GIFExport.swift in Sources */,
+				E30000000000000000000004 /* VideoCompositor+Audio.swift in Sources */,
 				A20000000000000000000011 /* SendableBox.swift in Sources */,
 				A3000000000000000000001B /* ReframedProject.swift in Sources */,
 				A3000000000000000000001C /* ProjectMetadata.swift in Sources */,
