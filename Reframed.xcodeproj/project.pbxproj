@@ -38,6 +38,7 @@
 		A1000000000000000000001A /* MenuBarExtraAccess in Frameworks */ = {isa = PBXBuildFile; productRef = E10000000000000000000002 /* MenuBarExtraAccess */; };
 		A1000000000000000000001C /* VideoTranscoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001C /* VideoTranscoder.swift */; };
 		A1000000000000000000001D /* RecordingBorderWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001D /* RecordingBorderWindow.swift */; };
+		A1F00000000000000000001 /* WindowPositionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F00000000000000000001 /* WindowPositionObserver.swift */; };
 		A1000000000000000000001E /* CaptureAreaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001E /* CaptureAreaView.swift */; };
 		A1000000000000000000001F /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001F /* Colors.swift */; };
 		A10000000000000000000020 /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* NumberField.swift */; };
@@ -183,6 +184,7 @@
 		B1000000000000000000001B /* Reframed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Reframed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1000000000000000000001C /* VideoTranscoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTranscoder.swift; sourceTree = "<group>"; };
 		B1000000000000000000001D /* RecordingBorderWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingBorderWindow.swift; sourceTree = "<group>"; };
+		B1F00000000000000000001 /* WindowPositionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPositionObserver.swift; sourceTree = "<group>"; };
 		B1000000000000000000001E /* CaptureAreaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureAreaView.swift; sourceTree = "<group>"; };
 		B1000000000000000000001F /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		B10000000000000000000020 /* NumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
@@ -491,6 +493,7 @@
 				B1000000000000000000000E /* SelectionRect.swift */,
 				B1000000000000000000001D /* RecordingBorderWindow.swift */,
 				B1000000000000000000000B /* SelectionCoordinator.swift */,
+				B1F00000000000000000001 /* WindowPositionObserver.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -686,6 +689,7 @@
 				A10000000000000000000033 /* AudioTrackWriter.swift in Sources */,
 				A1000000000000000000001C /* VideoTranscoder.swift in Sources */,
 				A1000000000000000000001D /* RecordingBorderWindow.swift in Sources */,
+				A1F00000000000000000001 /* WindowPositionObserver.swift in Sources */,
 				A1000000000000000000001E /* CaptureAreaView.swift in Sources */,
 				A10000000000000000000013 /* FileManager+Reframed.swift in Sources */,
 				A10000000000000000000032 /* MicrophoneCapture.swift in Sources */,

@@ -45,6 +45,7 @@ final class SessionState {
   private var devicePreviewWindow: DevicePreviewWindow?
   private var deviceCapture: DeviceCapture?
   private var audioLevelTask: Task<Void, Never>?
+  private var windowPositionObserver: WindowPositionObserver?
 
   weak var overlayView: SelectionOverlayView?
 
@@ -130,6 +131,19 @@ final class SessionState {
     audioLevelTask = nil
     micAudioLevel = 0
     systemAudioLevel = 0
+  }
+
+  private func startWindowTracking(windowID: CGWindowID) {
+    windowPositionObserver = WindowPositionObserver(
+      windowID: windowID
+    ) { [weak self] rect in
+      self?.selectionCoordinator?.updateRecordingBorder(screenRect: rect)
+    }
+  }
+
+  private func stopWindowTracking() {
+    windowPositionObserver?.stop()
+    windowPositionObserver = nil
   }
 
   private static func cameraMaxDimensions(for resolution: String) -> (Int, Int) {
@@ -654,10 +668,14 @@ final class SessionState {
     switch newState {
     case .recording:
       if audioLevelTask == nil { startAudioLevelPolling() }
+      if windowPositionObserver == nil, case .window(let win) = captureTarget {
+        startWindowTracking(windowID: win.windowID)
+      }
     case .paused:
       break
     default:
       stopAudioLevelPolling()
+      stopWindowTracking()
     }
   }
 

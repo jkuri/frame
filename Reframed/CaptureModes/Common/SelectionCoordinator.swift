@@ -19,6 +19,10 @@ final class SelectionCoordinator {
     window.orderFrontRegardless()
   }
 
+  func updateRecordingBorder(screenRect: CGRect) {
+    borderWindow?.updateCaptureRect(screenRect: screenRect)
+  }
+
   func destroyOverlay() {
     overlayWindow?.orderOut(nil)
     overlayWindow?.contentView = nil
