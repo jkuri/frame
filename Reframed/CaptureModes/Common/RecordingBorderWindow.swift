@@ -38,6 +38,7 @@ final class RecordingBorderWindow: NSWindow {
 
     let view = RecordingDimView(frame: CGRect(origin: .zero, size: screen.frame.size))
     view.captureRect = localCaptureRect
+    view.dimOuterArea = ConfigService.shared.dimOuterArea
     contentView = view
   }
 
@@ -47,16 +48,19 @@ final class RecordingBorderWindow: NSWindow {
 
 private final class RecordingDimView: NSView {
   var captureRect: CGRect = .zero
+  var dimOuterArea: Bool = true
 
   override func draw(_ dirtyRect: NSRect) {
     guard let context = NSGraphicsContext.current?.cgContext else { return }
 
-    context.saveGState()
-    context.setFillColor(ReframedColors.overlayBackground.cgColor)
-    context.addRect(bounds)
-    context.addRect(captureRect)
-    context.fillPath(using: .evenOdd)
-    context.restoreGState()
+    if dimOuterArea {
+      context.saveGState()
+      context.setFillColor(ReframedColors.overlayBackground.cgColor)
+      context.addRect(bounds)
+      context.addRect(captureRect)
+      context.fillPath(using: .evenOdd)
+      context.restoreGState()
+    }
 
     context.setStrokeColor(NSColor.controlAccentColor.cgColor)
     context.setLineWidth(2)

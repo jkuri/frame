@@ -65,6 +65,11 @@ final class ConfigService {
     set { data.retinaCapture = newValue; save() }
   }
 
+  var dimOuterArea: Bool {
+    get { data.dimOuterArea }
+    set { data.dimOuterArea = newValue; save() }
+  }
+
   var appearance: String {
     get { data.appearance }
     set { data.appearance = newValue; save(); applyAppearance() }
@@ -138,6 +143,7 @@ private struct ConfigData: Codable {
   var cameraMaximumResolution: String = "1080p"
   var projectFolder: String = "~/Reframed"
   var retinaCapture: Bool = false
+  var dimOuterArea: Bool = true
   var appearance: String = "system"
   var shortcuts: [String: KeyboardShortcut] = [:]
 }

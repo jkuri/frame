@@ -85,6 +85,14 @@ extension SettingsView {
           set: { options?.rememberLastSelection = $0 }
         )
       )
+
+      settingsToggle(
+        "Dim Outer Area While Recording",
+        isOn: Binding(
+          get: { options?.dimOuterArea ?? true },
+          set: { options?.dimOuterArea = $0 }
+        )
+      )
     }
   }
 }

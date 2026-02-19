@@ -104,4 +104,5 @@ extension SettingsView {
       .padding(.horizontal, 10)
     }
   }
+
 }

@@ -76,6 +76,10 @@ final class RecordingOptions {
     didSet { ConfigService.shared.retinaCapture = retinaCapture }
   }
 
+  var dimOuterArea: Bool {
+    didSet { ConfigService.shared.dimOuterArea = dimOuterArea }
+  }
+
   var selectedCamera: CaptureDevice? {
     didSet { ConfigService.shared.cameraDeviceId = selectedCamera?.id }
   }
@@ -108,6 +112,7 @@ final class RecordingOptions {
     captureQuality = CaptureQuality(rawValue: config.captureQuality) ?? .standard
     captureSystemAudio = config.captureSystemAudio
     retinaCapture = config.retinaCapture
+    dimOuterArea = config.dimOuterArea
 
     let savedDeviceId = config.audioDeviceId
     if let deviceId = savedDeviceId {
