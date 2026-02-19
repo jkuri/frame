@@ -477,6 +477,15 @@ enum VideoCompositor {
     }
     nonisolated(unsafe) let videoInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
     videoInput.expectsMediaDataInRealTime = false
+
+    nonisolated(unsafe) let adaptor = AVAssetWriterInputPixelBufferAdaptor(
+      assetWriterInput: videoInput,
+      sourcePixelBufferAttributes: [
+        kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_64RGBAHalf,
+        kCVPixelBufferWidthKey as String: Int(renderSize.width),
+        kCVPixelBufferHeightKey as String: Int(renderSize.height),
+      ]
+    )
     writer.add(videoInput)
 
     nonisolated(unsafe) var audioInput: AVAssetWriterInput?
@@ -511,6 +520,8 @@ enum VideoCompositor {
       try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
         nonisolated(unsafe) var sampleCount = 0
         nonisolated(unsafe) var continued = false
+        nonisolated(unsafe) var currentBuffer: CMSampleBuffer? = videoOutput.copyNextSampleBuffer()
+        nonisolated(unsafe) var latestBuffer: CMSampleBuffer? = nil
 
         let group = DispatchGroup()
         let videoQueue = DispatchQueue(label: "eu.jankuri.reframed.export.video", qos: .userInitiated)
@@ -552,6 +563,7 @@ enum VideoCompositor {
         }
 
         group.enter()
+        let timescale = CMTimeScale(exportFPS)
         videoInput.requestMediaDataWhenReady(on: videoQueue) {
           while videoInput.isReadyForMoreMediaData {
             if cancelled.pointee {
@@ -559,21 +571,40 @@ enum VideoCompositor {
               group.leave()
               return
             }
-            if let buffer = videoOutput.copyNextSampleBuffer() {
-              videoInput.append(buffer)
-              sampleCount += 1
-              if sampleCount % 10 == 0, let handler = progressHandler {
-                let progress = min(Double(sampleCount) / totalFrames, 1.0)
-                let elapsed = CFAbsoluteTimeGetCurrent() - exportStartTime
-                let remaining = Double(Int(totalFrames) - sampleCount)
-                let secsPerFrame = elapsed / Double(sampleCount)
-                let eta = remaining * secsPerFrame
-                Task { @MainActor in handler(progress, eta) }
-              }
-            } else {
+
+            if sampleCount >= Int(totalFrames) {
               videoInput.markAsFinished()
               group.leave()
               return
+            }
+
+            let outputTime = CMTimeAdd(timeRange.start, CMTime(value: CMTimeValue(sampleCount), timescale: timescale))
+            let outputSeconds = CMTimeGetSeconds(outputTime)
+
+            while let next = currentBuffer {
+              let pts = CMSampleBufferGetPresentationTimeStamp(next)
+              if CMTimeGetSeconds(pts) <= outputSeconds + 0.001 {
+                latestBuffer = next
+                currentBuffer = videoOutput.copyNextSampleBuffer()
+              } else {
+                break
+              }
+            }
+
+            if let latest = latestBuffer, let imageBuffer = CMSampleBufferGetImageBuffer(latest) {
+              adaptor.append(imageBuffer, withPresentationTime: outputTime)
+            } else if latestBuffer == nil, let current = currentBuffer, let imageBuffer = CMSampleBufferGetImageBuffer(current) {
+              adaptor.append(imageBuffer, withPresentationTime: outputTime)
+            }
+
+            sampleCount += 1
+            if sampleCount % 10 == 0, let handler = progressHandler {
+              let progress = min(Double(sampleCount) / totalFrames, 1.0)
+              let elapsed = CFAbsoluteTimeGetCurrent() - exportStartTime
+              let remaining = Double(Int(totalFrames) - sampleCount)
+              let secsPerFrame = elapsed / Double(sampleCount)
+              let eta = remaining * secsPerFrame
+              Task { @MainActor in handler(progress, eta) }
             }
           }
         }
