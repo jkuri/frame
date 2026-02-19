@@ -22,6 +22,12 @@ struct MenuBarView: View {
   @State private var totalProjectCount: Int = 0
   @Environment(\.colorScheme) private var colorScheme
 
+  private var isBusy: Bool {
+    if case .idle = session.state { return false }
+    if case .editing = session.state { return false }
+    return true
+  }
+
   var body: some View {
     let _ = colorScheme
     HoverEffectScope {
@@ -37,6 +43,7 @@ struct MenuBarView: View {
           }
         }
         .hoverEffect(id: "menu.newRecording")
+        .disabled(isBusy)
         .padding(.horizontal, 12)
 
         MenuBarActionRow(
@@ -50,6 +57,7 @@ struct MenuBarView: View {
           session.selectMode(.entireScreen)
         }
         .hoverEffect(id: "menu.displayMode")
+        .disabled(isBusy)
         .padding(.horizontal, 12)
 
         MenuBarActionRow(
@@ -63,6 +71,7 @@ struct MenuBarView: View {
           session.selectMode(.selectedWindow)
         }
         .hoverEffect(id: "menu.windowMode")
+        .disabled(isBusy)
         .padding(.horizontal, 12)
 
         MenuBarActionRow(
@@ -76,6 +85,7 @@ struct MenuBarView: View {
           session.selectMode(.selectedArea)
         }
         .hoverEffect(id: "menu.areaMode")
+        .disabled(isBusy)
         .padding(.horizontal, 12)
 
         MenuBarDivider()
@@ -95,8 +105,11 @@ struct MenuBarView: View {
               session.openProject(at: project.url)
             }
             .hoverEffect(id: "menu.project.\(project.id)")
+            .disabled(isBusy)
             .padding(.horizontal, 12)
           }
+
+          MenuBarDivider()
 
           MenuBarActionRow(
             icon: "folder",
@@ -108,6 +121,7 @@ struct MenuBarView: View {
             NSWorkspace.shared.open(URL(fileURLWithPath: path))
           }
           .hoverEffect(id: "menu.openProjects")
+          .disabled(isBusy)
           .padding(.horizontal, 12)
         }
 
@@ -270,7 +284,7 @@ private struct ProjectRow: View {
         Spacer()
       }
       .padding(.horizontal, 10)
-      .padding(.vertical, 10)
+      .padding(.vertical, 4)
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
@@ -328,7 +342,7 @@ private struct MenuBarActionRow: View {
         }
       }
       .padding(.horizontal, 10)
-      .padding(.vertical, 10)
+      .padding(.vertical, 6)
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
