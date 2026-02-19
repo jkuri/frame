@@ -96,7 +96,7 @@ struct EditorView: View {
     }
     .ignoresSafeArea(edges: .top)
     .frame(minWidth: 1200, minHeight: 800)
-    .background(ReframedColors.selectedBackground.opacity(0.55))
+    .background(ReframedColors.selectedBackground.opacity(0.05))
     .task {
       await editorState.setup()
       didFinishSetup = true

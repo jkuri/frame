@@ -90,6 +90,7 @@
 		A3000000000000000000001C /* ProjectMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3000000000000000000001C /* ProjectMetadata.swift */; };
 		A40000000000000000000001 /* SoundEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000001 /* SoundEffect.swift */; };
 		A40000000000000000000002 /* TimeFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000002 /* TimeFormatting.swift */; };
+		A40000000000000000000003 /* MediaFileInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000003 /* MediaFileInfo.swift */; };
 		A50000000000000000000001 /* MouseClickMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50000000000000000000001 /* MouseClickMonitor.swift */; };
 		A50000000000000000000002 /* MouseClickWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50000000000000000000002 /* MouseClickWindow.swift */; };
 
@@ -236,6 +237,7 @@
 		B3000000000000000000001C /* ProjectMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectMetadata.swift; sourceTree = "<group>"; };
 		B40000000000000000000001 /* SoundEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEffect.swift; sourceTree = "<group>"; };
 		B40000000000000000000002 /* TimeFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatting.swift; sourceTree = "<group>"; };
+		B40000000000000000000003 /* MediaFileInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFileInfo.swift; sourceTree = "<group>"; };
 		B50000000000000000000001 /* MouseClickMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseClickMonitor.swift; sourceTree = "<group>"; };
 		B50000000000000000000002 /* MouseClickWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseClickWindow.swift; sourceTree = "<group>"; };
 
@@ -410,6 +412,7 @@
 				B20000000000000000000011 /* SendableBox.swift */,
 				B40000000000000000000001 /* SoundEffect.swift */,
 				B40000000000000000000002 /* TimeFormatting.swift */,
+				B40000000000000000000003 /* MediaFileInfo.swift */,
 				B60000000000000000000001 /* CodableColor.swift */,
 				DA000000000000000000001D /* RNNoiseProcessor.swift */,
 				CB0000000000000000000002 /* CIImageExtensions.swift */,
@@ -744,6 +747,7 @@
 				A3000000000000000000001C /* ProjectMetadata.swift in Sources */,
 				A40000000000000000000001 /* SoundEffect.swift in Sources */,
 				A40000000000000000000002 /* TimeFormatting.swift in Sources */,
+				A40000000000000000000003 /* MediaFileInfo.swift in Sources */,
 				A50000000000000000000001 /* MouseClickMonitor.swift in Sources */,
 				A50000000000000000000002 /* MouseClickWindow.swift in Sources */,
 

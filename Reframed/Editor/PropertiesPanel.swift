@@ -25,6 +25,10 @@ struct PropertiesPanel: View {
   @State var backgroundImageFilename: String?
   @State var showClickColorPopover = false
   @State var showBorderColorPopover = false
+  @State private var screenInfo: MediaFileInfo?
+  @State private var webcamInfo: MediaFileInfo?
+  @State private var systemAudioInfo: MediaFileInfo?
+  @State private var micAudioInfo: MediaFileInfo?
 
   var body: some View {
     let _ = colorScheme
@@ -123,9 +127,6 @@ struct PropertiesPanel: View {
       SectionHeader(icon: "info.circle", title: "Recording Info")
 
       VStack(spacing: Layout.compactSpacing) {
-        infoRow("Resolution", value: "\(Int(editorState.result.screenSize.width))x\(Int(editorState.result.screenSize.height))")
-        infoRow("FPS", value: "\(editorState.result.fps)")
-        infoRow("Codec", value: codecLabel(editorState.result.captureQuality))
         infoRow("Duration", value: formatDuration(editorState.duration))
 
         if let mode = editorState.project?.metadata.captureMode, mode != .none {
@@ -133,19 +134,110 @@ struct PropertiesPanel: View {
         }
 
         infoRow("Project Size", value: formattedProjectSize())
-
-        if let ws = editorState.result.webcamSize {
-          infoRow("Webcam", value: "\(Int(ws.width))x\(Int(ws.height))")
-        }
-
-        infoRow("System Audio", value: editorState.result.systemAudioURL != nil ? "Yes" : "No")
-        infoRow("Microphone", value: editorState.result.microphoneAudioURL != nil ? "Yes" : "No")
         infoRow("Cursor Data", value: editorState.cursorMetadataProvider != nil ? "Yes" : "No")
 
         if let date = editorState.project?.metadata.createdAt {
           infoRow("Recorded", value: formattedDate(date))
         }
       }
+
+      screenTrackSection
+      webcamTrackSection
+      systemAudioTrackSection
+      micAudioTrackSection
+    }
+    .task { await loadMediaInfo() }
+  }
+
+  private var screenTrackSection: some View {
+    VStack(alignment: .leading, spacing: Layout.itemSpacing) {
+      SectionHeader(icon: "rectangle.on.rectangle", title: "Screen Capture")
+
+      VStack(spacing: Layout.compactSpacing) {
+        infoRow("Resolution", value: "\(Int(editorState.result.screenSize.width))x\(Int(editorState.result.screenSize.height))")
+        infoRow("FPS", value: "\(editorState.result.fps)")
+        infoRow("Codec", value: codecLabel(editorState.result.captureQuality))
+        if let info = screenInfo {
+          infoRow("Size", value: info.fileSize)
+          if let bitrate = info.bitrate {
+            infoRow("Bitrate", value: bitrate)
+          }
+        }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var webcamTrackSection: some View {
+    if editorState.result.webcamSize != nil {
+      VStack(alignment: .leading, spacing: Layout.itemSpacing) {
+        SectionHeader(icon: "web.camera", title: "Camera")
+
+        VStack(spacing: Layout.compactSpacing) {
+          if let ws = editorState.result.webcamSize {
+            infoRow("Resolution", value: "\(Int(ws.width))x\(Int(ws.height))")
+          }
+          if let info = webcamInfo {
+            if let fps = info.fps {
+              infoRow("FPS", value: fps)
+            }
+            infoRow("Size", value: info.fileSize)
+            if let bitrate = info.bitrate {
+              infoRow("Bitrate", value: bitrate)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var systemAudioTrackSection: some View {
+    if editorState.result.systemAudioURL != nil {
+      VStack(alignment: .leading, spacing: Layout.itemSpacing) {
+        SectionHeader(icon: "speaker.wave.2", title: "System Audio")
+
+        VStack(spacing: Layout.compactSpacing) {
+          if let info = systemAudioInfo {
+            infoRow("Size", value: info.fileSize)
+            if let bitrate = info.bitrate {
+              infoRow("Bitrate", value: bitrate)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var micAudioTrackSection: some View {
+    if editorState.result.microphoneAudioURL != nil {
+      VStack(alignment: .leading, spacing: Layout.itemSpacing) {
+        SectionHeader(icon: "mic", title: "Microphone")
+
+        VStack(spacing: Layout.compactSpacing) {
+          if let info = micAudioInfo {
+            infoRow("Size", value: info.fileSize)
+            if let bitrate = info.bitrate {
+              infoRow("Bitrate", value: bitrate)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private func loadMediaInfo() async {
+    let result = editorState.result
+    screenInfo = await MediaFileInfo.load(url: result.screenVideoURL)
+    if let url = result.webcamVideoURL {
+      webcamInfo = await MediaFileInfo.load(url: url)
+    }
+    if let url = result.systemAudioURL {
+      systemAudioInfo = await MediaFileInfo.load(url: url)
+    }
+    if let url = result.microphoneAudioURL {
+      micAudioInfo = await MediaFileInfo.load(url: url)
     }
   }
 
