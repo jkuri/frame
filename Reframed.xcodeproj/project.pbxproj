@@ -143,6 +143,7 @@
 		A10000000000000000000047 /* ToggleRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000047 /* ToggleRow.swift */; };
 		A10000000000000000000048 /* CustomToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000048 /* CustomToggle.swift */; };
 		A10000000000000000000049 /* IconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000049 /* IconButton.swift */; };
+		A1000000000000000000004A /* InlineEditableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000004A /* InlineEditableText.swift */; };
 		A2000000000000000000002A /* EditorView+TransportBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002A /* EditorView+TransportBar.swift */; };
 		A2000000000000000000002B /* ResizePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002B /* ResizePopover.swift */; };
 		A2000000000000000000002C /* ExportResultSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002C /* ExportResultSheet.swift */; };
@@ -287,6 +288,7 @@
 		B10000000000000000000047 /* ToggleRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleRow.swift; sourceTree = "<group>"; };
 		B10000000000000000000048 /* CustomToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToggle.swift; sourceTree = "<group>"; };
 		B10000000000000000000049 /* IconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconButton.swift; sourceTree = "<group>"; };
+		B1000000000000000000004A /* InlineEditableText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineEditableText.swift; sourceTree = "<group>"; };
 		B2000000000000000000002A /* EditorView+TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorView+TransportBar.swift"; sourceTree = "<group>"; };
 		B2000000000000000000002B /* ResizePopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizePopover.swift; sourceTree = "<group>"; };
 		B2000000000000000000002C /* ExportResultSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportResultSheet.swift; sourceTree = "<group>"; };
@@ -469,6 +471,7 @@
 				B10000000000000000000047 /* ToggleRow.swift */,
 				B10000000000000000000048 /* CustomToggle.swift */,
 				B10000000000000000000049 /* IconButton.swift */,
+				B1000000000000000000004A /* InlineEditableText.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -793,6 +796,7 @@
 				A10000000000000000000047 /* ToggleRow.swift in Sources */,
 				A10000000000000000000048 /* CustomToggle.swift in Sources */,
 				A10000000000000000000049 /* IconButton.swift in Sources */,
+				A1000000000000000000004A /* InlineEditableText.swift in Sources */,
 				A2000000000000000000002A /* EditorView+TransportBar.swift in Sources */,
 				A2000000000000000000002B /* ResizePopover.swift in Sources */,
 				A2000000000000000000002C /* ExportResultSheet.swift in Sources */,

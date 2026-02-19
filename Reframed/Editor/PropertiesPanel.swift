@@ -23,10 +23,8 @@ struct PropertiesPanel: View {
   @State var selectedGradientId: Int = 0
   @State var selectedColorId: String? = "Black"
   @State var backgroundImageFilename: String?
-  @State private var editingProjectName: String = ""
   @State var showClickColorPopover = false
   @State var showBorderColorPopover = false
-  @FocusState private var projectNameFocused: Bool
 
   var body: some View {
     let _ = colorScheme
@@ -108,46 +106,16 @@ struct PropertiesPanel: View {
       VStack(alignment: .leading, spacing: Layout.itemSpacing) {
         SectionHeader(icon: "doc.text", title: "Project")
 
-        HStack(spacing: 6) {
-          TextField("Project Name", text: $editingProjectName)
-            .font(.system(size: 12))
-            .foregroundStyle(ReframedColors.primaryText)
-            .textFieldStyle(.plain)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-            .background(ReframedColors.fieldBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-            .focused($projectNameFocused)
-            .onSubmit { commitProjectRename() }
-            .onChange(of: projectNameFocused) { _, focused in
-              if !focused { commitProjectRename() }
-            }
-            .onAppear {
-              editingProjectName = editorState.projectName
-              Task { @MainActor in
-                projectNameFocused = false
-              }
-            }
-
-          Button("Rename") {
-            commitProjectRename()
-            projectNameFocused = false
+        InlineEditableText(
+          text: editorState.projectName,
+          onCommit: { newName in
+            editorState.renameProject(newName)
           }
-          .font(.system(size: 12, weight: .medium))
-          .foregroundStyle(.white)
-          .background(ReframedColors.controlAccentColor)
-          .clipShape(RoundedRectangle(cornerRadius: 6))
-          .disabled(isRenameDisabled)
-        }
+        )
       }
 
       recordingInfoSection
     }
-  }
-
-  private var isRenameDisabled: Bool {
-    let trimmed = editingProjectName.trimmingCharacters(in: .whitespacesAndNewlines)
-    return trimmed.isEmpty || trimmed == editorState.projectName
   }
 
   private var recordingInfoSection: some View {
@@ -248,16 +216,6 @@ struct PropertiesPanel: View {
         editorState.clampCameraPosition()
       }
     }
-  }
-
-  private func commitProjectRename() {
-    let trimmed = editingProjectName.trimmingCharacters(in: .whitespacesAndNewlines)
-    guard !trimmed.isEmpty, trimmed != editorState.projectName else {
-      editingProjectName = editorState.projectName
-      return
-    }
-    editorState.renameProject(trimmed)
-    editingProjectName = editorState.projectName
   }
 
   private func updateBackgroundStyle(mode: BackgroundMode) {
