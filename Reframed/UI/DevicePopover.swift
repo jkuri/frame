@@ -29,9 +29,9 @@ struct DevicePopover: View {
         onStart(id)
       } label: {
         HStack(spacing: 5) {
-          Image(systemName: "record.circle")
+          Image(systemName: "iphone.and.arrow.right.inward")
             .font(.system(size: 12, weight: .semibold))
-          Text("Start Recording")
+          Text("Open Device")
             .font(.system(size: 12, weight: .semibold))
         }
         .foregroundStyle(.white)

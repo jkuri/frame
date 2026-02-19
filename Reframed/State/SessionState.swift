@@ -299,6 +299,10 @@ final class SessionState {
     windowSelectionCoordinator = nil
     overlayView = nil
     hideStartRecordingOverlay()
+    devicePreviewWindow?.close()
+    devicePreviewWindow = nil
+    deviceCapture?.stop()
+    deviceCapture = nil
     transition(to: .idle)
     showToolbar()
     logger.info("Selection cancelled")
@@ -466,6 +470,7 @@ final class SessionState {
     stopCameraPreview()
     devicePreviewWindow?.close()
     devicePreviewWindow = nil
+    deviceCapture?.stop()
     deviceCapture = nil
 
     let saveDir = FileManager.default.projectSaveDirectory()
@@ -711,12 +716,21 @@ final class SessionState {
 
         if let session = capture.captureSession {
           let previewWindow = DevicePreviewWindow()
-          previewWindow.show(captureSession: session, deviceName: device.name)
+          previewWindow.show(
+            captureSession: session,
+            deviceName: device.name,
+            delay: options.timerDelay.rawValue,
+            onCountdownStart: { [weak self] in
+              self?.toolbarWindow?.orderOut(nil)
+            },
+            onCancel: { [weak self] in self?.cancelSelection() },
+            onStart: { [weak self] in self?.startDeviceRecording() }
+          )
           devicePreviewWindow = previewWindow
         }
 
+        hideToolbar()
         logger.info("Device preview started: \(device.name) at \(info.width)x\(info.height)")
-        beginRecordingWithCountdown()
       } catch {
         logger.error("Device recording failed: \(error)")
         deviceCapture?.stop()
@@ -724,6 +738,11 @@ final class SessionState {
         showError(error.localizedDescription)
       }
     }
+  }
+
+  private func startDeviceRecording() {
+    devicePreviewWindow?.hideButton()
+    beginRecordingWithCountdown()
   }
 
   private func recordEntireScreen() {

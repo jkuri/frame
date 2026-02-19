@@ -1,9 +1,47 @@
 import AVFoundation
 import AppKit
+import SwiftUI
+
+struct DeviceStartRecordingView: View {
+  let delay: Int
+  let onCountdownStart: () -> Void
+  let onCancel: () -> Void
+  let onStart: () -> Void
+
+  var body: some View {
+    StartRecordingButton(
+      delay: delay,
+      onCountdownStart: onCountdownStart,
+      onCancel: onCancel,
+      action: onStart
+    )
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .overlay {
+      Button("") { onCancel() }
+        .keyboardShortcut(.escape, modifiers: [])
+        .opacity(0)
+    }
+  }
+}
+
+@MainActor
+final class DevicePreviewPanel: NSPanel {
+  init(origin: CGPoint, size: NSSize) {
+    super.init(
+      contentRect: NSRect(origin: origin, size: size),
+      styleMask: [.borderless, .nonactivatingPanel],
+      backing: .buffered,
+      defer: false
+    )
+  }
+
+  override var canBecomeKey: Bool { true }
+  override var canBecomeMain: Bool { false }
+}
 
 @MainActor
 final class DevicePreviewWindow {
-  private var panel: NSPanel?
+  private var panel: DevicePreviewPanel?
   private var previewLayer: AVCaptureVideoPreviewLayer?
   nonisolated(unsafe) private var moveObserver: NSObjectProtocol?
   private var appearanceObserver: NSKeyValueObservation?
@@ -12,11 +50,19 @@ final class DevicePreviewWindow {
   private let videoWidth: CGFloat = 270
   private let videoHeight: CGFloat = 585
   private let cornerRadius: CGFloat = 14
+  private let buttonAreaHeight: CGFloat = 64
 
   private var totalWidth: CGFloat { videoWidth + padding * 2 }
-  private var totalHeight: CGFloat { videoHeight + padding * 2 }
+  private var totalHeight: CGFloat { videoHeight + padding * 2 + buttonAreaHeight }
 
-  func show(captureSession: AVCaptureSession, deviceName: String) {
+  func show(
+    captureSession: AVCaptureSession,
+    deviceName: String,
+    delay: Int,
+    onCountdownStart: @escaping () -> Void,
+    onCancel: @escaping () -> Void,
+    onStart: @escaping () -> Void
+  ) {
     if panel == nil {
       createPanel()
     }
@@ -25,8 +71,11 @@ final class DevicePreviewWindow {
     previewLayer = nil
 
     guard let contentView = panel?.contentView else { return }
+    contentView.subviews.removeAll()
 
-    let videoView = NSView(frame: NSRect(x: padding, y: padding, width: videoWidth, height: videoHeight))
+    let videoView = NSView(
+      frame: NSRect(x: padding, y: padding + buttonAreaHeight, width: videoWidth, height: videoHeight)
+    )
     videoView.wantsLayer = true
     videoView.layer?.cornerRadius = cornerRadius - 3
     videoView.layer?.masksToBounds = true
@@ -39,8 +88,37 @@ final class DevicePreviewWindow {
     self.previewLayer = layer
 
     contentView.addSubview(videoView)
+
+    let buttonContent = DeviceStartRecordingView(
+      delay: delay,
+      onCountdownStart: onCountdownStart,
+      onCancel: onCancel,
+      onStart: onStart
+    )
+    let hostingView = NSHostingView(rootView: buttonContent)
+    hostingView.frame = NSRect(x: 0, y: 0, width: totalWidth, height: buttonAreaHeight)
+    contentView.addSubview(hostingView)
+
     panel?.title = deviceName
-    panel?.orderFrontRegardless()
+    panel?.makeKeyAndOrderFront(nil)
+  }
+
+  func hideButton() {
+    guard let contentView = panel?.contentView else { return }
+    for subview in contentView.subviews where subview is NSHostingView<DeviceStartRecordingView> {
+      subview.removeFromSuperview()
+    }
+    let videoOnlyHeight = videoHeight + padding * 2
+    for subview in contentView.subviews {
+      subview.frame.origin.y = padding
+    }
+    contentView.frame.size.height = videoOnlyHeight
+    guard let panel else { return }
+    var frame = panel.frame
+    let heightDiff = frame.height - videoOnlyHeight
+    frame.origin.y += heightDiff
+    frame.size.height = videoOnlyHeight
+    panel.setFrame(frame, display: true)
   }
 
   func close() {
@@ -61,11 +139,9 @@ final class DevicePreviewWindow {
   private func createPanel() {
     let origin = resolvedOrigin()
 
-    let panel = NSPanel(
-      contentRect: NSRect(origin: origin, size: NSSize(width: totalWidth, height: totalHeight)),
-      styleMask: [.borderless, .nonactivatingPanel],
-      backing: .buffered,
-      defer: false
+    let panel = DevicePreviewPanel(
+      origin: origin,
+      size: NSSize(width: totalWidth, height: totalHeight)
     )
     panel.level = NSWindow.Level(rawValue: NSWindow.Level.screenSaver.rawValue + 1)
     panel.isFloatingPanel = true
@@ -76,7 +152,9 @@ final class DevicePreviewWindow {
     panel.sharingType = Window.sharingType
     panel.collectionBehavior = [.canJoinAllSpaces]
 
-    let contentView = NSView(frame: NSRect(origin: .zero, size: NSSize(width: totalWidth, height: totalHeight)))
+    let contentView = NSView(
+      frame: NSRect(origin: .zero, size: NSSize(width: totalWidth, height: totalHeight))
+    )
     contentView.wantsLayer = true
     contentView.layer?.cornerRadius = cornerRadius
     contentView.layer?.masksToBounds = true
