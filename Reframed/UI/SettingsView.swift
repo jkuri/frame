@@ -6,6 +6,7 @@ private enum SettingsTab: String, CaseIterable {
   case recording = "Recording"
   case devices = "Devices"
   case shortcuts = "Shortcuts"
+  case about = "About"
 
   var icon: String {
     switch self {
@@ -13,6 +14,7 @@ private enum SettingsTab: String, CaseIterable {
     case .recording: "record.circle"
     case .devices: "mic.and.signal.meter"
     case .shortcuts: "keyboard"
+    case .about: "info.circle"
     }
   }
 }
@@ -27,6 +29,8 @@ struct SettingsView: View {
   @State var appearance: String = ConfigService.shared.appearance
   @State var showMicPopover = false
   @State var showCameraPopover = false
+  @State var updateCheckInProgress = false
+  @State var updateStatus: UpdateStatus? = nil
   @Environment(\.colorScheme) private var colorScheme
 
   let fpsOptions = [24, 30, 40, 50, 60]
@@ -66,12 +70,14 @@ struct SettingsView: View {
             devicesContent
           case .shortcuts:
             shortcutsContent
+          case .about:
+            aboutContent
           }
         }
         .padding(Layout.settingsPadding)
       }
     }
-    .frame(width: 600, height: 500)
+    .frame(width: 700, height: 540)
     .background(ReframedColors.panelBackground)
   }
 
@@ -168,6 +174,13 @@ struct SettingsView: View {
       projectFolder = path
       ConfigService.shared.projectFolder = path
     }
+  }
+
+  func checkForUpdates() async {
+    updateCheckInProgress = true
+    updateStatus = nil
+    updateStatus = await UpdateChecker.checkForUpdates()
+    updateCheckInProgress = false
   }
 
   func chooseOutputFolder() {

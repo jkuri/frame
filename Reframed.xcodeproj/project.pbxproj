@@ -145,6 +145,8 @@
 		A10000000000000000000048 /* CustomToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000048 /* CustomToggle.swift */; };
 		A10000000000000000000049 /* IconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000049 /* IconButton.swift */; };
 		A1000000000000000000004A /* InlineEditableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000004A /* InlineEditableText.swift */; };
+		A1000000000000000000004B /* SettingsAboutTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000004B /* SettingsAboutTab.swift */; };
+		A1000000000000000000004C /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000004C /* UpdateChecker.swift */; };
 		A2000000000000000000002A /* EditorView+TransportBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002A /* EditorView+TransportBar.swift */; };
 		A2000000000000000000002B /* ResizePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002B /* ResizePopover.swift */; };
 		A2000000000000000000002C /* ExportResultSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002C /* ExportResultSheet.swift */; };
@@ -291,6 +293,8 @@
 		B10000000000000000000048 /* CustomToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToggle.swift; sourceTree = "<group>"; };
 		B10000000000000000000049 /* IconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconButton.swift; sourceTree = "<group>"; };
 		B1000000000000000000004A /* InlineEditableText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineEditableText.swift; sourceTree = "<group>"; };
+		B1000000000000000000004B /* SettingsAboutTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAboutTab.swift; sourceTree = "<group>"; };
+		B1000000000000000000004C /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		B2000000000000000000002A /* EditorView+TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorView+TransportBar.swift"; sourceTree = "<group>"; };
 		B2000000000000000000002B /* ResizePopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizePopover.swift; sourceTree = "<group>"; };
 		B2000000000000000000002C /* ExportResultSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportResultSheet.swift; sourceTree = "<group>"; };
@@ -417,6 +421,7 @@
 				DA000000000000000000001D /* RNNoiseProcessor.swift */,
 				CB0000000000000000000002 /* CIImageExtensions.swift */,
 				B1000000000000000000003E /* KeyboardShortcut.swift */,
+				B1000000000000000000004C /* UpdateChecker.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -475,6 +480,7 @@
 				B10000000000000000000048 /* CustomToggle.swift */,
 				B10000000000000000000049 /* IconButton.swift */,
 				B1000000000000000000004A /* InlineEditableText.swift */,
+				B1000000000000000000004B /* SettingsAboutTab.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -801,6 +807,8 @@
 				A10000000000000000000048 /* CustomToggle.swift in Sources */,
 				A10000000000000000000049 /* IconButton.swift in Sources */,
 				A1000000000000000000004A /* InlineEditableText.swift in Sources */,
+				A1000000000000000000004B /* SettingsAboutTab.swift in Sources */,
+				A1000000000000000000004C /* UpdateChecker.swift in Sources */,
 				A2000000000000000000002A /* EditorView+TransportBar.swift in Sources */,
 				A2000000000000000000002B /* ResizePopover.swift in Sources */,
 				A2000000000000000000002C /* ExportResultSheet.swift in Sources */,
