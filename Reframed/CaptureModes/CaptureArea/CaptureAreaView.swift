@@ -57,8 +57,13 @@ struct CaptureAreaView: View {
       .background(ReframedColors.panelBackground)
       .clipShape(RoundedRectangle(cornerRadius: 6))
 
-      StartRecordingButton(action: { session.overlayView?.confirmSelection() })
-        .padding(.top, 8)
+      StartRecordingButton(
+        delay: session.options.timerDelay.rawValue,
+        onCountdownStart: { session.hideToolbar() },
+        onCancel: { session.cancelSelection() },
+        action: { session.overlayView?.confirmSelection() }
+      )
+      .padding(.top, 8)
     }
     .frame(width: 260)
     .onReceive(NotificationCenter.default.publisher(for: .selectionRectChanged)) { notification in

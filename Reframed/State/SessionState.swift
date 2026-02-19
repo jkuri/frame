@@ -36,8 +36,6 @@ final class SessionState {
   private var startRecordingWindow: StartRecordingWindow?
   private var editorWindows: [EditorWindow] = []
   private var webcamPreviewWindow: WebcamPreviewWindow?
-  private var countdownOverlayWindow: CountdownOverlayWindow?
-  private var countdownTask: Task<Void, Never>?
   private var persistentWebcam: WebcamCapture?
   private var verifiedCameraInfo: VerifiedCamera?
   private var mouseClickMonitor: MouseClickMonitor?
@@ -168,7 +166,10 @@ final class SessionState {
   }
 
   func showToolbar() {
-    guard toolbarWindow == nil else { return }
+    if let existing = toolbarWindow {
+      existing.makeKeyAndOrderFront(nil)
+      return
+    }
 
     let window = CaptureToolbarWindow(session: self) { [weak self] in
       MainActor.assumeIsolated {
@@ -194,12 +195,13 @@ final class SessionState {
     case .none:
       break
     case .entireScreen:
+      hideToolbar()
       showStartRecordingOverlay()
     case .selectedWindow:
-
+      hideToolbar()
       startWindowSelection()
     case .selectedArea:
-
+      hideToolbar()
       do {
         try beginSelection()
       } catch {
@@ -296,7 +298,9 @@ final class SessionState {
     windowSelectionCoordinator?.destroyOverlay()
     windowSelectionCoordinator = nil
     overlayView = nil
+    hideStartRecordingOverlay()
     transition(to: .idle)
+    showToolbar()
     logger.info("Selection cancelled")
   }
 
@@ -305,42 +309,7 @@ final class SessionState {
   }
 
   private func beginRecordingWithCountdown() {
-    let delay = options.timerDelay.rawValue
-    guard delay > 0 else {
-      Task {
-        do {
-          try await startRecording()
-        } catch {
-          logger.error("Failed to start recording: \(error)")
-          cleanupAfterRecordingFailure()
-          showError(error.localizedDescription)
-        }
-      }
-      return
-    }
-
-    transition(to: .countdown(remaining: delay))
-
-    if let screen = NSScreen.main {
-      let overlay = CountdownOverlayWindow(screen: screen, remaining: delay)
-      overlay.orderFrontRegardless()
-      countdownOverlayWindow = overlay
-    }
-
-    countdownTask = Task {
-      var remaining = delay
-      while remaining > 0 {
-        try? await Task.sleep(for: .seconds(1))
-        if Task.isCancelled { return }
-        remaining -= 1
-        if remaining > 0 {
-          transition(to: .countdown(remaining: remaining))
-          countdownOverlayWindow?.updateCountdown(remaining)
-        }
-      }
-
-      dismissCountdownOverlay()
-
+    Task {
       do {
         try await startRecording()
       } catch {
@@ -349,19 +318,6 @@ final class SessionState {
         showError(error.localizedDescription)
       }
     }
-  }
-
-  func cancelCountdown() {
-    countdownTask?.cancel()
-    countdownTask = nil
-    dismissCountdownOverlay()
-    cleanupAfterRecordingFailure()
-  }
-
-  private func dismissCountdownOverlay() {
-    countdownOverlayWindow?.orderOut(nil)
-    countdownOverlayWindow?.contentView = nil
-    countdownOverlayWindow = nil
   }
 
   private func cleanupAfterRecordingFailure() {
@@ -595,9 +551,6 @@ final class SessionState {
   }
 
   func restartRecording() {
-    countdownTask?.cancel()
-    countdownTask = nil
-    dismissCountdownOverlay()
     mouseClickMonitor?.stop()
     mouseClickMonitor = nil
 
@@ -671,6 +624,7 @@ final class SessionState {
       if windowPositionObserver == nil, case .window(let win) = captureTarget {
         startWindowTracking(windowID: win.windowID)
       }
+      showToolbar()
     case .paused:
       break
     default:
@@ -700,14 +654,27 @@ final class SessionState {
     guard startRecordingWindow == nil else { return }
     guard let screen = NSScreen.main else { return }
 
-    let window = StartRecordingWindow(screen: screen) { [weak self] in
-      MainActor.assumeIsolated {
-        self?.startRecordingFromOverlay()
+    let window = StartRecordingWindow(
+      screen: screen,
+      delay: options.timerDelay.rawValue,
+      onCountdownStart: { [weak self] in
+        MainActor.assumeIsolated {
+          self?.toolbarWindow?.orderOut(nil)
+        }
+      },
+      onCancel: { [weak self] in
+        MainActor.assumeIsolated {
+          self?.cancelSelection()
+        }
+      },
+      onStart: { [weak self] in
+        MainActor.assumeIsolated {
+          self?.startRecordingFromOverlay()
+        }
       }
-    }
+    )
     startRecordingWindow = window
-    window.orderFrontRegardless()
-    toolbarWindow?.makeKeyAndOrderFront(nil)
+    window.makeKeyAndOrderFront(nil)
   }
 
   private func hideStartRecordingOverlay() {

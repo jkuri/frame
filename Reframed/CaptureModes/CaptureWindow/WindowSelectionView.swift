@@ -84,7 +84,11 @@ struct WindowSelectionView: View {
               }
             }
 
-            StartRecordingButton {
+            StartRecordingButton(
+              delay: session.options.timerDelay.rawValue,
+              onCountdownStart: { session.hideToolbar() },
+              onCancel: { session.cancelSelection() }
+            ) {
               Task {
                 await windowController.updateSCWindows()
                 if let scWindow = windowController.scWindows.first(where: {

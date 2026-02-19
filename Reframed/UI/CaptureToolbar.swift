@@ -13,8 +13,6 @@ struct CaptureToolbar: View {
     let _ = colorScheme
     HStack(spacing: 0) {
       switch session.state {
-      case .countdown(let remaining):
-        countdownContent(remaining: remaining)
       case .recording(let startedAt):
         recordingControls(startedAt: startedAt, isPaused: false)
       case .paused(let elapsed):
@@ -194,27 +192,6 @@ struct CaptureToolbar: View {
           SettingsView(options: session.options)
             .presentationBackground(ReframedColors.panelBackground)
         }
-      }
-    }
-  }
-
-  private func countdownContent(remaining: Int) -> some View {
-    Group {
-      Image(systemName: "timer")
-        .font(.system(size: 14))
-        .foregroundStyle(ReframedColors.secondaryText)
-        .padding(.leading, 4)
-
-      Text("Recording in \(remaining)...")
-        .font(.system(size: 12, weight: .medium))
-        .foregroundStyle(ReframedColors.primaryText)
-        .padding(.horizontal, 10)
-        .frame(height: 52)
-
-      ToolbarDivider()
-
-      ToolbarActionButton(icon: "xmark", tooltip: "Cancel") {
-        session.cancelCountdown()
       }
     }
   }

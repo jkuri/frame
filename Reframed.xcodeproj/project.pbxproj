@@ -86,7 +86,6 @@
 		A2000000000000000000000F /* CameraVideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000F /* CameraVideoCompositor.swift */; };
 		A20000000000000000000010 /* VideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000010 /* VideoCompositor.swift */; };
 		A20000000000000000000011 /* SendableBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000011 /* SendableBox.swift */; };
-		A20000000000000000000012 /* CountdownOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000012 /* CountdownOverlayWindow.swift */; };
 		A3000000000000000000001B /* ReframedProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3000000000000000000001B /* ReframedProject.swift */; };
 		A3000000000000000000001C /* ProjectMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3000000000000000000001C /* ProjectMetadata.swift */; };
 		A40000000000000000000001 /* SoundEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000001 /* SoundEffect.swift */; };
@@ -232,7 +231,6 @@
 		B2000000000000000000000F /* CameraVideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraVideoCompositor.swift; sourceTree = "<group>"; };
 		B20000000000000000000010 /* VideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCompositor.swift; sourceTree = "<group>"; };
 		B20000000000000000000011 /* SendableBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendableBox.swift; sourceTree = "<group>"; };
-		B20000000000000000000012 /* CountdownOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownOverlayWindow.swift; sourceTree = "<group>"; };
 		B3000000000000000000001B /* ReframedProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReframedProject.swift; sourceTree = "<group>"; };
 		B3000000000000000000001C /* ProjectMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectMetadata.swift; sourceTree = "<group>"; };
 		B40000000000000000000001 /* SoundEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEffect.swift; sourceTree = "<group>"; };
@@ -450,7 +448,6 @@
 				B1000000000000000000002B /* PermissionsView.swift */,
 				B1000000000000000000002C /* StartRecordingButton.swift */,
 				B1000000000000000000002D /* SettingsView.swift */,
-				B20000000000000000000012 /* CountdownOverlayWindow.swift */,
 				B70000000000000000000004 /* DevicePopover.swift */,
 				B80000000000000000000001 /* MenuBarView.swift */,
 				B80000000000000000000002 /* HoverEffect.swift */,
@@ -740,7 +737,6 @@
 				A2000000000000000000000F /* CameraVideoCompositor.swift in Sources */,
 				A20000000000000000000010 /* VideoCompositor.swift in Sources */,
 				A20000000000000000000011 /* SendableBox.swift in Sources */,
-				A20000000000000000000012 /* CountdownOverlayWindow.swift in Sources */,
 				A3000000000000000000001B /* ReframedProject.swift in Sources */,
 				A3000000000000000000001C /* ProjectMetadata.swift in Sources */,
 				A40000000000000000000001 /* SoundEffect.swift in Sources */,

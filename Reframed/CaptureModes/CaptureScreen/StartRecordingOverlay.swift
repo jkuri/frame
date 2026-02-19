@@ -4,6 +4,9 @@ import SwiftUI
 struct StartRecordingOverlayView: View {
   let displayName: String
   let resolution: String
+  let delay: Int
+  var onCountdownStart: (() -> Void)?
+  let onCancel: () -> Void
   let onStart: () -> Void
 
   var body: some View {
@@ -16,7 +19,12 @@ struct StartRecordingOverlayView: View {
         .font(.system(size: 12))
         .foregroundStyle(ReframedColors.secondaryText)
 
-      StartRecordingButton(action: onStart)
+      StartRecordingButton(
+        delay: delay,
+        onCountdownStart: onCountdownStart,
+        onCancel: { onCancel() },
+        action: onStart
+      )
     }
     .padding(24)
     .background(ReframedColors.panelBackground)
@@ -24,12 +32,23 @@ struct StartRecordingOverlayView: View {
     .shadow(radius: 20)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(.black.opacity(0.4))
+    .overlay {
+      Button("") { onCancel() }
+        .keyboardShortcut(.escape, modifiers: [])
+        .opacity(0)
+    }
   }
 }
 
 @MainActor
 final class StartRecordingWindow: NSPanel {
-  init(screen: NSScreen, onStart: @escaping @MainActor () -> Void) {
+  init(
+    screen: NSScreen,
+    delay: Int,
+    onCountdownStart: @escaping @MainActor () -> Void,
+    onCancel: @escaping @MainActor () -> Void,
+    onStart: @escaping @MainActor () -> Void
+  ) {
     super.init(
       contentRect: screen.frame,
       styleMask: [.borderless, .nonactivatingPanel],
@@ -53,6 +72,9 @@ final class StartRecordingWindow: NSPanel {
     let view = StartRecordingOverlayView(
       displayName: displayName,
       resolution: resolution,
+      delay: delay,
+      onCountdownStart: onCountdownStart,
+      onCancel: onCancel,
       onStart: onStart
     )
     let hostingView = NSHostingView(rootView: view)
@@ -62,6 +84,6 @@ final class StartRecordingWindow: NSPanel {
     setFrame(screen.frame, display: true)
   }
 
-  override var canBecomeKey: Bool { false }
+  override var canBecomeKey: Bool { true }
   override var canBecomeMain: Bool { false }
 }
