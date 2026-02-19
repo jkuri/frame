@@ -143,6 +143,14 @@ final class SessionState {
       windowID: windowID
     ) { [weak self] rect in
       self?.selectionCoordinator?.updateRecordingBorder(screenRect: rect)
+      if let recorder = self?.cursorMetadataRecorder {
+        let screenHeight = NSScreen.main?.frame.height ?? 0
+        let sckOrigin = CGPoint(
+          x: rect.origin.x,
+          y: screenHeight - rect.origin.y - rect.height
+        )
+        recorder.updateCaptureOrigin(sckOrigin)
+      }
     }
   }
 

@@ -41,6 +41,13 @@ final class CursorMetadataRecorder: @unchecked Sendable {
     lock.unlock()
   }
 
+  func updateCaptureOrigin(_ origin: CGPoint) {
+    lock.lock()
+    self.captureOriginX = Double(origin.x)
+    self.captureOriginY = Double(origin.y)
+    lock.unlock()
+  }
+
   func start() {
     lock.lock()
     startHostTime = CMClockGetTime(CMClockGetHostTimeClock())
