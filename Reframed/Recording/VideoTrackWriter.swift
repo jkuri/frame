@@ -30,7 +30,8 @@ final class VideoTrackWriter: @unchecked Sendable {
     height: Int,
     fps: Int = 60,
     clock: SharedRecordingClock,
-    captureQuality: CaptureQuality = .standard
+    captureQuality: CaptureQuality = .standard,
+    isWebcam: Bool = false
   ) throws {
     self.outputURL = outputURL
     self.clock = clock
@@ -39,9 +40,10 @@ final class VideoTrackWriter: @unchecked Sendable {
       try FileManager.default.removeItem(at: outputURL)
     }
 
-    let fileType: AVFileType = captureQuality.isProRes ? .mov : .mp4
+    let fileType: AVFileType = captureQuality.isProRes && !isWebcam ? .mov : .mp4
     let writer = try AVAssetWriter(outputURL: outputURL, fileType: fileType)
 
+    let bitRateMultiplier = isWebcam ? 1 : 5
     let videoSettings: [String: Any]
     switch captureQuality {
     case .standard:
@@ -55,7 +57,7 @@ final class VideoTrackWriter: @unchecked Sendable {
           AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
         ] as [String: Any],
         AVVideoCompressionPropertiesKey: [
-          AVVideoAverageBitRateKey: width * height * 5,
+          AVVideoAverageBitRateKey: width * height * bitRateMultiplier,
           AVVideoProfileLevelKey: kVTProfileLevel_HEVC_Main10_AutoLevel,
           AVVideoExpectedSourceFrameRateKey: fps,
           AVVideoAllowFrameReorderingKey: false,

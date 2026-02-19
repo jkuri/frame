@@ -173,7 +173,8 @@ actor RecordingCoordinator {
         width: camW,
         height: camH,
         fps: fps,
-        clock: clock
+        clock: clock,
+        isWebcam: true
       )
       self.webcamWriter = camWriter
       cam.attachWriter(camWriter)
@@ -338,7 +339,8 @@ actor RecordingCoordinator {
         width: camW,
         height: camH,
         fps: fps,
-        clock: clock
+        clock: clock,
+        isWebcam: true
       )
       self.webcamWriter = camWriter
       cam.attachWriter(camWriter)
