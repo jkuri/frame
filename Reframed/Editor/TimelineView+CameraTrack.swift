@@ -85,7 +85,7 @@ extension TimelineView {
     ) {
       CameraRegionEditPopover(
         region: region,
-        maxCameraRelativeWidth: editorState.maxCameraRelativeWidth,
+        maxCameraRelativeWidth: editorState.maxCameraRelativeWidth(for: region.customCameraAspect ?? editorState.cameraAspect),
         onChangeType: { newType in
           editorState.updateCameraRegionType(regionId: region.id, type: newType)
         },
@@ -164,14 +164,25 @@ extension TimelineView {
       return (region.startSeconds, region.endSeconds)
     }
     let timeDelta = (cameraDragOffset / width) * totalSeconds
+    let regions = editorState.cameraRegions
+    guard let idx = regions.firstIndex(where: { $0.id == region.id }) else {
+      return (region.startSeconds, region.endSeconds)
+    }
+    let dur = totalSeconds
+    let prevEnd: Double = idx > 0 ? regions[idx - 1].endSeconds : 0
+    let nextStart: Double = idx < regions.count - 1 ? regions[idx + 1].startSeconds : dur
 
     switch dt {
     case .move:
-      return (region.startSeconds + timeDelta, region.endSeconds + timeDelta)
+      let regionDur = region.endSeconds - region.startSeconds
+      let clampedStart = max(prevEnd, min(nextStart - regionDur, region.startSeconds + timeDelta))
+      return (clampedStart, clampedStart + regionDur)
     case .resizeLeft:
-      return (region.startSeconds + timeDelta, region.endSeconds)
+      let newStart = max(prevEnd, min(region.endSeconds - 0.01, region.startSeconds + timeDelta))
+      return (newStart, region.endSeconds)
     case .resizeRight:
-      return (region.startSeconds, region.endSeconds + timeDelta)
+      let newEnd = max(region.startSeconds + 0.01, min(nextStart, region.endSeconds + timeDelta))
+      return (region.startSeconds, newEnd)
     }
   }
 

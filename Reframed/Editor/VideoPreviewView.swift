@@ -437,6 +437,7 @@ final class VideoPreviewContainer: NSView {
       webcamView.layer?.borderColor = NSColor.clear.cgColor
       webcamView.layer?.backgroundColor = NSColor.clear.cgColor
 
+      webcamPlayerLayer.setAffineTransform(.identity)
       let gravity: AVLayerVideoGravity =
         currentFullscreenFillMode == .fill
         ? .resizeAspectFill : .resizeAspect
@@ -506,6 +507,7 @@ final class VideoPreviewContainer: NSView {
       ? currentCameraBorderColor
       : NSColor.clear.cgColor
     webcamPlayerLayer.videoGravity = .resizeAspectFill
+    webcamPlayerLayer.setAffineTransform(.identity)
     webcamPlayerLayer.frame = webcamView.bounds
     webcamPlayerLayer.setAffineTransform(
       currentCameraMirrored ? CGAffineTransform(scaleX: -1, y: 1) : .identity

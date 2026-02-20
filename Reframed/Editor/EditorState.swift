@@ -668,7 +668,7 @@ final class EditorState {
       var layout = cameraRegions[idx].customLayout
     else { return }
     let regionAspect = cameraRegions[idx].customCameraAspect ?? cameraAspect
-    layout.relativeWidth = min(layout.relativeWidth, maxCameraRelativeWidth)
+    layout.relativeWidth = min(layout.relativeWidth, maxCameraRelativeWidth(for: regionAspect))
     let relH: CGFloat = {
       guard let ws = result.webcamSize else { return layout.relativeWidth * 0.75 }
       let canvas = canvasSize(for: result.screenSize)
@@ -829,9 +829,13 @@ final class EditorState {
   }
 
   var maxCameraRelativeWidth: CGFloat {
+    maxCameraRelativeWidth(for: cameraAspect)
+  }
+
+  func maxCameraRelativeWidth(for aspect: CameraAspect) -> CGFloat {
     guard let ws = result.webcamSize else { return 1.0 }
     let canvas = canvasSize(for: result.screenSize)
-    let hwRatio = cameraAspect.heightToWidthRatio(webcamSize: ws)
+    let hwRatio = aspect.heightToWidthRatio(webcamSize: ws)
     let canvasRatio = canvas.width / max(canvas.height, 1)
     return min(1.0, 1.0 / max(hwRatio * canvasRatio, 0.001))
   }
