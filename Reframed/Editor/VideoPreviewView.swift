@@ -620,8 +620,9 @@ final class VideoPreviewContainer: NSView {
       }
 
       webcamWrapper.layer?.shadowOpacity = 0
-      screenContainerLayer.isHidden = true
-      cursorOverlay.isHidden = true
+      let fsTransitioning = hasActiveTransition
+      screenContainerLayer.isHidden = !fsTransitioning
+      cursorOverlay.isHidden = !fsTransitioning
       webcamWrapper.frame = canvasRect
       webcamView.frame = webcamWrapper.bounds
       webcamView.layer?.cornerRadius = 0

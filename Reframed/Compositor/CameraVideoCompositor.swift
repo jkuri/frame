@@ -418,7 +418,9 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
               drawRect = aspectFillRect(imageSize: virtualSize, in: fullRect)
             }
             context.saveGState()
-            drawBackground(in: context, rect: fullRect, instruction: instruction, colorSpace: colorSpace)
+            if regionTransition == nil || regionTransition!.type == .none {
+              drawBackground(in: context, rect: fullRect, instruction: instruction, colorSpace: colorSpace)
+            }
             context.clip(to: fullRect)
             if instruction.cameraMirrored {
               context.translateBy(x: drawRect.midX, y: 0)
