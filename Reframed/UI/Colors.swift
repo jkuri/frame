@@ -2,6 +2,18 @@ import AppKit
 import CoreGraphics
 import SwiftUI
 
+extension Color {
+  static func hex(_ hex: String) -> Color {
+    let h = hex.hasPrefix("#") ? String(hex.dropFirst()) : hex
+    guard h.count == 6, let val = UInt64(h, radix: 16) else { return .clear }
+    return Color(
+      red: Double((val >> 16) & 0xFF) / 255.0,
+      green: Double((val >> 8) & 0xFF) / 255.0,
+      blue: Double(val & 0xFF) / 255.0
+    )
+  }
+}
+
 struct ColorPreset: Identifiable, Sendable {
   let id: String
   let name: String
@@ -150,7 +162,7 @@ enum ReframedColors {
 
   static let screenTrackColor = Color(red: 0.23, green: 0.51, blue: 0.96)
   static let webcamTrackColor = Color(red: 0.13, green: 0.77, blue: 0.37)
-  static let webcamHiddenTrackColor = Color(red: 0.94, green: 0.55, blue: 0.20)
+  static let webcamHiddenTrackColor = Color.hex("#fde047")
 
   static let systemAudioColor = Color(red: 0.925, green: 0.282, blue: 0.600)
   static let micAudioColor = Color(red: 0.94, green: 0.27, blue: 0.27)

@@ -57,9 +57,18 @@ struct AudioRegionData: Codable, Sendable, Identifiable, Equatable {
   var endSeconds: Double
 }
 
-enum CameraRegionType: String, Codable, Sendable {
+enum CameraRegionType: String, Codable, Sendable, CaseIterable, Identifiable {
   case fullscreen
   case hidden
+
+  var id: String { rawValue }
+
+  var label: String {
+    switch self {
+    case .fullscreen: "Fullscreen"
+    case .hidden: "Hidden"
+    }
+  }
 }
 
 struct CameraRegionData: Codable, Sendable, Identifiable, Equatable {

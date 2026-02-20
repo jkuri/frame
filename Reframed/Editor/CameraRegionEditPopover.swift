@@ -9,53 +9,41 @@ struct CameraRegionEditPopover: View {
 
   var body: some View {
     let _ = colorScheme
-    VStack(alignment: .leading, spacing: 0) {
+    VStack(alignment: .leading, spacing: Layout.regionPopoverSpacing) {
       SectionHeader(title: "Camera Region")
 
-      VStack(alignment: .leading, spacing: 4) {
-        Text("Type")
-          .font(.system(size: 12))
-          .foregroundStyle(ReframedColors.secondaryText)
-        Picker(
-          "",
-          selection: Binding(
-            get: { regionType },
-            set: { onChangeType($0) }
-          )
-        ) {
-          Text("Fullscreen").tag(CameraRegionType.fullscreen)
-          Text("Hidden").tag(CameraRegionType.hidden)
-        }
-        .pickerStyle(.segmented)
-        .labelsHidden()
-      }
+      FullWidthSegmentPicker(
+        items: CameraRegionType.allCases,
+        label: { $0.label },
+        selection: Binding(
+          get: { regionType },
+          set: { onChangeType($0) }
+        )
+      )
       .padding(.horizontal, 12)
       .padding(.vertical, 4)
-
-      Divider()
-        .background(ReframedColors.divider)
-        .padding(.vertical, 4)
 
       Button {
         onRemove()
       } label: {
-        HStack(spacing: 8) {
+        HStack(spacing: 5) {
           Image(systemName: "trash")
-            .font(.system(size: 11))
-            .frame(width: 14)
+            .font(.system(size: 12, weight: .semibold))
           Text("Remove")
-            .font(.system(size: 13))
-          Spacer()
+            .font(.system(size: 12, weight: .semibold))
         }
-        .foregroundStyle(.red.opacity(0.8))
-        .padding(.horizontal, 12)
-        .padding(.vertical, 5)
-        .contentShape(Rectangle())
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity)
+        .frame(height: 32)
+        .background(Color.red.opacity(0.8))
+        .clipShape(RoundedRectangle(cornerRadius: 7))
       }
       .buttonStyle(.plain)
+      .padding(.horizontal, 12)
+      .padding(.vertical, 8)
     }
     .padding(.vertical, 8)
-    .frame(width: 200)
+    .frame(width: Layout.regionPopoverWidth)
     .popoverContainerStyle()
   }
 }
