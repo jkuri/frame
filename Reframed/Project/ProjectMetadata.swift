@@ -57,6 +57,18 @@ struct AudioRegionData: Codable, Sendable, Identifiable, Equatable {
   var endSeconds: Double
 }
 
+enum CameraRegionType: String, Codable, Sendable {
+  case fullscreen
+  case hidden
+}
+
+struct CameraRegionData: Codable, Sendable, Identifiable, Equatable {
+  var id: UUID = UUID()
+  var startSeconds: Double
+  var endSeconds: Double
+  var type: CameraRegionType = .fullscreen
+}
+
 struct EditorStateData: Codable, Sendable {
   var trimStartSeconds: Double
   var trimEndSeconds: Double
@@ -82,6 +94,7 @@ struct EditorStateData: Codable, Sendable {
   var audioSettings: AudioSettingsData?
   var systemAudioRegions: [AudioRegionData]?
   var micAudioRegions: [AudioRegionData]?
+  var cameraRegions: [CameraRegionData]?
   var cameraFullscreenRegions: [AudioRegionData]?
 }
 

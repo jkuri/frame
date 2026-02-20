@@ -134,8 +134,8 @@ extension PropertiesPanel {
         )
       }
     }
-    .disabled(!editorState.webcamEnabled || editorState.cameraFullscreenRegions.isEmpty)
-    .opacity(editorState.webcamEnabled && !editorState.cameraFullscreenRegions.isEmpty ? 1 : 0.5)
+    .disabled(!editorState.webcamEnabled || !editorState.cameraRegions.contains { $0.type == .fullscreen })
+    .opacity(editorState.webcamEnabled && editorState.cameraRegions.contains { $0.type == .fullscreen } ? 1 : 0.5)
   }
 
   private var borderColorPickerButton: some View {

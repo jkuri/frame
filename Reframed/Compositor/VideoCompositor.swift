@@ -20,6 +20,7 @@ enum VideoCompositor {
     systemAudioRegions: [CMTimeRange]? = nil,
     micAudioRegions: [CMTimeRange]? = nil,
     cameraFullscreenRegions: [CMTimeRange]? = nil,
+    cameraHiddenRegions: [CMTimeRange]? = nil,
     backgroundStyle: BackgroundStyle = .none,
     backgroundImageURL: URL? = nil,
     backgroundImageFillMode: BackgroundImageFillMode = .fill,
@@ -262,6 +263,15 @@ enum VideoCompositor {
         zoomTimeline: zoomTimeline,
         trimStartSeconds: CMTimeGetSeconds(effectiveTrim.start),
         cameraFullscreenRegions: (cameraFullscreenRegions ?? []).compactMap { region in
+          let overlapStart = CMTimeMaximum(region.start, effectiveTrim.start)
+          let overlapEnd = CMTimeMinimum(region.end, effectiveTrim.end)
+          guard CMTimeCompare(overlapEnd, overlapStart) > 0 else { return nil }
+          return CMTimeRange(
+            start: CMTimeSubtract(overlapStart, effectiveTrim.start),
+            end: CMTimeSubtract(overlapEnd, effectiveTrim.start)
+          )
+        },
+        cameraHiddenRegions: (cameraHiddenRegions ?? []).compactMap { region in
           let overlapStart = CMTimeMaximum(region.start, effectiveTrim.start)
           let overlapEnd = CMTimeMinimum(region.end, effectiveTrim.end)
           guard CMTimeCompare(overlapEnd, overlapStart) > 0 else { return nil }

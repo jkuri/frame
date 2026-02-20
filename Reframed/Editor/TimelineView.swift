@@ -44,6 +44,7 @@ struct TimelineView: View {
   @State var cameraDragOffset: CGFloat = 0
   @State var cameraDragType: RegionDragType?
   @State var cameraDragRegionId: UUID?
+  @State var popoverCameraRegionId: UUID?
 
   private var showSystemAudioTrack: Bool {
     !systemAudioSamples.isEmpty || editorState.hasSystemAudio

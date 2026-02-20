@@ -3,7 +3,7 @@ import SwiftUI
 extension TimelineView {
   func cameraTrackContent(width: CGFloat) -> some View {
     let h = trackHeight
-    let regions = editorState.cameraFullscreenRegions
+    let regions = editorState.cameraRegions
 
     return ZStack(alignment: .leading) {
       ForEach(regions) { region in
@@ -17,7 +17,7 @@ extension TimelineView {
       if regions.isEmpty {
         let viewportWidth = width / timelineZoom
         let visibleCenterX = scrollOffset + viewportWidth / 2
-        Text("Double-click to add fullscreen region")
+        Text("Double-click to add camera region")
           .font(.system(size: 11))
           .foregroundStyle(ReframedColors.dimLabel)
           .fixedSize()
@@ -45,16 +45,20 @@ extension TimelineView {
 
   @ViewBuilder
   func cameraRegionView(
-    region: AudioRegionData,
+    region: CameraRegionData,
     width: CGFloat,
     height: CGFloat
   ) -> some View {
-    let accentColor = ReframedColors.webcamTrackColor
+    let accentColor =
+      region.type == .fullscreen
+      ? ReframedColors.webcamTrackColor
+      : ReframedColors.webcamHiddenTrackColor
     let effective = effectiveCameraRegion(region, width: width)
     let startX = max(0, CGFloat(effective.start / totalSeconds) * width)
     let endX = min(width, CGFloat(effective.end / totalSeconds) * width)
     let regionWidth = max(4, endX - startX)
     let edgeThreshold = min(8.0, regionWidth * 0.2)
+    let isPopoverShown = popoverCameraRegionId == region.id
 
     ZStack {
       RoundedRectangle(cornerRadius: 6)
@@ -67,8 +71,27 @@ extension TimelineView {
     .contentShape(Rectangle())
     .overlay {
       RightClickOverlay {
-        editorState.removeCameraRegion(regionId: region.id)
+        popoverCameraRegionId = region.id
       }
+    }
+    .popover(
+      isPresented: Binding(
+        get: { isPopoverShown },
+        set: { if !$0 { popoverCameraRegionId = nil } }
+      ),
+      arrowEdge: .top
+    ) {
+      CameraRegionEditPopover(
+        regionType: region.type,
+        onChangeType: { newType in
+          editorState.updateCameraRegionType(regionId: region.id, type: newType)
+        },
+        onRemove: {
+          popoverCameraRegionId = nil
+          editorState.removeCameraRegion(regionId: region.id)
+        }
+      )
+      .presentationBackground(ReframedColors.panelBackground)
     }
     .gesture(
       DragGesture(minimumDistance: 3, coordinateSpace: .named("cameraRegion"))
@@ -115,7 +138,7 @@ extension TimelineView {
     .position(x: startX + regionWidth / 2, y: height / 2)
   }
 
-  func effectiveCameraRegion(_ region: AudioRegionData, width: CGFloat) -> (start: Double, end: Double) {
+  func effectiveCameraRegion(_ region: CameraRegionData, width: CGFloat) -> (start: Double, end: Double) {
     guard cameraDragRegionId == region.id, let dt = cameraDragType else {
       return (region.startSeconds, region.endSeconds)
     }
@@ -131,7 +154,7 @@ extension TimelineView {
     }
   }
 
-  func commitCameraDrag(region: AudioRegionData, width: CGFloat) {
+  func commitCameraDrag(region: CameraRegionData, width: CGFloat) {
     let timeDelta = (cameraDragOffset / width) * totalSeconds
 
     switch cameraDragType {

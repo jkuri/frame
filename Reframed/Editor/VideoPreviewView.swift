@@ -29,6 +29,7 @@ struct VideoPreviewView: NSViewRepresentable {
   var currentTime: Double = 0
   var zoomTimeline: ZoomTimeline?
   var cameraFullscreenRegions: [(start: Double, end: Double)] = []
+  var cameraHiddenRegions: [(start: Double, end: Double)] = []
   var cameraFullscreenFillMode: CameraFullscreenFillMode = .fit
   var cameraFullscreenAspect: CameraFullscreenAspect = .original
 
@@ -46,7 +47,9 @@ struct VideoPreviewView: NSViewRepresentable {
   func updateNSView(_ nsView: VideoPreviewContainer, context: Context) {
     context.coordinator.canvasSize = canvasSize
 
-    let isFullscreen = cameraFullscreenRegions.contains { currentTime >= $0.start && currentTime <= $0.end }
+    let isCameraHidden = cameraHiddenRegions.contains { currentTime >= $0.start && currentTime <= $0.end }
+    nsView.isCameraHidden = isCameraHidden
+    let isFullscreen = !isCameraHidden && cameraFullscreenRegions.contains { currentTime >= $0.start && currentTime <= $0.end }
     nsView.isCameraFullscreen = isFullscreen
     nsView.currentFullscreenFillMode = cameraFullscreenFillMode
     nsView.currentFullscreenAspect = cameraFullscreenAspect
@@ -133,6 +136,7 @@ final class VideoPreviewContainer: NSView {
   private let cursorOverlay = CursorOverlayLayer()
   private let screenContainerLayer = CALayer()
   var coordinator: VideoPreviewView.Coordinator?
+  var isCameraHidden = false
   var isCameraFullscreen = false
   var currentFullscreenFillMode: CameraFullscreenFillMode = .fit
   var currentFullscreenAspect: CameraFullscreenAspect = .original
@@ -399,6 +403,14 @@ final class VideoPreviewContainer: NSView {
     }
 
     if isDraggingCamera {
+      CATransaction.commit()
+      return
+    }
+
+    if isCameraHidden {
+      webcamWrapper.isHidden = true
+      screenContainerLayer.isHidden = false
+      cursorOverlay.isHidden = false
       CATransaction.commit()
       return
     }

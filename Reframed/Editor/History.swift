@@ -191,15 +191,15 @@ final class History {
       }
     }
 
-    if old.cameraFullscreenRegions != new.cameraFullscreenRegions {
-      let oldCount = old.cameraFullscreenRegions?.count ?? 0
-      let newCount = new.cameraFullscreenRegions?.count ?? 0
+    if old.cameraRegions != new.cameraRegions {
+      let oldCount = old.cameraRegions?.count ?? 0
+      let newCount = new.cameraRegions?.count ?? 0
       if newCount > oldCount {
-        changes.append("Camera fullscreen region added")
+        changes.append("Camera region added")
       } else if newCount < oldCount {
-        changes.append("Camera fullscreen region removed")
+        changes.append("Camera region removed")
       } else {
-        changes.append("Camera fullscreen region adjusted")
+        changes.append("Camera region adjusted")
       }
     }
 

@@ -252,7 +252,9 @@ struct EditorView: View {
           currentTime: CMTimeGetSeconds(editorState.currentTime),
           zoomTimeline: editorState.zoomTimeline,
           cameraFullscreenRegions: editorState.webcamEnabled
-            ? editorState.cameraFullscreenRegions.map { (start: $0.startSeconds, end: $0.endSeconds) } : [],
+            ? editorState.cameraRegions.filter { $0.type == .fullscreen }.map { (start: $0.startSeconds, end: $0.endSeconds) } : [],
+          cameraHiddenRegions: editorState.webcamEnabled
+            ? editorState.cameraRegions.filter { $0.type == .hidden }.map { (start: $0.startSeconds, end: $0.endSeconds) } : [],
           cameraFullscreenFillMode: editorState.cameraFullscreenFillMode,
           cameraFullscreenAspect: editorState.cameraFullscreenAspect
         )

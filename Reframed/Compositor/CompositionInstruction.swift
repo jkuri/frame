@@ -40,6 +40,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
   let zoomTimeline: ZoomTimeline?
   let trimStartSeconds: Double
   let cameraFullscreenRegions: [CMTimeRange]
+  let cameraHiddenRegions: [CMTimeRange]
   let cameraFullscreenFillMode: CameraFullscreenFillMode
   let cameraFullscreenAspect: CameraFullscreenAspect
 
@@ -75,6 +76,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     zoomTimeline: ZoomTimeline? = nil,
     trimStartSeconds: Double = 0,
     cameraFullscreenRegions: [CMTimeRange] = [],
+    cameraHiddenRegions: [CMTimeRange] = [],
     cameraFullscreenFillMode: CameraFullscreenFillMode = .fit,
     cameraFullscreenAspect: CameraFullscreenAspect = .original
   ) {
@@ -109,6 +111,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     self.zoomTimeline = zoomTimeline
     self.trimStartSeconds = trimStartSeconds
     self.cameraFullscreenRegions = cameraFullscreenRegions
+    self.cameraHiddenRegions = cameraHiddenRegions
     self.cameraFullscreenFillMode = cameraFullscreenFillMode
     self.cameraFullscreenAspect = cameraFullscreenAspect
 

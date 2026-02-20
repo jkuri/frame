@@ -246,6 +246,14 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
     }
 
     if let webcamBuffer {
+      let isCamHidden = instruction.cameraHiddenRegions.contains {
+        $0.containsTime(compositionTime)
+      }
+
+      guard !isCamHidden else {
+        return
+      }
+
       let isCamFullscreen = instruction.cameraFullscreenRegions.contains {
         $0.containsTime(compositionTime)
       }
