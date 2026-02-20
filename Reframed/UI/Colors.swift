@@ -160,14 +160,14 @@ enum ReframedColors {
     Color(nsColor: .controlAccentColor)
   }
 
-  static let screenTrackColor = Color(red: 0.23, green: 0.51, blue: 0.96)
-  static let webcamTrackColor = Color(red: 0.13, green: 0.77, blue: 0.37)
+  static let screenTrackColor = Color.hex("#3b82f5")
+  static let webcamTrackColor = Color.hex("#21c45e")
   static let webcamHiddenTrackColor = Color.hex("#fde047")
   static let webcamCustomTrackColor = Color.hex("#38bdf8")
 
-  static let systemAudioColor = Color(red: 0.925, green: 0.282, blue: 0.600)
-  static let micAudioColor = Color(red: 0.94, green: 0.27, blue: 0.27)
+  static let systemAudioColor = Color.hex("#ec4899")
+  static let micAudioColor = Color.hex("#f04545")
 
-  static let zoomColor = Color(red: 0.45, green: 0.30, blue: 0.75)
-  static let zoomEaseColor = Color(red: 0.45, green: 0.30, blue: 0.75).opacity(0.5)
+  static let zoomColor = Color.hex("#734dbf")
+  static let zoomEaseColor = Color.hex("#734dbf").opacity(0.5)
 }
