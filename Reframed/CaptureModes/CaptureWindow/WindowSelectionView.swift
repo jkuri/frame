@@ -36,7 +36,7 @@ struct WindowSelectionView: View {
           context.fill(targetPath, with: .color(.black))
           context.blendMode = .normal
 
-          context.fill(targetPath, with: .color(.white.opacity(0.8)))
+          context.fill(targetPath, with: .color(.white.opacity(0.7)))
           context.stroke(targetPath, with: .color(.white), lineWidth: 2)
         }
         .edgesIgnoringSafeArea(.all)
@@ -70,7 +70,6 @@ struct WindowSelectionView: View {
                 .buttonStyle(PrimaryButtonStyle(size: .small, forceLightMode: true))
                 .popover(isPresented: $showingResize, arrowEdge: .bottom) {
                   ResizePopover(windowController: windowController, window: current)
-                    .background(ReframedColors.background)
                 }
             }
 
