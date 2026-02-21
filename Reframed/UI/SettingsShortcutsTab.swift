@@ -52,7 +52,7 @@ extension SettingsView {
         ConfigService.shared.resetAllShortcuts()
         NotificationCenter.default.post(name: .shortcutsDidChange, object: nil)
       }
-      .buttonStyle(SettingsButtonStyle())
+      .buttonStyle(OutlineButtonStyle(size: .small))
     }
     .padding(.horizontal, 28)
   }

@@ -64,17 +64,17 @@ struct EditorView: View {
 
         HStack(spacing: 8) {
           mainContent
-            .background(ReframedColors.panelBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(ReframedColors.divider, lineWidth: 1))
+            .background(ReframedColors.background)
+            .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
+            .overlay(RoundedRectangle(cornerRadius: Radius.xl).stroke(ReframedColors.divider, lineWidth: 1))
           editorSidebar
-            .background(ReframedColors.panelBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(ReframedColors.divider, lineWidth: 1))
+            .background(ReframedColors.background)
+            .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
+            .overlay(RoundedRectangle(cornerRadius: Radius.xl).stroke(ReframedColors.divider, lineWidth: 1))
           PropertiesPanel(editorState: editorState, selectedTab: selectedTab)
-            .background(ReframedColors.panelBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(ReframedColors.divider, lineWidth: 1))
+            .background(ReframedColors.background)
+            .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
+            .overlay(RoundedRectangle(cornerRadius: Radius.xl).stroke(ReframedColors.divider, lineWidth: 1))
         }
         .padding(.horizontal, 12)
         .frame(maxHeight: .infinity)
@@ -88,11 +88,11 @@ struct EditorView: View {
       if !editorState.isPreviewMode {
         timeline
           .fixedSize(horizontal: false, vertical: true)
-          .background(ReframedColors.panelBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 10))
-          .overlay(RoundedRectangle(cornerRadius: 10).stroke(ReframedColors.divider, lineWidth: 1))
+          .background(ReframedColors.backgroundContainer)
+          .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
+          .overlay(RoundedRectangle(cornerRadius: Radius.xl).stroke(ReframedColors.divider, lineWidth: 1))
           .padding(.horizontal, 12)
-          .padding(.top, 10)
+          .padding(.top, 12)
           .padding(.bottom, 12)
       }
     }
@@ -107,7 +107,7 @@ struct EditorView: View {
     }
     .ignoresSafeArea(edges: .top)
     .frame(minWidth: 1200, minHeight: 800)
-    .background(ReframedColors.panelBackground)
+    .background(ReframedColors.backgroundContainer)
     .task {
       await editorState.setup()
       didFinishSetup = true
@@ -179,7 +179,7 @@ struct EditorView: View {
               .frame(width: 56, height: 48)
               .background(
                 selectedTab == tab ? ReframedColors.selectedBackground : Color.clear,
-                in: RoundedRectangle(cornerRadius: 8)
+                in: RoundedRectangle(cornerRadius: Radius.lg)
               )
               .contentShape(Rectangle())
               .opacity(disabled ? 0.45 : 1)

@@ -36,8 +36,8 @@ struct WindowSelectionView: View {
           context.fill(targetPath, with: .color(.black))
           context.blendMode = .normal
 
-          context.fill(targetPath, with: .color(Color(nsColor: .controlAccentColor).opacity(0.3)))
-          context.stroke(targetPath, with: .color(Color(nsColor: .controlAccentColor)), lineWidth: 2)
+          context.fill(targetPath, with: .color(ReframedColors.primary.opacity(0.3)))
+          context.stroke(targetPath, with: .color(ReframedColors.primary), lineWidth: 2)
         }
         .edgesIgnoringSafeArea(.all)
 
@@ -66,22 +66,12 @@ struct WindowSelectionView: View {
                 .foregroundStyle(.white)
                 .shadow(color: .black.opacity(0.3), radius: 4)
 
-              Button {
-                showingResize.toggle()
-              } label: {
-                Text("Resize")
-                  .font(.system(size: 13))
-                  .foregroundStyle(.white)
-                  .padding(.horizontal, 12)
-                  .padding(.vertical, 5)
-                  .background(Color(nsColor: .controlAccentColor))
-                  .clipShape(RoundedRectangle(cornerRadius: 5))
-              }
-              .buttonStyle(.plain)
-              .popover(isPresented: $showingResize, arrowEdge: .bottom) {
-                ResizePopover(windowController: windowController, window: current)
-                  .background(ReframedColors.panelBackground)
-              }
+              Button("Resize") { showingResize.toggle() }
+                .buttonStyle(PrimaryButtonStyle(size: .small))
+                .popover(isPresented: $showingResize, arrowEdge: .bottom) {
+                  ResizePopover(windowController: windowController, window: current)
+                    .background(ReframedColors.background)
+                }
             }
 
             StartRecordingButton(

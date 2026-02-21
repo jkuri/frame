@@ -41,12 +41,12 @@ extension SettingsView {
           .padding(.horizontal, 10)
           .padding(.vertical, 7)
           .background(ReframedColors.fieldBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 6))
+          .clipShape(RoundedRectangle(cornerRadius: Radius.md))
 
         Button("Browse") {
           chooseProjectFolder()
         }
-        .buttonStyle(SettingsButtonStyle())
+        .buttonStyle(OutlineButtonStyle(size: .small))
       }
     }
   }
@@ -64,12 +64,12 @@ extension SettingsView {
           .padding(.horizontal, 10)
           .padding(.vertical, 7)
           .background(ReframedColors.fieldBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 6))
+          .clipShape(RoundedRectangle(cornerRadius: Radius.md))
 
         Button("Browse") {
           chooseOutputFolder()
         }
-        .buttonStyle(SettingsButtonStyle())
+        .buttonStyle(OutlineButtonStyle(size: .small))
       }
     }
   }

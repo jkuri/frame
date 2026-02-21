@@ -17,7 +17,7 @@ struct InlineEditableText: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
         .background(ReframedColors.fieldBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 6))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
         .focused($isFocused)
         .onSubmit { commit() }
         .onChange(of: isFocused) { _, focused in
@@ -41,7 +41,7 @@ struct InlineEditableText: View {
       .padding(.horizontal, 8)
       .padding(.vertical, 6)
       .background(ReframedColors.fieldBackground.opacity(0.5))
-      .clipShape(RoundedRectangle(cornerRadius: 6))
+      .clipShape(RoundedRectangle(cornerRadius: Radius.md))
       .onTapGesture { startEditing() }
     }
   }

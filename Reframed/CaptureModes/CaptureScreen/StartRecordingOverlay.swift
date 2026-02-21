@@ -27,7 +27,7 @@ struct StartRecordingOverlayView: View {
       )
     }
     .padding(24)
-    .background(ReframedColors.panelBackground)
+    .background(ReframedColors.background)
     .clipShape(RoundedRectangle(cornerRadius: 16))
     .shadow(radius: 20)
     .frame(maxWidth: .infinity, maxHeight: .infinity)

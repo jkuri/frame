@@ -16,7 +16,7 @@ struct NumberField: View {
       .multilineTextAlignment(.center)
       .frame(width: width, height: height)
       .background(ReframedColors.fieldBackground)
-      .clipShape(RoundedRectangle(cornerRadius: 6))
+      .clipShape(RoundedRectangle(cornerRadius: Radius.md))
       .onSubmit { onCommit?() }
   }
 }

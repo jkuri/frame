@@ -90,7 +90,7 @@ private struct PermissionRow: View {
         .frame(width: 260)
         .padding(.vertical, 8)
         .background(
-          RoundedRectangle(cornerRadius: 8)
+          RoundedRectangle(cornerRadius: Radius.lg)
             .stroke(granted ? Color.green.opacity(0.5) : ReframedColors.permissionBorder, lineWidth: 1)
         )
         .foregroundStyle(granted ? .green : ReframedColors.permissionText)

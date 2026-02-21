@@ -6,11 +6,11 @@ struct PopoverContainerStyle: ViewModifier {
   func body(content: Content) -> some View {
     let _ = colorScheme
     content
-      .background(ReframedColors.panelBackground)
-      .clipShape(RoundedRectangle(cornerRadius: 8))
+      .background(ReframedColors.background)
+      .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
       .overlay(
-        RoundedRectangle(cornerRadius: 8)
-          .strokeBorder(ReframedColors.subtleBorder, lineWidth: 0.5)
+        RoundedRectangle(cornerRadius: Radius.lg)
+          .strokeBorder(ReframedColors.border, lineWidth: 0.5)
       )
   }
 }

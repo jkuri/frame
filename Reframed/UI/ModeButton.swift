@@ -14,11 +14,11 @@ struct ModeButton: View {
           .foregroundStyle(ReframedColors.primaryText)
         Text(label)
           .font(.system(size: 10))
-          .foregroundStyle(ReframedColors.secondaryText)
+          .foregroundStyle(isSelected ? ReframedColors.primaryText : ReframedColors.secondaryText)
       }
       .frame(width: 56, height: 52)
-      .background(isSelected ? ReframedColors.selectedBackground : Color.clear)
-      .clipShape(RoundedRectangle(cornerRadius: 6))
+      .background(isSelected ? ReframedColors.muted : Color.clear)
+      .clipShape(RoundedRectangle(cornerRadius: Radius.md))
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)

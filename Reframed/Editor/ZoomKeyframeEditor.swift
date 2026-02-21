@@ -24,8 +24,8 @@ struct ZoomKeyframeEditor: View {
   var body: some View {
     let _ = colorScheme
     ZStack(alignment: .leading) {
-      RoundedRectangle(cornerRadius: 10)
-        .fill(ReframedColors.panelBackground)
+      RoundedRectangle(cornerRadius: Track.borderRadius)
+        .fill(ReframedColors.backgroundContainer)
         .frame(width: width, height: height)
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { location in
@@ -57,7 +57,7 @@ struct ZoomKeyframeEditor: View {
       }
     }
     .frame(width: width, height: height)
-    .clipShape(RoundedRectangle(cornerRadius: 10))
+    .clipShape(RoundedRectangle(cornerRadius: Track.borderRadius))
     .coordinateSpace(name: "zoomEditor")
   }
 
@@ -170,8 +170,8 @@ struct ZoomKeyframeEditor: View {
     let startX = max(0, (times.start / duration) * width)
     let endX = min(width, (times.end / duration) * width)
     let regionWidth = max(4, endX - startX)
-    let fillColor = ReframedColors.zoomColor
-    let easeColor = ReframedColors.zoomEaseColor
+    let fillColor = Track.background
+    let easeColor = Track.background.opacity(0.5)
 
     let zoomStartX = (times.zoomStart / duration) * width
     let zoomEndX = (times.zoomEnd / duration) * width
@@ -199,10 +199,36 @@ struct ZoomKeyframeEditor: View {
           .frame(width: trailTransWidth, height: height)
       }
     }
-    .clipShape(RoundedRectangle(cornerRadius: 10))
+    .clipShape(RoundedRectangle(cornerRadius: Track.borderRadius))
+    .overlay {
+      let totalDur = times.end - times.start
+      let easeIn = times.zoomStart - times.start
+      let easeOut = times.end - times.zoomEnd
+
+      HStack(spacing: 3) {
+        Image(systemName: region.isAuto ? "sparkle.magnifyingglass" : "plus.magnifyingglass")
+          .font(.system(size: 10))
+        if regionWidth > 50 {
+          Text(String(format: "%.1fs", totalDur))
+            .font(.system(size: 10, weight: .medium))
+            .lineLimit(1)
+        }
+        if regionWidth > 100 {
+          Text(String(format: "%.1fx", region.peakZoom))
+            .font(.system(size: 10))
+            .lineLimit(1)
+        }
+        if regionWidth > 160, easeIn > 0.01 || easeOut > 0.01 {
+          Text(String(format: "↗%.1fs ↘%.1fs", easeIn, easeOut))
+            .font(.system(size: 9))
+            .lineLimit(1)
+        }
+      }
+      .foregroundStyle(Track.regionTextColor)
+    }
     .overlay(
-      RoundedRectangle(cornerRadius: 10)
-        .strokeBorder(fillColor, lineWidth: 2)
+      RoundedRectangle(cornerRadius: Track.borderRadius)
+        .strokeBorder(Track.borderColor, lineWidth: Track.borderWidth)
     )
     .frame(width: regionWidth, height: height)
     .contentShape(Rectangle())
@@ -259,7 +285,7 @@ struct ZoomKeyframeEditor: View {
           onRemoveRegion(region.startIndex, region.count)
         }
       )
-      .presentationBackground(ReframedColors.panelBackground)
+      .presentationBackground(ReframedColors.background)
     }
     .onContinuousHover { phase in
       guard !region.isAuto else { return }

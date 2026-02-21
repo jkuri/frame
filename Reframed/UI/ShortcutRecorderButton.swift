@@ -26,10 +26,10 @@ struct ShortcutRecorderButton: View {
         .frame(height: 28)
         .frame(minWidth: 120)
         .background(ReframedColors.fieldBackground.opacity(0.8))
-        .clipShape(RoundedRectangle(cornerRadius: 6))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
         .overlay(
-          RoundedRectangle(cornerRadius: 6)
-            .stroke(Color.accentColor, lineWidth: 1.5)
+          RoundedRectangle(cornerRadius: Radius.md)
+            .stroke(ReframedColors.ring, lineWidth: 1.5)
         )
       } else {
         Button {
@@ -43,7 +43,7 @@ struct ShortcutRecorderButton: View {
             .frame(height: 28)
             .frame(minWidth: 60)
             .background(ReframedColors.fieldBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.md))
         }
         .buttonStyle(.plain)
       }

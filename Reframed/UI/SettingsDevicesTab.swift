@@ -30,25 +30,20 @@ extension SettingsView {
           .font(.system(size: 13))
           .foregroundStyle(ReframedColors.primaryText)
         Spacer()
-        devicePickerButton(label: microphoneLabel, isActive: $showMicPopover)
-          .popover(isPresented: $showMicPopover, arrowEdge: .bottom) {
-            VStack(alignment: .leading, spacing: 0) {
-              CheckmarkRow(title: "None", isSelected: options?.selectedMicrophone == nil) {
-                options?.selectedMicrophone = nil
-                showMicPopover = false
-              }
-              ForEach(availableMicrophones) { mic in
-                CheckmarkRow(title: mic.name, isSelected: options?.selectedMicrophone?.id == mic.id) {
-                  options?.selectedMicrophone = mic
-                  showMicPopover = false
-                }
+        SelectButton(label: microphoneLabel, fixedWidth: 260) {
+          VStack(alignment: .leading, spacing: 0) {
+            CheckmarkRow(title: "None", isSelected: options?.selectedMicrophone == nil) {
+              options?.selectedMicrophone = nil
+            }
+            ForEach(availableMicrophones) { mic in
+              CheckmarkRow(title: mic.name, isSelected: options?.selectedMicrophone?.id == mic.id) {
+                options?.selectedMicrophone = mic
               }
             }
-            .padding(.vertical, 8)
-            .frame(width: 220)
-            .background(ReframedColors.panelBackground)
           }
-          .presentationBackground(ReframedColors.panelBackground)
+          .padding(.vertical, 8)
+          .frame(width: 320)
+        }
       }
       .padding(.horizontal, 10)
     }
@@ -68,25 +63,20 @@ extension SettingsView {
           .font(.system(size: 13))
           .foregroundStyle(ReframedColors.primaryText)
         Spacer()
-        devicePickerButton(label: cameraLabelText, isActive: $showCameraPopover)
-          .popover(isPresented: $showCameraPopover, arrowEdge: .bottom) {
-            VStack(alignment: .leading, spacing: 0) {
-              CheckmarkRow(title: "None", isSelected: options?.selectedCamera == nil) {
-                options?.selectedCamera = nil
-                showCameraPopover = false
-              }
-              ForEach(availableCameras) { cam in
-                CheckmarkRow(title: cam.name, isSelected: options?.selectedCamera?.id == cam.id) {
-                  options?.selectedCamera = cam
-                  showCameraPopover = false
-                }
+        SelectButton(label: cameraLabelText, fixedWidth: 260) {
+          VStack(alignment: .leading, spacing: 0) {
+            CheckmarkRow(title: "None", isSelected: options?.selectedCamera == nil) {
+              options?.selectedCamera = nil
+            }
+            ForEach(availableCameras) { cam in
+              CheckmarkRow(title: cam.name, isSelected: options?.selectedCamera?.id == cam.id) {
+                options?.selectedCamera = cam
               }
             }
-            .padding(.vertical, 8)
-            .frame(width: 220)
-            .background(ReframedColors.panelBackground)
           }
-          .presentationBackground(ReframedColors.panelBackground)
+          .padding(.vertical, 8)
+          .frame(width: 320)
+        }
       }
       .padding(.horizontal, 10)
 

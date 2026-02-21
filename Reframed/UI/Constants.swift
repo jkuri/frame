@@ -16,4 +16,22 @@ enum Layout {
 
   static let regionPopoverWidth: CGFloat = 320
   static let regionPopoverSpacing: CGFloat = 4
+
+  static let segmentSpacing: CGFloat = 8
+}
+
+enum Track {
+  static let height: CGFloat = 38
+  static let borderWidth: CGFloat = 2
+  static let borderRadius: CGFloat = Radius.lg
+  @MainActor static var background: Color { ReframedColors.background }
+  @MainActor static var borderColor: Color { ReframedColors.border }
+  @MainActor static var regionTextColor: Color { ReframedColors.primaryText }
+}
+
+enum Radius {
+  static let sm: CGFloat = 4
+  static let md: CGFloat = 6
+  static let lg: CGFloat = 8
+  static let xl: CGFloat = 10
 }

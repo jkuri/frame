@@ -49,12 +49,6 @@ extension TimelineView {
     width: CGFloat,
     height: CGFloat
   ) -> some View {
-    let accentColor: Color =
-      switch region.type {
-      case .fullscreen: ReframedColors.webcamTrackColor
-      case .hidden: ReframedColors.webcamHiddenTrackColor
-      case .custom: ReframedColors.webcamCustomTrackColor
-      }
     let effective = effectiveCameraRegion(region, width: width)
     let startX = max(0, CGFloat(effective.start / totalSeconds) * width)
     let endX = min(width, CGFloat(effective.end / totalSeconds) * width)
@@ -63,13 +57,25 @@ extension TimelineView {
     let isPopoverShown = popoverCameraRegionId == region.id
 
     ZStack {
-      RoundedRectangle(cornerRadius: 6)
-        .fill(accentColor.opacity(0.6))
+      RoundedRectangle(cornerRadius: Track.borderRadius)
+        .fill(Track.background)
 
-      RoundedRectangle(cornerRadius: 6)
-        .strokeBorder(accentColor, lineWidth: 2)
+      HStack(spacing: 3) {
+        Image(systemName: region.type.icon)
+          .font(.system(size: 10))
+        if regionWidth > 50 {
+          Text(region.type.label)
+            .font(.system(size: 10, weight: .medium))
+            .lineLimit(1)
+        }
+      }
+      .foregroundStyle(Track.regionTextColor)
+
+      RoundedRectangle(cornerRadius: Track.borderRadius)
+        .strokeBorder(Track.borderColor, lineWidth: Track.borderWidth)
     }
     .frame(width: regionWidth, height: height)
+    .clipped()
     .contentShape(Rectangle())
     .overlay {
       RightClickOverlay {
@@ -121,7 +127,7 @@ extension TimelineView {
           editorState.removeCameraRegion(regionId: region.id)
         }
       )
-      .presentationBackground(ReframedColors.panelBackground)
+      .presentationBackground(ReframedColors.background)
     }
     .gesture(
       DragGesture(minimumDistance: 3, coordinateSpace: .named("cameraRegion"))

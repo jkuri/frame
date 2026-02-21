@@ -30,7 +30,7 @@ private struct CheckmarkRowHoverBackground: View {
   @State private var isHovered = false
 
   var body: some View {
-    RoundedRectangle(cornerRadius: 4)
+    RoundedRectangle(cornerRadius: Radius.sm)
       .fill(isHovered ? ReframedColors.hoverBackground : Color.clear)
       .padding(.horizontal, 4)
       .onHover { isHovered = $0 }

@@ -27,8 +27,6 @@ struct SettingsView: View {
   @State var cameraMaximumResolution: String = ConfigService.shared.cameraMaximumResolution
   @State var projectFolder: String = ConfigService.shared.projectFolder
   @State var appearance: String = ConfigService.shared.appearance
-  @State var showMicPopover = false
-  @State var showCameraPopover = false
   @State var updateCheckInProgress = false
   @State var updateStatus: UpdateStatus? = nil
   @Environment(\.colorScheme) private var colorScheme
@@ -78,7 +76,7 @@ struct SettingsView: View {
       }
     }
     .frame(width: 700, height: 540)
-    .background(ReframedColors.panelBackground)
+    .background(ReframedColors.background)
   }
 
   private var tabBar: some View {
@@ -97,8 +95,8 @@ struct SettingsView: View {
             .foregroundStyle(selectedTab == tab ? ReframedColors.primaryText : ReframedColors.dimLabel)
             .padding(.horizontal, 18)
             .padding(.vertical, 10)
-            .background(selectedTab == tab ? ReframedColors.selectedActive : Color.clear)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .background(selectedTab == tab ? ReframedColors.muted : Color.clear)
+            .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
             .contentShape(Rectangle())
           }
           .buttonStyle(.plain)
@@ -108,27 +106,6 @@ struct SettingsView: View {
       .padding(.horizontal, 24)
       .padding(.vertical, 12)
     }
-  }
-
-  func devicePickerButton(label: String, isActive: Binding<Bool>) -> some View {
-    Button {
-      isActive.wrappedValue.toggle()
-    } label: {
-      HStack(spacing: 4) {
-        Text(label)
-          .font(.system(size: 12, weight: .medium))
-          .foregroundStyle(ReframedColors.primaryText)
-          .lineLimit(1)
-        Image(systemName: "chevron.up.chevron.down")
-          .font(.system(size: 9, weight: .semibold))
-          .foregroundStyle(ReframedColors.dimLabel)
-      }
-      .padding(.horizontal, 10)
-      .frame(height: 28)
-      .background(ReframedColors.fieldBackground)
-      .clipShape(RoundedRectangle(cornerRadius: 6))
-    }
-    .buttonStyle(.plain)
   }
 
   func sectionLabel(_ text: String) -> some View {
@@ -150,7 +127,7 @@ struct SettingsView: View {
   }
 
   func updateWindowBackgrounds() {
-    let bg = ReframedColors.panelBackgroundNS
+    let bg = ReframedColors.backgroundNS
     for window in NSApp.windows {
       if window.titlebarAppearsTransparent {
         window.backgroundColor = bg
@@ -199,20 +176,5 @@ struct SettingsView: View {
       outputFolder = path
       ConfigService.shared.outputFolder = path
     }
-  }
-}
-
-struct SettingsButtonStyle: ButtonStyle {
-  @Environment(\.colorScheme) private var colorScheme
-
-  func makeBody(configuration: Configuration) -> some View {
-    let _ = colorScheme
-    configuration.label
-      .font(.system(size: 12, weight: .medium))
-      .foregroundStyle(ReframedColors.primaryText)
-      .padding(.horizontal, 14)
-      .frame(height: 30)
-      .background(configuration.isPressed ? ReframedColors.buttonPressed : ReframedColors.buttonBackground)
-      .clipShape(RoundedRectangle(cornerRadius: 6))
   }
 }
