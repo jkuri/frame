@@ -158,6 +158,7 @@ Uses `MenuBarExtra(.window)` + MenuBarExtraAccess (1.2.x) for the `isPresented` 
 - If a view exceeds 200 lines, break it into separate files using Swift extensions.
 - Always run `make format` after changes.
 - Always run `make build` after changes and make sure there are no warnings or errors.
+- Fix root causes, not symptoms. No temporary workarounds or band-aid fixes.
 
 ## Key constraints
 
