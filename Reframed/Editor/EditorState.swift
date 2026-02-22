@@ -217,6 +217,37 @@ final class EditorState {
     return abs(videoRegionsTotalDuration - dur) > 0.01
   }
 
+  var previewElapsedTime: Double {
+    let t = CMTimeGetSeconds(currentTime)
+    var elapsed = 0.0
+    for region in videoRegions {
+      if t >= region.endSeconds {
+        elapsed += region.endSeconds - region.startSeconds
+      } else if t >= region.startSeconds {
+        elapsed += t - region.startSeconds
+        break
+      } else {
+        break
+      }
+    }
+    return elapsed
+  }
+
+  func sourceTimeForPreviewElapsed(_ elapsed: Double) -> Double {
+    var remaining = elapsed
+    for region in videoRegions {
+      let regionDur = region.endSeconds - region.startSeconds
+      if remaining <= regionDur {
+        return region.startSeconds + remaining
+      }
+      remaining -= regionDur
+    }
+    if let last = videoRegions.last {
+      return last.endSeconds
+    }
+    return 0
+  }
+
   init(project: ReframedProject) {
     self.project = project
     self.result = project.recordingResult
