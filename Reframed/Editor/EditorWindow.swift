@@ -28,16 +28,6 @@ final class EditorWindow: NSObject, NSWindowDelegate {
 
     let editorView = EditorView(
       editorState: state,
-      onSave: { [weak self] url in
-        self?.editorState?.teardown()
-        self?.window?.close()
-        self?.onSave?(url)
-      },
-      onCancel: { [weak self] in
-        self?.editorState?.teardown()
-        self?.window?.close()
-        self?.onCancel?()
-      },
       onDelete: { [weak self] in
         self?.editorState?.teardown()
         self?.window?.close()

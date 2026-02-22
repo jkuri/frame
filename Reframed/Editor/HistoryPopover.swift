@@ -95,7 +95,7 @@ struct HistoryPopover: View {
 
         Spacer()
 
-        Text(relativeTime(entry.timestamp))
+        Text(formatRelativeTime(entry.timestamp))
           .font(.system(size: 10))
           .foregroundStyle(ReframedColors.tertiaryText)
       }
@@ -112,15 +112,4 @@ struct HistoryPopover: View {
     .opacity(isFuture ? 0.6 : 1)
   }
 
-  private func relativeTime(_ date: Date) -> String {
-    let seconds = Int(-date.timeIntervalSinceNow)
-    if seconds < 5 { return "just now" }
-    if seconds < 60 { return "\(seconds)s ago" }
-    let minutes = seconds / 60
-    if minutes < 60 { return "\(minutes)m ago" }
-    let hours = minutes / 60
-    if hours < 24 { return "\(hours)h ago" }
-    let days = hours / 24
-    return "\(days)d ago"
-  }
 }

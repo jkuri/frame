@@ -34,10 +34,10 @@ final class ZoomTimeline: @unchecked Sendable {
     }
 
     if time <= kfs.first!.t {
-      return ztpRect(for: kfs.first!)
+      return zoomRect(for: kfs.first!)
     }
     if time >= kfs.last!.t {
-      return ztpRect(for: kfs.last!)
+      return zoomRect(for: kfs.last!)
     }
 
     var lo = 0
@@ -55,7 +55,7 @@ final class ZoomTimeline: @unchecked Sendable {
     let k1 = kfs[hi]
     let span = k1.t - k0.t
     guard span > 0 else {
-      return ztpRect(for: k1)
+      return zoomRect(for: k1)
     }
 
     let linearT = (time - k0.t) / span
@@ -79,43 +79,7 @@ final class ZoomTimeline: @unchecked Sendable {
     return CGRect(x: originX, y: originY, width: visibleW, height: visibleH)
   }
 
-  func addKeyframe(_ keyframe: ZoomKeyframe) {
-    lock.lock()
-    keyframes.append(keyframe)
-    keyframes.sort { $0.t < $1.t }
-    lock.unlock()
-  }
-
-  func removeKeyframe(at index: Int) {
-    lock.lock()
-    guard index >= 0 && index < keyframes.count else {
-      lock.unlock()
-      return
-    }
-    keyframes.remove(at: index)
-    lock.unlock()
-  }
-
-  func setKeyframes(_ newKeyframes: [ZoomKeyframe]) {
-    lock.lock()
-    keyframes = newKeyframes.sorted { $0.t < $1.t }
-    lock.unlock()
-  }
-
-  func clearAutoKeyframes() {
-    lock.lock()
-    keyframes.removeAll { $0.isAuto }
-    lock.unlock()
-  }
-
-  var isEmpty: Bool {
-    lock.lock()
-    let empty = keyframes.isEmpty
-    lock.unlock()
-    return empty
-  }
-
-  private func ztpRect(for k: ZoomKeyframe) -> CGRect {
+  private func zoomRect(for k: ZoomKeyframe) -> CGRect {
     if k.zoomLevel <= 1.0 {
       return CGRect(x: 0, y: 0, width: 1, height: 1)
     }

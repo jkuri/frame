@@ -580,11 +580,6 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
     }
   }
 
-  private static func smoothstep(_ t: Double) -> CGFloat {
-    let c = max(0.0, min(1.0, t))
-    return CGFloat(c * c * c * (c * (c * 6 - 15) + 10))
-  }
-
   private static func computeRegionTransition(
     compositionTime: CMTime,
     region: RegionTransitionInfo

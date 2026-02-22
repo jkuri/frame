@@ -40,7 +40,7 @@ struct ExportResultSheet: View {
             .lineLimit(1)
             .truncationMode(.middle)
 
-          Text(formattedFileSize(url: url))
+          Text(MediaFileInfo.formattedFileSize(url: url))
             .font(.system(size: 12))
             .foregroundStyle(ReframedColors.secondaryText)
         }
@@ -94,17 +94,6 @@ struct ExportResultSheet: View {
       .buttonStyle(PrimaryButtonStyle(size: .small))
       .padding(.bottom, 28)
     }
-  }
-
-  private func formattedFileSize(url: URL) -> String {
-    guard let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
-      let size = attrs[.size] as? Int64
-    else {
-      return ""
-    }
-    let formatter = ByteCountFormatter()
-    formatter.countStyle = .file
-    return formatter.string(fromByteCount: size)
   }
 
   private func copyToClipboard() {

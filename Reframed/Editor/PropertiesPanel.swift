@@ -295,7 +295,7 @@ struct PropertiesPanel: View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
       SectionHeader(icon: "rectangle.dashed", title: "Canvas")
 
-      FullWidthSegmentPicker(
+      SegmentPicker(
         items: CanvasAspect.allCases,
         label: { $0.label },
         selection: $editorState.canvasAspect

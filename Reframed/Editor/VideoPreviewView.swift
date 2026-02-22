@@ -122,23 +122,8 @@ struct VideoPreviewView: NSViewRepresentable {
     }()
 
     let activeTransitionType: RegionTransitionType = {
-      func resolveType(
-        time: Double,
-        start: Double,
-        end: Double,
-        entryTransition: RegionTransitionType,
-        entryDuration: Double,
-        exitTransition: RegionTransitionType,
-        exitDuration: Double
-      ) -> RegionTransitionType {
-        let elapsed = time - start
-        let remaining = end - time
-        if entryTransition != .none && elapsed < entryDuration { return entryTransition }
-        if exitTransition != .none && remaining < exitDuration { return exitTransition }
-        return .none
-      }
       if let r = hiddenRegion {
-        return resolveType(
+        return Self.resolveTransitionType(
           time: currentTime,
           start: r.start,
           end: r.end,
@@ -149,7 +134,7 @@ struct VideoPreviewView: NSViewRepresentable {
         )
       }
       if let r = fsRegion {
-        return resolveType(
+        return Self.resolveTransitionType(
           time: currentTime,
           start: r.start,
           end: r.end,
@@ -160,7 +145,7 @@ struct VideoPreviewView: NSViewRepresentable {
         )
       }
       if let r = customRegion {
-        return resolveType(
+        return Self.resolveTransitionType(
           time: currentTime,
           start: r.start,
           end: r.end,
@@ -191,11 +176,15 @@ struct VideoPreviewView: NSViewRepresentable {
     }()
     let screenTransitionType: RegionTransitionType = {
       guard let r = videoRegion else { return .none }
-      let elapsed = currentTime - r.start
-      let remaining = r.end - currentTime
-      if r.entryTransition != .none && elapsed < r.entryDuration { return r.entryTransition }
-      if r.exitTransition != .none && remaining < r.exitDuration { return r.exitTransition }
-      return .none
+      return Self.resolveTransitionType(
+        time: currentTime,
+        start: r.start,
+        end: r.end,
+        entryTransition: r.entryTransition,
+        entryDuration: r.entryDuration,
+        exitTransition: r.exitTransition,
+        exitDuration: r.exitDuration
+      )
     }()
     nsView.screenTransitionProgress = screenTransitionProgress
     nsView.screenTransitionType = screenTransitionType
@@ -255,11 +244,6 @@ struct VideoPreviewView: NSViewRepresentable {
     }
   }
 
-  static func smoothstep(_ t: Double) -> CGFloat {
-    let c = max(0, min(1, t))
-    return CGFloat(c * c * c * (c * (c * 6 - 15) + 10))
-  }
-
   static func computeTransitionProgress(
     time: Double,
     start: Double,
@@ -278,6 +262,22 @@ struct VideoPreviewView: NSViewRepresentable {
       return smoothstep(remaining / exitDuration)
     }
     return 1.0
+  }
+
+  static func resolveTransitionType(
+    time: Double,
+    start: Double,
+    end: Double,
+    entryTransition: RegionTransitionType,
+    entryDuration: Double,
+    exitTransition: RegionTransitionType,
+    exitDuration: Double
+  ) -> RegionTransitionType {
+    let elapsed = time - start
+    let remaining = end - time
+    if entryTransition != .none && elapsed < entryDuration { return entryTransition }
+    if exitTransition != .none && remaining < exitDuration { return exitTransition }
+    return .none
   }
 
   func makeCoordinator() -> Coordinator {
@@ -337,6 +337,13 @@ final class VideoPreviewContainer: NSView {
   private let screenShadowLayer = CALayer()
   private var trackingArea: NSTrackingArea?
   private var currentZoomRect = CGRect(x: 0, y: 0, width: 1, height: 1)
+  private var lastCursorNormalizedPosition: CGPoint = .zero
+  private var lastCursorStyle: CursorStyle = .defaultArrow
+  private var lastCursorSize: CGFloat = 24
+  private var lastCursorVisible = false
+  private var lastCursorClicks: [(point: CGPoint, progress: Double)] = []
+  private var lastClickHighlightColor: CGColor?
+  private var lastClickHighlightSize: CGFloat = 36
 
   override init(frame: NSRect) {
     super.init(frame: frame)
@@ -388,6 +395,9 @@ final class VideoPreviewContainer: NSView {
   override func layout() {
     super.layout()
     layoutAll()
+    if lastCursorVisible {
+      applyCursorOverlay()
+    }
   }
 
   override func updateTrackingAreas() {
@@ -444,6 +454,26 @@ final class VideoPreviewContainer: NSView {
     clickHighlightColor: CGColor? = nil,
     clickHighlightSize: CGFloat = 36
   ) {
+    lastCursorNormalizedPosition = normalizedPosition
+    lastCursorStyle = style
+    lastCursorSize = size
+    lastCursorVisible = visible
+    lastCursorClicks = clicks
+    lastClickHighlightColor = clickHighlightColor
+    lastClickHighlightSize = clickHighlightSize
+
+    applyCursorOverlay()
+  }
+
+  private func applyCursorOverlay() {
+    let normalizedPosition = lastCursorNormalizedPosition
+    let style = lastCursorStyle
+    let size = lastCursorSize
+    let visible = lastCursorVisible
+    let clicks = lastCursorClicks
+    let clickHighlightColor = lastClickHighlightColor
+    let clickHighlightSize = lastClickHighlightSize
+
     let canvasRect = AVMakeRect(aspectRatio: currentCanvasSize, insideRect: bounds)
     let scaleX = canvasRect.width / max(currentCanvasSize.width, 1)
     let scaleY = canvasRect.height / max(currentCanvasSize.height, 1)

@@ -41,10 +41,6 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
     case .window(let window):
       filter = SCContentFilter(desktopIndependentWindow: window)
       sourceRect = CGRect(origin: .zero, size: CGSize(width: CGFloat(window.frame.width), height: CGFloat(window.frame.height)))
-
-    case .screen:
-      filter = SCContentFilter(display: display, excludingApplications: [], exceptingWindows: [])
-      sourceRect = CGRect(origin: .zero, size: display.frame.size)
     }
 
     let baseW = Int(sourceRect.width * displayScale) & ~1

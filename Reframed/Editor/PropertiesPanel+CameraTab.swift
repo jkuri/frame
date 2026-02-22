@@ -49,7 +49,7 @@ extension PropertiesPanel {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
       SectionHeader(icon: "aspectratio", title: "Aspect Ratio")
 
-      FullWidthSegmentPicker(
+      SegmentPicker(
         items: CameraAspect.allCases,
         label: { $0.label },
         selection: $editorState.cameraAspect
@@ -112,7 +112,7 @@ extension PropertiesPanel {
         Text("Aspect Ratio")
           .font(.system(size: 12))
           .foregroundStyle(ReframedColors.secondaryText)
-        FullWidthSegmentPicker(
+        SegmentPicker(
           items: CameraFullscreenAspect.allCases,
           label: { $0.label },
           selection: $editorState.cameraFullscreenAspect
@@ -123,7 +123,7 @@ extension PropertiesPanel {
         Text("Fill Mode")
           .font(.system(size: 12))
           .foregroundStyle(ReframedColors.secondaryText)
-        FullWidthSegmentPicker(
+        SegmentPicker(
           items: CameraFullscreenFillMode.allCases,
           label: { $0.label },
           selection: $editorState.cameraFullscreenFillMode

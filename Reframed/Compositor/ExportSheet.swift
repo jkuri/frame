@@ -23,7 +23,7 @@ struct ExportSheet: View {
 
       VStack(alignment: .leading, spacing: 18) {
         settingsRow(label: "Format") {
-          FullWidthSegmentPicker(
+          SegmentPicker(
             items: ExportFormat.allCases,
             label: { $0.label },
             selection: $settings.format
@@ -32,7 +32,7 @@ struct ExportSheet: View {
 
         if settings.format.isGIF {
           settingsRow(label: "Quality") {
-            FullWidthSegmentPicker(
+            SegmentPicker(
               items: GIFQuality.allCases,
               label: { $0.label },
               selection: $settings.gifQuality
@@ -45,7 +45,7 @@ struct ExportSheet: View {
             .padding(.top, -10)
         } else {
           settingsRow(label: "Codec") {
-            FullWidthSegmentPicker(
+            SegmentPicker(
               items: ExportCodec.allCases,
               label: { $0.label },
               selection: $settings.codec
@@ -59,7 +59,7 @@ struct ExportSheet: View {
         }
 
         settingsRow(label: "Frame Rate") {
-          FullWidthSegmentPicker(
+          SegmentPicker(
             items: gifAllowedFPSCases,
             label: { $0.label },
             selection: $settings.fps
@@ -79,7 +79,7 @@ struct ExportSheet: View {
         }
 
         settingsRow(label: "Resolution") {
-          FullWidthSegmentPicker(
+          SegmentPicker(
             items: ExportResolution.allCases,
             label: { $0.label },
             selection: $settings.resolution
@@ -88,7 +88,7 @@ struct ExportSheet: View {
 
         if hasAudio && !settings.format.isGIF {
           settingsRow(label: "Audio Bitrate (kbps)") {
-            FullWidthSegmentPicker(
+            SegmentPicker(
               items: ExportAudioBitrate.allCases,
               label: { $0.label },
               selection: $settings.audioBitrate
@@ -98,7 +98,7 @@ struct ExportSheet: View {
 
         if !settings.format.isGIF {
           settingsRow(label: "Renderer") {
-            FullWidthSegmentPicker(
+            SegmentPicker(
               items: ExportMode.allCases,
               label: { $0.label },
               selection: $settings.mode

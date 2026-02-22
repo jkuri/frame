@@ -26,3 +26,37 @@ func formatPreciseDuration(seconds raw: Double) -> String {
   let seconds = totalSeconds % 60
   return String(format: "%02d:%02d.%02d", minutes, seconds, centiseconds)
 }
+
+func formatCompactTime(seconds: Double) -> String {
+  let mins = Int(seconds) / 60
+  let secs = seconds - Double(mins * 60)
+  if mins > 0 {
+    return String(format: "%d:%04.1f", mins, secs)
+  }
+  return String(format: "%.1fs", secs)
+}
+
+func formatTimeRange(start: Double, end: Double) -> String {
+  let fmt = { (s: Double) -> String in
+    let mins = Int(s) / 60
+    let secs = Int(s) % 60
+    let frac = Int((s - Double(Int(s))) * 10)
+    if mins > 0 {
+      return String(format: "%d:%02d.%d", mins, secs, frac)
+    }
+    return String(format: "%d.%d", secs, frac)
+  }
+  return "\(fmt(start))–\(fmt(end))"
+}
+
+func formatRelativeTime(_ date: Date) -> String {
+  let seconds = Int(-date.timeIntervalSinceNow)
+  if seconds < 5 { return "just now" }
+  if seconds < 60 { return "\(seconds)s ago" }
+  let minutes = seconds / 60
+  if minutes < 60 { return "\(minutes)m ago" }
+  let hours = minutes / 60
+  if hours < 24 { return "\(hours)h ago" }
+  let days = hours / 24
+  return "\(days)d ago"
+}

@@ -46,7 +46,7 @@ extension SettingsView {
       }
 
       settingsRow(label: "Maximum Camera Resolution") {
-        FullWidthSegmentPicker(
+        SegmentPicker(
           items: ["720p", "1080p", "4K"],
           label: { $0 },
           selection: Binding(

@@ -34,7 +34,7 @@ struct SliderRow<V: BinaryFloatingPoint>: View where V.Stride: BinaryFloatingPoi
   }
 }
 
-struct MonoSlider<V: BinaryFloatingPoint>: View where V.Stride: BinaryFloatingPoint {
+private struct MonoSlider<V: BinaryFloatingPoint>: View where V.Stride: BinaryFloatingPoint {
   @Binding var value: V
   let range: ClosedRange<V>
   var step: V.Stride = 1

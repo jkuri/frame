@@ -43,8 +43,6 @@ struct EditorView: View {
   @State var baseZoom: CGFloat = 1.0
   @Environment(\.colorScheme) private var colorScheme
 
-  let onSave: (URL) -> Void
-  let onCancel: () -> Void
   let onDelete: () -> Void
 
   var body: some View {
@@ -384,12 +382,6 @@ struct EditorView: View {
       )
     }
     return $editorState.cameraLayout
-  }
-
-  private func previewCornerRadius(screenSize: CGSize, viewSize: CGSize) -> CGFloat {
-    let nativeRadius: CGFloat = 10
-    let scale = min(viewSize.width / max(screenSize.width, 1), viewSize.height / max(screenSize.height, 1))
-    return nativeRadius * scale
   }
 
   private func regenerateMicWaveform() {

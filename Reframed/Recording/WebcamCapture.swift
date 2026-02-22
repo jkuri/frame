@@ -180,15 +180,6 @@ final class WebcamCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelegat
     videoWriter?.appendSampleBuffer(sampleBuffer)
   }
 
-  static func isDeviceAvailable(deviceId: String) -> Bool {
-    let discovery = AVCaptureDevice.DiscoverySession(
-      deviceTypes: [.builtInWideAngleCamera, .external],
-      mediaType: .video,
-      position: .unspecified
-    )
-    return discovery.devices.contains { $0.uniqueID == deviceId }
-  }
-
   private static func bestFormat(
     for device: AVCaptureDevice,
     maxWidth: Int,

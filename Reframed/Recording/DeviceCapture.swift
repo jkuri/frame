@@ -108,21 +108,6 @@ final class DeviceCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelegat
     }
   }
 
-  func detachWriters() {
-    verifyQueue.sync {
-      self.videoWriter = nil
-    }
-    audioQueue.sync {
-      self.audioWriter = nil
-    }
-    if let videoOut = captureSession?.outputs.first(where: { $0 is AVCaptureVideoDataOutput }) as? AVCaptureVideoDataOutput {
-      videoOut.setSampleBufferDelegate(self, queue: verifyQueue)
-    }
-    if let audioOut = captureSession?.outputs.first(where: { $0 is AVCaptureAudioDataOutput }) as? AVCaptureAudioDataOutput {
-      audioOut.setSampleBufferDelegate(self, queue: audioQueue)
-    }
-  }
-
   func pause() {
     verifyQueue.async { self.isPaused = true }
   }
@@ -157,17 +142,4 @@ final class DeviceCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelegat
     }
   }
 
-  var deviceAudioFormat: (sampleRate: Double, channelCount: Int)? {
-    guard let session = captureSession else { return nil }
-    for output in session.outputs {
-      if let audioOut = output as? AVCaptureAudioDataOutput,
-        let connection = audioOut.connection(with: .audio),
-        let desc = connection.audioChannels.first
-      {
-        _ = desc
-        return (48000, 2)
-      }
-    }
-    return (48000, 2)
-  }
 }

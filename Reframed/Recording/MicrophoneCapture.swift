@@ -146,12 +146,4 @@ final class MicrophoneCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDel
     audioWriter?.appendSample(sampleBuffer)
   }
 
-  static func isDeviceAvailable(deviceId: String) -> Bool {
-    let discovery = AVCaptureDevice.DiscoverySession(
-      deviceTypes: [.microphone],
-      mediaType: .audio,
-      position: .unspecified
-    )
-    return discovery.devices.contains { $0.uniqueID == deviceId }
-  }
 }

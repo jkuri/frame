@@ -23,7 +23,7 @@ extension TimelineView {
         Image(systemName: "film")
           .font(.system(size: Track.fontSize))
         if regionWidth > 50 {
-          Text(formatRegionRange(start: effective.start, end: effective.end))
+          Text(formatTimeRange(start: effective.start, end: effective.end))
             .font(.system(size: Track.fontSize, weight: Track.fontWeight))
             .lineLimit(1)
         }
@@ -155,16 +155,4 @@ extension TimelineView {
     }
   }
 
-  private func formatRegionRange(start: Double, end: Double) -> String {
-    let fmt = { (s: Double) -> String in
-      let mins = Int(s) / 60
-      let secs = Int(s) % 60
-      let frac = Int((s - Double(Int(s))) * 10)
-      if mins > 0 {
-        return String(format: "%d:%02d.%d", mins, secs, frac)
-      }
-      return String(format: "%d.%d", secs, frac)
-    }
-    return "\(fmt(start))–\(fmt(end))"
-  }
 }

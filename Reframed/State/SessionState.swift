@@ -81,7 +81,7 @@ final class SessionState {
 
     Task {
       do {
-        let (maxW, maxH) = Self.cameraMaxDimensions(for: ConfigService.shared.cameraMaximumResolution)
+        let (maxW, maxH) = CaptureMode.cameraMaxDimensions(for: ConfigService.shared.cameraMaximumResolution)
         let webcam = WebcamCapture()
         let info = try await webcam.startAndVerify(
           deviceId: cam.id,
@@ -157,17 +157,6 @@ final class SessionState {
   private func stopWindowTracking() {
     windowPositionObserver?.stop()
     windowPositionObserver = nil
-  }
-
-  private static func cameraMaxDimensions(for resolution: String) -> (Int, Int) {
-    switch resolution {
-    case "720p":
-      return (1280, 720)
-    case "4K":
-      return (3840, 2160)
-    default:
-      return (1920, 1080)
-    }
   }
 
   func toggleToolbar() {

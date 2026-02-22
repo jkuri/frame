@@ -4,7 +4,7 @@ extension SettingsView {
   var recordingContent: some View {
     Group {
       settingsRow(label: "Capture Quality") {
-        FullWidthSegmentPicker(
+        SegmentPicker(
           items: CaptureQuality.allCases,
           label: { $0.label },
           selection: Binding(
@@ -35,7 +35,7 @@ extension SettingsView {
       .padding(.top, -10)
 
       settingsRow(label: "Frame Rate") {
-        FullWidthSegmentPicker(
+        SegmentPicker(
           items: fpsOptions,
           label: { "\($0)" },
           selection: Binding(
@@ -46,7 +46,7 @@ extension SettingsView {
       }
 
       settingsRow(label: "Timer Delay") {
-        FullWidthSegmentPicker(
+        SegmentPicker(
           items: TimerDelay.allCases,
           label: { $0.label },
           selection: Binding(

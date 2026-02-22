@@ -36,7 +36,7 @@ struct MediaFileInfo: Sendable {
     return MediaFileInfo(fileSize: size, bitrate: bitrate, fps: fps)
   }
 
-  private static func formattedFileSize(url: URL) -> String {
+  static func formattedFileSize(url: URL) -> String {
     guard let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
       let size = attrs[.size] as? Int64
     else {

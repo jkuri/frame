@@ -12,7 +12,10 @@ struct ShortcutCaptureView: NSViewRepresentable {
     return view
   }
 
-  func updateNSView(_ nsView: ShortcutCaptureNSView, context: Context) {}
+  func updateNSView(_ nsView: ShortcutCaptureNSView, context: Context) {
+    nsView.onCapture = onCapture
+    nsView.onCancel = onCancel
+  }
 }
 
 final class ShortcutCaptureNSView: NSView {

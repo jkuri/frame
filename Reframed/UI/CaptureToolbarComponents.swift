@@ -76,12 +76,12 @@ struct ToolbarToggleButton: View {
 
   private var iconColor: Color {
     if !isAvailable { return ReframedColors.disabledText }
-    return isOn ? ReframedColors.primaryText : ReframedColors.primaryText
+    return ReframedColors.primaryText
   }
 
   private var labelColor: Color {
     if !isAvailable { return ReframedColors.disabledText }
-    return isOn ? ReframedColors.secondaryText : ReframedColors.secondaryText
+    return ReframedColors.secondaryText
   }
 
   private var background: Color {

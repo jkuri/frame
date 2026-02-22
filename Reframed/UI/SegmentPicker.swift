@@ -3,39 +3,57 @@ import SwiftUI
 struct SegmentPicker<Item: Hashable>: View {
   let items: [Item]
   let label: (Item) -> String
-  let isSelected: (Item) -> Bool
-  let onSelect: (Item) -> Void
-  var itemWidth: CGFloat? = nil
-  var horizontalPadding: CGFloat = 10
-
-  @Environment(\.colorScheme) private var colorScheme
+  @Binding var selection: Item
+  @Environment(\.colorScheme) var colorScheme
 
   var body: some View {
     let _ = colorScheme
-    HStack(spacing: 4) {
+    HStack(spacing: Layout.segmentSpacing) {
       ForEach(items, id: \.self) { item in
-        Button {
-          onSelect(item)
-        } label: {
-          if let itemWidth {
-            Text(label(item))
-              .font(.system(size: 12, weight: .medium))
-              .foregroundStyle(ReframedColors.primaryText)
-              .frame(width: itemWidth, height: 28)
-              .background(isSelected(item) ? ReframedColors.selectedActive : ReframedColors.fieldBackground)
-              .clipShape(RoundedRectangle(cornerRadius: Radius.md))
-          } else {
-            Text(label(item))
-              .font(.system(size: 12, weight: .medium))
-              .foregroundStyle(ReframedColors.primaryText)
-              .padding(.horizontal, horizontalPadding)
-              .frame(height: 28)
-              .background(isSelected(item) ? ReframedColors.selectedActive : ReframedColors.fieldBackground)
-              .clipShape(RoundedRectangle(cornerRadius: Radius.md))
-          }
+        let isSelected = selection == item
+        ToggleGroupItem(
+          text: label(item),
+          isSelected: isSelected
+        ) {
+          selection = item
         }
-        .buttonStyle(.plain)
       }
     }
+  }
+}
+
+private struct ToggleGroupItem: View {
+  let text: String
+  let isSelected: Bool
+  let action: () -> Void
+
+  @State private var isHovered = false
+
+  var body: some View {
+    Button(action: action) {
+      Text(text)
+        .font(.system(size: 11, weight: .medium))
+        .foregroundStyle(
+          isSelected
+            ? ReframedColors.primaryText
+            : (isHovered ? ReframedColors.primaryText : ReframedColors.mutedForeground)
+        )
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 6)
+        .padding(.horizontal, 6)
+        .background(
+          isSelected
+            ? ReframedColors.muted
+            : (isHovered ? ReframedColors.muted : Color.clear),
+          in: RoundedRectangle(cornerRadius: Radius.md)
+        )
+        .overlay(
+          RoundedRectangle(cornerRadius: Radius.md)
+            .stroke(ReframedColors.border, lineWidth: 1)
+        )
+        .contentShape(Rectangle())
+    }
+    .buttonStyle(.plain)
+    .onHover { isHovered = $0 }
   }
 }

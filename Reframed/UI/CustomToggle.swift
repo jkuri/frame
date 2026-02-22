@@ -17,7 +17,7 @@ struct CustomToggle: View {
     if isOn {
       return ReframedColors.primaryForeground
     }
-    return colorScheme == .dark ? .white : .white
+    return .white
   }
 
   var body: some View {

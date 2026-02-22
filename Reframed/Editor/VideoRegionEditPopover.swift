@@ -61,7 +61,7 @@ struct VideoRegionEditPopover: View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
       SectionHeader(icon: "arrow.right", title: "Entry Transition")
 
-      FullWidthSegmentPicker(
+      SegmentPicker(
         items: RegionTransitionType.allCases,
         label: { $0.label },
         selection: $localEntryTransition
@@ -81,7 +81,7 @@ struct VideoRegionEditPopover: View {
 
       SectionHeader(icon: "arrow.left", title: "Exit Transition")
 
-      FullWidthSegmentPicker(
+      SegmentPicker(
         items: RegionTransitionType.allCases,
         label: { $0.label },
         selection: $localExitTransition

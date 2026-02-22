@@ -52,7 +52,6 @@
 		A10000000000000000000026 /* ModeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000026 /* ModeButton.swift */; };
 		A10000000000000000000027 /* CaptureToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000027 /* CaptureToolbar.swift */; };
 		A10000000000000000000028 /* CaptureToolbarWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000028 /* CaptureToolbarWindow.swift */; };
-		A10000000000000000000029 /* ToolbarBackdropWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000029 /* ToolbarBackdropWindow.swift */; };
 		A1000000000000000000002A /* StartRecordingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002A /* StartRecordingOverlay.swift */; };
 		A1000000000000000000002B /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002B /* PermissionsView.swift */; };
 		A1000000000000000000002C /* StartRecordingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000002C /* StartRecordingButton.swift */; };
@@ -90,6 +89,7 @@
 		A40000000000000000000001 /* SoundEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000001 /* SoundEffect.swift */; };
 		A40000000000000000000002 /* TimeFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000002 /* TimeFormatting.swift */; };
 		A40000000000000000000003 /* MediaFileInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000003 /* MediaFileInfo.swift */; };
+		A40000000000000000000004 /* MathUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000004 /* MathUtilities.swift */; };
 		A50000000000000000000001 /* MouseClickMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50000000000000000000001 /* MouseClickMonitor.swift */; };
 		A50000000000000000000002 /* MouseClickWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50000000000000000000002 /* MouseClickWindow.swift */; };
 
@@ -124,8 +124,7 @@
 		A10000000000000000000039 /* CaptureToolbarComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000039 /* CaptureToolbarComponents.swift */; };
 		A1000000000000000000003A /* SliderRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003A /* SliderRow.swift */; };
 		A1000000000000000000003B /* TailwindColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003B /* TailwindColorPicker.swift */; };
-		A1000000000000000000003C /* SegmentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003C /* SegmentPicker.swift */; };
-		A10000000000000000000044 /* FullWidthSegmentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000044 /* FullWidthSegmentPicker.swift */; };
+		A10000000000000000000044 /* SegmentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000044 /* SegmentPicker.swift */; };
 		A10000000000000000000045 /* SwatchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000045 /* SwatchButton.swift */; };
 		A1000000000000000000003D /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003D /* Constants.swift */; };
 		A1000000000000000000003E /* KeyboardShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003E /* KeyboardShortcut.swift */; };
@@ -140,7 +139,6 @@
 		A20000000000000000000022 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000022 /* History.swift */; };
 		A20000000000000000000023 /* HistoryPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000023 /* HistoryPopover.swift */; };
 
-		CA0000000000000000000002 /* CIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0000000000000000000002 /* CIImageExtensions.swift */; };
 		DB000000000000000000000A /* RNNoiseProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA000000000000000000001D /* RNNoiseProcessor.swift */; };
 		A10000000000000000000046 /* PopoverContainerStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000046 /* PopoverContainerStyle.swift */; };
 		A10000000000000000000047 /* ToggleRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000047 /* ToggleRow.swift */; };
@@ -209,7 +207,6 @@
 		B10000000000000000000026 /* ModeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeButton.swift; sourceTree = "<group>"; };
 		B10000000000000000000027 /* CaptureToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbar.swift; sourceTree = "<group>"; };
 		B10000000000000000000028 /* CaptureToolbarWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbarWindow.swift; sourceTree = "<group>"; };
-		B10000000000000000000029 /* ToolbarBackdropWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarBackdropWindow.swift; sourceTree = "<group>"; };
 		B1000000000000000000002A /* StartRecordingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRecordingOverlay.swift; sourceTree = "<group>"; };
 		B1000000000000000000002B /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
 		B1000000000000000000002C /* StartRecordingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRecordingButton.swift; sourceTree = "<group>"; };
@@ -247,6 +244,7 @@
 		B40000000000000000000001 /* SoundEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEffect.swift; sourceTree = "<group>"; };
 		B40000000000000000000002 /* TimeFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatting.swift; sourceTree = "<group>"; };
 		B40000000000000000000003 /* MediaFileInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFileInfo.swift; sourceTree = "<group>"; };
+		B40000000000000000000004 /* MathUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathUtilities.swift; sourceTree = "<group>"; };
 		B50000000000000000000001 /* MouseClickMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseClickMonitor.swift; sourceTree = "<group>"; };
 		B50000000000000000000002 /* MouseClickWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseClickWindow.swift; sourceTree = "<group>"; };
 
@@ -281,8 +279,7 @@
 		B10000000000000000000039 /* CaptureToolbarComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbarComponents.swift; sourceTree = "<group>"; };
 		B1000000000000000000003A /* SliderRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderRow.swift; sourceTree = "<group>"; };
 		B1000000000000000000003B /* TailwindColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailwindColorPicker.swift; sourceTree = "<group>"; };
-		B1000000000000000000003C /* SegmentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentPicker.swift; sourceTree = "<group>"; };
-		B10000000000000000000044 /* FullWidthSegmentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullWidthSegmentPicker.swift; sourceTree = "<group>"; };
+		B10000000000000000000044 /* SegmentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentPicker.swift; sourceTree = "<group>"; };
 		B10000000000000000000045 /* SwatchButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwatchButton.swift; sourceTree = "<group>"; };
 		B1000000000000000000003E /* KeyboardShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcut.swift; sourceTree = "<group>"; };
 		B1000000000000000000003F /* KeyboardShortcutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutManager.swift; sourceTree = "<group>"; };
@@ -296,7 +293,6 @@
 		B20000000000000000000022 /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
 		B20000000000000000000023 /* HistoryPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryPopover.swift; sourceTree = "<group>"; };
 
-		CB0000000000000000000002 /* CIImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CIImageExtensions.swift; sourceTree = "<group>"; };
 		DA000000000000000000001D /* RNNoiseProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNNoiseProcessor.swift; sourceTree = "<group>"; };
 		B10000000000000000000046 /* PopoverContainerStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverContainerStyle.swift; sourceTree = "<group>"; };
 		B10000000000000000000047 /* ToggleRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleRow.swift; sourceTree = "<group>"; };
@@ -433,9 +429,9 @@
 				B40000000000000000000001 /* SoundEffect.swift */,
 				B40000000000000000000002 /* TimeFormatting.swift */,
 				B40000000000000000000003 /* MediaFileInfo.swift */,
+				B40000000000000000000004 /* MathUtilities.swift */,
 				B60000000000000000000001 /* CodableColor.swift */,
 				DA000000000000000000001D /* RNNoiseProcessor.swift */,
-				CB0000000000000000000002 /* CIImageExtensions.swift */,
 				B1000000000000000000003E /* KeyboardShortcut.swift */,
 				B1000000000000000000004C /* UpdateChecker.swift */,
 			);
@@ -470,7 +466,6 @@
 				B10000000000000000000026 /* ModeButton.swift */,
 				B10000000000000000000027 /* CaptureToolbar.swift */,
 				B10000000000000000000028 /* CaptureToolbarWindow.swift */,
-				B10000000000000000000029 /* ToolbarBackdropWindow.swift */,
 				B1000000000000000000002B /* PermissionsView.swift */,
 				B1000000000000000000002C /* StartRecordingButton.swift */,
 				B1000000000000000000002D /* SettingsView.swift */,
@@ -483,8 +478,7 @@
 				B10000000000000000000039 /* CaptureToolbarComponents.swift */,
 				B1000000000000000000003A /* SliderRow.swift */,
 				B1000000000000000000003B /* TailwindColorPicker.swift */,
-				B1000000000000000000003C /* SegmentPicker.swift */,
-				B10000000000000000000044 /* FullWidthSegmentPicker.swift */,
+				B10000000000000000000044 /* SegmentPicker.swift */,
 				B1000000000000000000003D /* Constants.swift */,
 				B10000000000000000000040 /* SettingsShortcutsTab.swift */,
 				B10000000000000000000041 /* ShortcutRow.swift */,
@@ -742,7 +736,6 @@
 				A10000000000000000000026 /* ModeButton.swift in Sources */,
 				A10000000000000000000027 /* CaptureToolbar.swift in Sources */,
 				A10000000000000000000028 /* CaptureToolbarWindow.swift in Sources */,
-				A10000000000000000000029 /* ToolbarBackdropWindow.swift in Sources */,
 				A1000000000000000000002A /* StartRecordingOverlay.swift in Sources */,
 				ED4608FB0AB34BC3B7BEDB94 /* WindowController.swift in Sources */,
 				A1000000000000000000002B /* PermissionsView.swift in Sources */,
@@ -781,6 +774,7 @@
 				A40000000000000000000001 /* SoundEffect.swift in Sources */,
 				A40000000000000000000002 /* TimeFormatting.swift in Sources */,
 				A40000000000000000000003 /* MediaFileInfo.swift in Sources */,
+				A40000000000000000000004 /* MathUtilities.swift in Sources */,
 				A50000000000000000000001 /* MouseClickMonitor.swift in Sources */,
 				A50000000000000000000002 /* MouseClickWindow.swift in Sources */,
 
@@ -816,8 +810,7 @@
 				A10000000000000000000039 /* CaptureToolbarComponents.swift in Sources */,
 				A1000000000000000000003A /* SliderRow.swift in Sources */,
 				A1000000000000000000003B /* TailwindColorPicker.swift in Sources */,
-				A1000000000000000000003C /* SegmentPicker.swift in Sources */,
-				A10000000000000000000044 /* FullWidthSegmentPicker.swift in Sources */,
+				A10000000000000000000044 /* SegmentPicker.swift in Sources */,
 				A10000000000000000000045 /* SwatchButton.swift in Sources */,
 				A1000000000000000000003E /* KeyboardShortcut.swift in Sources */,
 				A1000000000000000000003F /* KeyboardShortcutManager.swift in Sources */,
@@ -830,7 +823,6 @@
 				A20000000000000000000021 /* PropertiesPanel+AudioTab.swift in Sources */,
 				A20000000000000000000022 /* History.swift in Sources */,
 				A20000000000000000000023 /* HistoryPopover.swift in Sources */,
-				CA0000000000000000000002 /* CIImageExtensions.swift in Sources */,
 				DB000000000000000000000A /* RNNoiseProcessor.swift in Sources */,
 				A10000000000000000000046 /* PopoverContainerStyle.swift in Sources */,
 				A10000000000000000000047 /* ToggleRow.swift in Sources */,

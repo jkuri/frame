@@ -4,7 +4,7 @@ extension SettingsView {
   var generalContent: some View {
     Group {
       settingsRow(label: "Appearance") {
-        FullWidthSegmentPicker(
+        SegmentPicker(
           items: ["system", "light", "dark"],
           label: { $0.capitalized },
           selection: Binding(

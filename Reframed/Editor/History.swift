@@ -74,7 +74,7 @@ final class History {
 
     if old.trimStartSeconds != new.trimStartSeconds || old.trimEndSeconds != new.trimEndSeconds {
       changes.append(
-        "Trim range \(formatTime(old.trimStartSeconds))–\(formatTime(old.trimEndSeconds)) → \(formatTime(new.trimStartSeconds))–\(formatTime(new.trimEndSeconds))"
+        "Trim range \(formatCompactTime(seconds:old.trimStartSeconds))–\(formatCompactTime(seconds:old.trimEndSeconds)) → \(formatCompactTime(seconds:new.trimStartSeconds))–\(formatCompactTime(seconds:new.trimEndSeconds))"
       )
     }
 
@@ -191,6 +191,18 @@ final class History {
       }
     }
 
+    if old.cameraFullscreenRegions != new.cameraFullscreenRegions {
+      let oldCount = old.cameraFullscreenRegions?.count ?? 0
+      let newCount = new.cameraFullscreenRegions?.count ?? 0
+      if newCount > oldCount {
+        changes.append("Camera fullscreen region added")
+      } else if newCount < oldCount {
+        changes.append("Camera fullscreen region removed")
+      } else {
+        changes.append("Camera fullscreen region adjusted")
+      }
+    }
+
     if old.cameraRegions != new.cameraRegions {
       let oldCount = old.cameraRegions?.count ?? 0
       let newCount = new.cameraRegions?.count ?? 0
@@ -203,16 +215,19 @@ final class History {
       }
     }
 
-    return changes
-  }
-
-  private static func formatTime(_ seconds: Double) -> String {
-    let mins = Int(seconds) / 60
-    let secs = seconds - Double(mins * 60)
-    if mins > 0 {
-      return String(format: "%d:%04.1f", mins, secs)
+    if old.videoRegions != new.videoRegions {
+      let oldCount = old.videoRegions?.count ?? 0
+      let newCount = new.videoRegions?.count ?? 0
+      if newCount > oldCount {
+        changes.append("Video region added")
+      } else if newCount < oldCount {
+        changes.append("Video region removed")
+      } else {
+        changes.append("Video region adjusted")
+      }
     }
-    return String(format: "%.1fs", secs)
+
+    return changes
   }
 
   private static func describeBackground(_ style: BackgroundStyle) -> String {
@@ -283,9 +298,23 @@ final class History {
       let enabled = new?.autoZoomEnabled ?? false
       changes.append(enabled ? "Auto zoom enabled" : "Auto zoom disabled")
     }
+    if old?.zoomFollowCursor != new?.zoomFollowCursor {
+      let enabled = new?.zoomFollowCursor ?? true
+      changes.append(enabled ? "Zoom follow cursor enabled" : "Zoom follow cursor disabled")
+    }
     if old?.zoomLevel != new?.zoomLevel {
       changes.append(
         "Zoom level set to \(String(format: "%.1f", new?.zoomLevel ?? 2.0))x"
+      )
+    }
+    if old?.transitionDuration != new?.transitionDuration {
+      changes.append(
+        "Zoom transition speed set to \(String(format: "%.1f", new?.transitionDuration ?? 0.3))s"
+      )
+    }
+    if old?.dwellThreshold != new?.dwellThreshold {
+      changes.append(
+        "Zoom dwell threshold set to \(String(format: "%.1f", new?.dwellThreshold ?? 0.5))s"
       )
     }
     if old?.keyframes != new?.keyframes {

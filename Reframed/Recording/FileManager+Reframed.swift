@@ -68,10 +68,6 @@ extension FileManager {
     try moveItem(at: source, to: destination)
   }
 
-  func reframedBundleURL(in directory: URL) -> URL {
-    directory.appendingPathComponent("recording-\(timestamp()).frm")
-  }
-
   func cleanupTempDir() {
     let tempDir = URL(fileURLWithPath: "/tmp/Reframed", isDirectory: true)
     guard let contents = try? contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil) else { return }

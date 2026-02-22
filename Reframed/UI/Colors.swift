@@ -150,10 +150,6 @@ enum ReframedColors {
     isDark ? Color.white.opacity(0.12) : Color.black.opacity(0.08)
   }
 
-  static var subtleHover: Color {
-    isDark ? Color.white.opacity(0.06) : Color.black.opacity(0.04)
-  }
-
   static var selectedActive: Color {
     isDark ? Color.white.opacity(0.2) : Color.black.opacity(0.12)
   }
@@ -194,24 +190,12 @@ enum ReframedColors {
     isDark ? Color.white.opacity(0.12) : Color.black.opacity(0.06)
   }
 
-  static var accentForeground: Color {
-    isDark ? .white : .black
-  }
-
   static var muted: Color {
     isDark ? Color.white.opacity(0.08) : Color(white: 0.96)
   }
 
   static var mutedForeground: Color {
     isDark ? Color.white.opacity(0.5) : Color(white: 0.45)
-  }
-
-  static var destructive: Color {
-    Color(red: 0.937, green: 0.267, blue: 0.267)
-  }
-
-  static var destructiveForeground: Color {
-    .white
   }
 
 }

@@ -37,11 +37,7 @@ final class AudioWaveformGenerator {
     guard let reader = try? AVAssetReader(asset: asset) else { return [] }
 
     let audioTracks = (try? await asset.loadTracks(withMediaType: .audio)) ?? []
-    guard let track = audioTracks.first else {
-      let videoTracks = (try? await asset.loadTracks(withMediaType: .video)) ?? []
-      guard videoTracks.first != nil else { return [] }
-      return []
-    }
+    guard let track = audioTracks.first else { return [] }
 
     let trackTimeRange = try? await track.load(.timeRange)
     let assetDuration = try? await asset.load(.duration)

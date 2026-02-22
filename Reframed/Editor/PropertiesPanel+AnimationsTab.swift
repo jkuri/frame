@@ -16,7 +16,7 @@ extension PropertiesPanel {
             .font(.system(size: 12))
             .foregroundStyle(ReframedColors.secondaryText)
 
-          FullWidthSegmentPicker(
+          SegmentPicker(
             items: CursorMovementSpeed.allCases,
             label: { $0.label },
             selection: $editorState.cursorMovementSpeed

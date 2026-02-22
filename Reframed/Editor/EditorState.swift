@@ -1259,8 +1259,6 @@ final class EditorState {
     let config = ZoomDetectorConfig(
       zoomLevel: zoomLevel,
       dwellThresholdSeconds: zoomDwellThreshold,
-      velocityThreshold: 0.05,
-      minZoomDuration: 1.0,
       transitionDuration: zoomTransitionSpeed
     )
     let dur = CMTimeGetSeconds(duration)

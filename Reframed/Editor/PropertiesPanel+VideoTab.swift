@@ -5,7 +5,7 @@ extension PropertiesPanel {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
       SectionHeader(icon: "paintbrush.fill", title: "Background")
 
-      FullWidthSegmentPicker(
+      SegmentPicker(
         items: BackgroundMode.allCases,
         label: { $0.label },
         selection: $backgroundMode
@@ -71,7 +71,7 @@ extension PropertiesPanel {
         VStack(alignment: .leading, spacing: Layout.itemSpacing) {
           SectionHeader(icon: "arrow.up.left.and.arrow.down.right", title: "Fill Mode")
 
-          FullWidthSegmentPicker(
+          SegmentPicker(
             items: BackgroundImageFillMode.allCases,
             label: { $0.label },
             selection: $editorState.backgroundImageFillMode

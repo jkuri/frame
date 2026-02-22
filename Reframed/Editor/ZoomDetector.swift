@@ -3,8 +3,6 @@ import Foundation
 struct ZoomDetectorConfig: Codable, Sendable {
   var zoomLevel: Double = 2.0
   var dwellThresholdSeconds: Double = 0.5
-  var velocityThreshold: Double = 0.05
-  var minZoomDuration: Double = 1.0
   var transitionDuration: Double = 0.4
 }
 

@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum PrimaryButtonSize {
+enum ButtonSize {
   case small
   case medium
   case large
@@ -47,7 +47,7 @@ enum PrimaryButtonSize {
 }
 
 struct PrimaryButtonStyle: ButtonStyle {
-  var size: PrimaryButtonSize = .small
+  var size: ButtonSize = .small
   var fullWidth: Bool = false
   var forceLightMode: Bool = false
 
@@ -72,7 +72,7 @@ struct PrimaryButtonStyle: ButtonStyle {
 }
 
 struct SecondaryButtonStyle: ButtonStyle {
-  var size: PrimaryButtonSize = .small
+  var size: ButtonSize = .small
 
   @Environment(\.isEnabled) private var isEnabled
   @Environment(\.colorScheme) private var colorScheme
@@ -92,7 +92,7 @@ struct SecondaryButtonStyle: ButtonStyle {
 }
 
 struct OutlineButtonStyle: ButtonStyle {
-  var size: PrimaryButtonSize = .small
+  var size: ButtonSize = .small
   var fullWidth: Bool = false
 
   @Environment(\.isEnabled) private var isEnabled

@@ -47,7 +47,7 @@ actor RecordingCoordinator {
       verifiedCam = (existing.0, existing.1)
       logger.info("Using pre-existing camera: \(existing.1.width)x\(existing.1.height)")
     } else if let camId = cameraDeviceId {
-      let (maxW, maxH) = cameraMaxDimensions(for: cameraResolution)
+      let (maxW, maxH) = CaptureMode.cameraMaxDimensions(for: cameraResolution)
       let cam = WebcamCapture()
       let info = try await cam.startAndVerify(deviceId: camId, fps: fps, maxWidth: maxW, maxHeight: maxH)
       verifiedCam = (cam, info)
@@ -94,8 +94,6 @@ actor RecordingCoordinator {
       sourceRect = selection.screenCaptureKitRect
     case .window(let window):
       sourceRect = CGRect(origin: .zero, size: CGSize(width: CGFloat(window.frame.width), height: CGFloat(window.frame.height)))
-    case .screen(let screen):
-      sourceRect = screen.frame
     }
 
     pixelW = Int(round(sourceRect.width * displayScale)) & ~1
@@ -131,8 +129,6 @@ actor RecordingCoordinator {
       captureOrigin = selection.screenCaptureKitRect.origin
     case .window(let window):
       captureOrigin = window.frame.origin
-    case .screen:
-      captureOrigin = display.frame.origin
     }
 
     if let cursorMetadataRecorder {
@@ -239,7 +235,7 @@ actor RecordingCoordinator {
       verifiedCam = (existing.0, existing.1)
       logger.info("Using pre-existing camera for device recording: \(existing.1.width)x\(existing.1.height)")
     } else if let camId = cameraDeviceId {
-      let (maxW, maxH) = cameraMaxDimensions(for: cameraResolution)
+      let (maxW, maxH) = CaptureMode.cameraMaxDimensions(for: cameraResolution)
       let cam = WebcamCapture()
       let info = try await cam.startAndVerify(deviceId: camId, fps: fps, maxWidth: maxW, maxHeight: maxH)
       verifiedCam = (cam, info)
@@ -578,18 +574,4 @@ actor RecordingCoordinator {
     return SendableBox(session)
   }
 
-  func getWebcamCapture() -> WebcamCapture? {
-    webcamCapture
-  }
-
-  private func cameraMaxDimensions(for resolution: String) -> (Int, Int) {
-    switch resolution {
-    case "720p":
-      return (1280, 720)
-    case "4K":
-      return (3840, 2160)
-    default:
-      return (1920, 1080)
-    }
-  }
 }

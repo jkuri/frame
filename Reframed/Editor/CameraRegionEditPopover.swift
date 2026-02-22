@@ -32,7 +32,7 @@ struct CameraRegionEditPopover: View {
     VStack(alignment: .leading, spacing: Layout.regionPopoverSpacing) {
       SectionHeader(title: "Camera Region")
 
-      FullWidthSegmentPicker(
+      SegmentPicker(
         items: CameraRegionType.allCases,
         label: { $0.label },
         selection: Binding(
@@ -151,7 +151,7 @@ struct CameraRegionEditPopover: View {
 
       SectionHeader(icon: "aspectratio", title: "Aspect Ratio")
 
-      FullWidthSegmentPicker(
+      SegmentPicker(
         items: CameraAspect.allCases,
         label: { $0.label },
         selection: $localAspect
@@ -200,7 +200,7 @@ struct CameraRegionEditPopover: View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
       SectionHeader(icon: "arrow.right", title: "Entry Transition")
 
-      FullWidthSegmentPicker(
+      SegmentPicker(
         items: RegionTransitionType.allCases,
         label: { $0.label },
         selection: $localEntryTransition
@@ -220,7 +220,7 @@ struct CameraRegionEditPopover: View {
 
       SectionHeader(icon: "arrow.left", title: "Exit Transition")
 
-      FullWidthSegmentPicker(
+      SegmentPicker(
         items: RegionTransitionType.allCases,
         label: { $0.label },
         selection: $localExitTransition
