@@ -593,13 +593,7 @@ final class VideoPreviewContainer: NSView {
         screenShadowLayer.opacity = currentVideoShadow > 0 ? p * 0.6 : 0
       case .scale:
         screenContainerLayer.opacity = 1
-        let cx = screenRect.width / 2
-        let cy = screenRect.height / 2
-        var transform = CATransform3DIdentity
-        transform = CATransform3DTranslate(transform, cx, cy, 0)
-        transform = CATransform3DScale(transform, CGFloat(p), CGFloat(p), 1)
-        transform = CATransform3DTranslate(transform, -cx, -cy, 0)
-        screenContainerLayer.transform = transform
+        screenContainerLayer.transform = CATransform3DMakeScale(CGFloat(p), CGFloat(p), 1)
         screenShadowLayer.opacity = currentVideoShadow > 0 ? p * 0.6 : 0
       case .slide:
         screenContainerLayer.opacity = 1
