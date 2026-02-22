@@ -55,6 +55,7 @@ struct VideoPreviewView: NSViewRepresentable {
       entryTransition: RegionTransitionType, entryDuration: Double,
       exitTransition: RegionTransitionType, exitDuration: Double
     )] = []
+  var isPreviewMode: Bool = false
 
   func makeNSView(context: Context) -> VideoPreviewContainer {
     let container = VideoPreviewContainer()
@@ -198,7 +199,7 @@ struct VideoPreviewView: NSViewRepresentable {
     }()
     nsView.screenTransitionProgress = screenTransitionProgress
     nsView.screenTransitionType = screenTransitionType
-    nsView.isScreenHidden = false
+    nsView.isScreenHidden = isPreviewMode && !videoRegions.isEmpty && videoRegion == nil
 
     let effectiveLayout = customRegion?.layout ?? cameraLayout
 
@@ -533,7 +534,8 @@ final class VideoPreviewContainer: NSView {
     )
     let screenRect = AVMakeRect(aspectRatio: currentScreenSize, insideRect: paddedArea)
 
-    screenContainerLayer.frame = screenRect
+    screenContainerLayer.bounds = CGRect(origin: .zero, size: screenRect.size)
+    screenContainerLayer.position = CGPoint(x: screenRect.midX, y: screenRect.midY)
     let cornerRadius = min(screenRect.width, screenRect.height) * (currentVideoCornerRadius / 100.0)
     let maskPath = CGPath(
       roundedRect: CGRect(origin: .zero, size: screenRect.size),

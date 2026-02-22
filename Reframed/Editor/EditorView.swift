@@ -300,7 +300,8 @@ struct EditorView: View {
               exitTransition: r.exitTransition ?? .none,
               exitDuration: r.exitTransitionDuration ?? 0.3
             )
-          }
+          },
+          isPreviewMode: editorState.isPreviewMode
         )
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
