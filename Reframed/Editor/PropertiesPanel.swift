@@ -53,11 +53,10 @@ struct PropertiesPanel: View {
           cursorSection
           if editorState.showCursor {
             clickHighlightsSubsection
+            cursorMovementSection
           }
         case .zoom:
           zoomSection
-        case .animations:
-          cursorMovementSection
         }
       }
       .padding(Layout.panelPadding)

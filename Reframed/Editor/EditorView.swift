@@ -2,7 +2,7 @@ import CoreMedia
 import SwiftUI
 
 enum EditorTab: String, CaseIterable, Identifiable {
-  case general, video, camera, audio, cursor, zoom, animations
+  case general, video, camera, audio, cursor, zoom
 
   var id: String { rawValue }
 
@@ -14,7 +14,6 @@ enum EditorTab: String, CaseIterable, Identifiable {
     case .audio: "Audio"
     case .cursor: "Cursor"
     case .zoom: "Zoom"
-    case .animations: "Animate"
     }
   }
 
@@ -26,7 +25,6 @@ enum EditorTab: String, CaseIterable, Identifiable {
     case .audio: "speaker.wave.2"
     case .cursor: "cursorarrow"
     case .zoom: "plus.magnifyingglass"
-    case .animations: "wand.and.stars"
     }
   }
 }
