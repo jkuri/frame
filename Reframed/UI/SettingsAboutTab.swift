@@ -5,9 +5,11 @@ extension SettingsView {
     VStack(spacing: Layout.sectionSpacing) {
       appInfoSection
       updateSection
+      Spacer(minLength: 0)
       linksSection
     }
     .frame(maxWidth: .infinity)
+    .containerRelativeFrame(.vertical) { height, _ in height - Layout.settingsPadding * 2 }
   }
 
   private var appInfoSection: some View {
