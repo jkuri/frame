@@ -541,7 +541,6 @@ final class SessionState {
     if editorWindows.isEmpty {
       captureMode = .none
       transition(to: .idle)
-      showToolbar()
     }
   }
 
