@@ -227,6 +227,20 @@ final class History {
       }
     }
 
+    if changes.isEmpty {
+      if old.audioSettings != new.audioSettings { changes.append("Audio settings updated") }
+      if old.cursorSettings != new.cursorSettings { changes.append("Cursor settings updated") }
+      if old.zoomSettings != new.zoomSettings { changes.append("Zoom settings updated") }
+      if old.animationSettings != new.animationSettings {
+        changes.append("Animation settings updated")
+      }
+      if old.cameraLayout != new.cameraLayout { changes.append("Camera layout updated") }
+    }
+
+    if changes.isEmpty {
+      changes.append("Editor settings updated")
+    }
+
     return changes
   }
 
