@@ -8,8 +8,10 @@ struct SliderRow<V: BinaryFloatingPoint>: View where V.Stride: BinaryFloatingPoi
   var step: V.Stride = 1
   var formattedValue: String? = nil
   var valueWidth: CGFloat = 36
+  @Environment(\.colorScheme) private var colorScheme
 
   var body: some View {
+    let _ = colorScheme
     HStack(spacing: 8) {
       if let label {
         if let labelWidth {
