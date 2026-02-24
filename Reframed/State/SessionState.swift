@@ -674,12 +674,11 @@ final class SessionState {
 
   private func showStartRecordingOverlay() {
     guard startRecordingWindow == nil else { return }
-    guard let screen = NSScreen.main else { return }
+    guard !NSScreen.screens.isEmpty else { return }
 
     let window = StartRecordingWindow(
-      screen: screen,
       delay: options.timerDelay.rawValue,
-      onCountdownStart: { [weak self] in
+      onCountdownStart: { [weak self] _ in
         MainActor.assumeIsolated {
           self?.toolbarWindow?.orderOut(nil)
         }
@@ -689,9 +688,9 @@ final class SessionState {
           self?.cancelSelection()
         }
       },
-      onStart: { [weak self] in
+      onStart: { [weak self] screen in
         MainActor.assumeIsolated {
-          self?.startRecordingFromOverlay()
+          self?.startRecordingFromOverlay(screen: screen)
         }
       }
     )
@@ -705,9 +704,9 @@ final class SessionState {
     startRecordingWindow = nil
   }
 
-  private func startRecordingFromOverlay() {
+  private func startRecordingFromOverlay(screen: NSScreen) {
     hideStartRecordingOverlay()
-    recordEntireScreen()
+    recordEntireScreen(screen: screen)
   }
 
   func startDeviceRecordingWith(deviceId: String) {
@@ -762,13 +761,12 @@ final class SessionState {
     beginRecordingWithCountdown()
   }
 
-  private func recordEntireScreen() {
+  private func recordEntireScreen(screen: NSScreen) {
     guard Permissions.hasScreenRecordingPermission else {
       Permissions.requestScreenRecordingPermission()
       return
     }
 
-    guard let screen = NSScreen.main else { return }
     let selection = SelectionRect(rect: screen.frame, displayID: screen.displayID)
     captureTarget = .region(selection)
 
