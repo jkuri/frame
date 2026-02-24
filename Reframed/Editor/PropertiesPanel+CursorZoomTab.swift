@@ -11,7 +11,7 @@ extension PropertiesPanel {
           VStack(spacing: 3) {
             Image(nsImage: CursorRenderer.previewImage(for: style, size: 42))
               .frame(width: 42, height: 42)
-              .background(ReframedColors.fieldBackground)
+              .background(ReframedColors.muted)
               .clipShape(RoundedRectangle(cornerRadius: Radius.md))
               .overlay(
                 RoundedRectangle(cornerRadius: Radius.md)
