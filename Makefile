@@ -7,7 +7,7 @@ VERSION = $(shell grep MARKETING_VERSION Config.xcconfig | cut -d'=' -f2 | tr -d
 RELEASE_DIR = $(BUILD_DIR)/Build/Products/Release
 DEBUG_DIR = $(BUILD_DIR)/Build/Products/Debug
 
-.PHONY: build release run dev dmg format clean help install uninstall changelog tag
+.PHONY: build release run dev dmg dmg-release format clean help install uninstall changelog tag
 
 all: help
 
@@ -25,6 +25,9 @@ dev: build
 
 dmg: release
 	@./scripts/create-dmg.sh
+
+dmg-release: release
+	@./scripts/create-dmg.sh --sign "$(REFRAMED_SIGNING_IDENTITY)" --notarize
 
 install: uninstall release
 	@cp -rf $(RELEASE_DIR)/$(APP_NAME).app /Applications/
@@ -57,7 +60,8 @@ help:
 	@echo "Targets:"
 	@echo "  build     - Build debug version"
 	@echo "  release   - Build release version"
-	@echo "  dmg       - Create .dmg installer"
+	@echo "  dmg         - Create .dmg installer"
+	@echo "  dmg-release - Create signed and notarized .dmg installer"
 	@echo "  install   - Install to /Applications"
 	@echo "  uninstall - Remove from /Applications"
 	@echo "  run       - Build release and run"
