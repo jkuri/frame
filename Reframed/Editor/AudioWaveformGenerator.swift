@@ -1,6 +1,7 @@
 import AVFoundation
 import Accelerate
 import Foundation
+import Logging
 
 @MainActor
 @Observable
@@ -8,6 +9,7 @@ final class AudioWaveformGenerator {
   private(set) var samples: [Float] = []
   private(set) var isGenerating = false
   private(set) var progress: Double = 0
+  nonisolated private static let logger = Logger(label: "eu.jankuri.reframed.waveform-generator")
 
   func generate(from url: URL, count: Int = 200) async {
     isGenerating = true
@@ -34,13 +36,31 @@ final class AudioWaveformGenerator {
     onProgress: (@MainActor @Sendable (Double) -> Void)? = nil
   ) async -> [Float] {
     let asset = AVURLAsset(url: url)
-    guard let reader = try? AVAssetReader(asset: asset) else { return [] }
+    let reader: AVAssetReader
+    do {
+      reader = try AVAssetReader(asset: asset)
+    } catch {
+      logger.error("Failed to create AVAssetReader: \(error)")
+      return []
+    }
 
-    let audioTracks = (try? await asset.loadTracks(withMediaType: .audio)) ?? []
+    let audioTracks: [AVAssetTrack]
+    do {
+      audioTracks = try await asset.loadTracks(withMediaType: .audio)
+    } catch {
+      logger.error("Failed to load audio tracks: \(error)")
+      return []
+    }
     guard let track = audioTracks.first else { return [] }
 
     let trackTimeRange = try? await track.load(.timeRange)
-    let assetDuration = try? await asset.load(.duration)
+    let assetDuration: CMTime?
+    do {
+      assetDuration = try await asset.load(.duration)
+    } catch {
+      logger.error("Failed to load asset duration: \(error)")
+      assetDuration = nil
+    }
     let totalDuration = CMTimeGetSeconds(trackTimeRange?.duration ?? assetDuration ?? .zero)
 
     let settings: [String: Any] = [

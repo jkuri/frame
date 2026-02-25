@@ -1,10 +1,12 @@
 import AVFoundation
 import Combine
 import Foundation
+import Logging
 
 @MainActor
 @Observable
 final class SyncedPlayerController {
+  private let logger = Logger(label: "eu.jankuri.reframed.synced-player")
   let screenPlayer: AVPlayer
   let webcamPlayer: AVPlayer?
   private let systemAudioPlayer: AVPlayer?
@@ -57,7 +59,13 @@ final class SyncedPlayerController {
   }
 
   private func setupMicEngine(url: URL) {
-    guard let audioFile = try? AVAudioFile(forReading: url) else { return }
+    let audioFile: AVAudioFile
+    do {
+      audioFile = try AVAudioFile(forReading: url)
+    } catch {
+      logger.error("Failed to open mic audio file: \(error)")
+      return
+    }
     micAudioFile = audioFile
 
     let engine = AVAudioEngine()
@@ -68,7 +76,11 @@ final class SyncedPlayerController {
     let format = audioFile.processingFormat
     engine.connect(playerNode, to: engine.mainMixerNode, format: format)
 
-    try? engine.start()
+    do {
+      try engine.start()
+    } catch {
+      logger.error("Failed to start audio engine: \(error)")
+    }
 
     micAudioEngine = engine
     micPlayerNode = playerNode
@@ -83,7 +95,13 @@ final class SyncedPlayerController {
 
     engine.disconnectNodeOutput(playerNode)
 
-    guard let audioFile = try? AVAudioFile(forReading: url) else { return }
+    let audioFile: AVAudioFile
+    do {
+      audioFile = try AVAudioFile(forReading: url)
+    } catch {
+      logger.error("Failed to open swapped mic audio file: \(error)")
+      return
+    }
     micAudioFile = audioFile
 
     let format = audioFile.processingFormat
@@ -96,8 +114,12 @@ final class SyncedPlayerController {
 
   func loadDuration() async {
     guard let item = screenPlayer.currentItem else { return }
-    let d = try? await item.asset.load(.duration)
-    duration = d ?? .zero
+    do {
+      duration = try await item.asset.load(.duration)
+    } catch {
+      logger.error("Failed to load duration: \(error)")
+      duration = .zero
+    }
     trimEnd = duration
   }
 
