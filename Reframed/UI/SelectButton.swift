@@ -28,7 +28,7 @@ struct SelectButton<MenuContent: View>: View {
         }
         Image(systemName: "chevron.up.chevron.down")
           .font(.system(size: 9, weight: .semibold))
-          .foregroundStyle(ReframedColors.mutedForeground)
+          .foregroundStyle(ReframedColors.primaryText)
       }
       .padding(.horizontal, 10)
       .frame(width: fixedWidth, height: 30)

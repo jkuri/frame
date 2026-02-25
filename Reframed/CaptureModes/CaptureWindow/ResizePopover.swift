@@ -4,7 +4,7 @@ struct ResizePopover: View {
   let windowController: WindowController
   let window: WindowInfo
 
-  private let popoverBg = Color.hex("#0f0f0f")
+  private let popoverBg = Color.hex("#000000")
   private let borderColor = Color.white.opacity(0.18)
   private let dividerColor = Color.white.opacity(0.22)
 

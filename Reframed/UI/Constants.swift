@@ -21,13 +21,13 @@ enum Layout {
 }
 
 enum Track {
-  static let height: CGFloat = 38
+  static let height: CGFloat = 42
   static let borderWidth: CGFloat = 2
   static let borderRadius: CGFloat = Radius.lg
   static let fontSize: CGFloat = 10
   static let fontWeight: Font.Weight = .medium
   @MainActor static var background: Color { ReframedColors.backgroundContainer }
-  @MainActor static var borderColor: Color { ReframedColors.border }
+  @MainActor static var borderColor: Color { ReframedColors.trackBorder }
   @MainActor static var regionTextColor: Color { ReframedColors.primaryText }
 }
 

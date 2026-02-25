@@ -33,11 +33,7 @@ private struct ToggleGroupItem: View {
     Button(action: action) {
       Text(text)
         .font(.system(size: 11, weight: .medium))
-        .foregroundStyle(
-          isSelected
-            ? ReframedColors.primaryText
-            : (isHovered ? ReframedColors.primaryText : ReframedColors.mutedForeground)
-        )
+        .foregroundStyle(ReframedColors.primaryText)
         .frame(maxWidth: .infinity)
         .padding(.vertical, 6)
         .padding(.horizontal, 6)

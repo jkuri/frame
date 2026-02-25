@@ -91,7 +91,7 @@ enum ReframedColors {
   }
 
   static var backgroundPopover: Color {
-    isDark ? Color.hex("#0f0f0f") : Color.hex("#ffffff")
+    isDark ? Color.hex("#000000") : Color.hex("#ffffff")
   }
 
   static var backgroundContainerNS: NSColor {
@@ -135,7 +135,7 @@ enum ReframedColors {
   }
 
   static var divider: Color {
-    isDark ? Color.white.opacity(0.22) : Color.black.opacity(0.12)
+    isDark ? Color.white.opacity(0.12) : Color.black.opacity(0.12)
   }
 
   static var border: Color {
@@ -198,4 +198,7 @@ enum ReframedColors {
     isDark ? Color.white.opacity(0.5) : Color(white: 0.45)
   }
 
+  static var trackBorder: Color {
+    isDark ? Color.hex("#000000") : Color.black.opacity(0.1)
+  }
 }

@@ -92,7 +92,7 @@ struct SettingsView: View {
               Text(tab.rawValue)
                 .font(.system(size: 13, weight: .medium))
             }
-            .foregroundStyle(selectedTab == tab ? ReframedColors.primaryText : ReframedColors.dimLabel)
+            .foregroundStyle(selectedTab == tab ? ReframedColors.primaryText : ReframedColors.secondaryText)
             .padding(.horizontal, 18)
             .padding(.vertical, 10)
             .background(selectedTab == tab ? ReframedColors.muted : Color.clear)
@@ -112,7 +112,7 @@ struct SettingsView: View {
     VStack(alignment: .leading, spacing: 6) {
       Text(label)
         .font(.system(size: 12, weight: .medium))
-        .foregroundStyle(ReframedColors.secondaryText)
+        .foregroundStyle(ReframedColors.primaryText)
       content()
     }
   }
@@ -121,7 +121,7 @@ struct SettingsView: View {
     HStack {
       Text(title)
         .font(.system(size: 12, weight: .medium))
-        .foregroundStyle(ReframedColors.secondaryText)
+        .foregroundStyle(ReframedColors.primaryText)
       Spacer()
       CustomToggle(isOn: isOn)
     }
