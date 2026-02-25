@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.10.1](https://github.com/jkuri/Reframed/compare/v0.10.0...v0.10.1) (2026-02-25)
+
+### Bug Fixes
+
+- **capture:** fix multiple display selection and capture for all three modes - display, window and area (closes #4) ([2b3ff7e](https://github.com/jkuri/Reframed/commit/2b3ff7e6a58a15cbe4902c944dfbf42e883c8d45))
+
+### Chores
+
+- **docs:** add llms.txt ([625b512](https://github.com/jkuri/Reframed/commit/625b5123df9836705ffef4c78a96a6ee923868a4))
+
 ## [v0.10.0](https://github.com/jkuri/Reframed/compare/v0.9.4...v0.10.0) (2026-02-24)
 
 ### Features
