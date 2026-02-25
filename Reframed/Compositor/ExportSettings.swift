@@ -202,6 +202,95 @@ enum ExportAudioBitrate: Sendable, CaseIterable, Identifiable {
   }
 }
 
+enum ExportPreset: Sendable, CaseIterable, Identifiable {
+  case custom
+  case youtube
+  case twitter
+  case tiktok
+  case instagram
+  case discord
+  case proRes
+  case gif
+
+  var id: Self { self }
+
+  var label: String {
+    switch self {
+    case .custom: "Custom"
+    case .youtube: "YouTube"
+    case .twitter: "Twitter/X"
+    case .tiktok: "TikTok"
+    case .instagram: "Instagram"
+    case .discord: "Discord"
+    case .proRes: "ProRes"
+    case .gif: "GIF"
+    }
+  }
+
+  var settings: ExportSettings? {
+    switch self {
+    case .custom:
+      nil
+    case .youtube:
+      ExportSettings(
+        format: .mp4,
+        fps: .original,
+        resolution: .fhd1080,
+        codec: .h265,
+        audioBitrate: .kbps320,
+        mode: .parallel
+      )
+    case .twitter:
+      ExportSettings(
+        format: .mp4,
+        fps: .fps30,
+        resolution: .fhd1080,
+        codec: .h264,
+        audioBitrate: .kbps256,
+        mode: .parallel
+      )
+    case .tiktok:
+      ExportSettings(
+        format: .mp4,
+        fps: .fps30,
+        resolution: .fhd1080,
+        codec: .h264,
+        audioBitrate: .kbps256,
+        mode: .parallel
+      )
+    case .instagram:
+      ExportSettings(
+        format: .mp4,
+        fps: .fps30,
+        resolution: .fhd1080,
+        codec: .h264,
+        audioBitrate: .kbps256,
+        mode: .parallel
+      )
+    case .discord:
+      ExportSettings(
+        format: .mp4,
+        fps: .fps30,
+        resolution: .hd720,
+        codec: .h264,
+        audioBitrate: .kbps192,
+        mode: .parallel
+      )
+    case .proRes:
+      ExportSettings(
+        format: .mov,
+        fps: .original,
+        resolution: .original,
+        codec: .proRes422,
+        audioBitrate: .kbps320,
+        mode: .parallel
+      )
+    case .gif:
+      ExportSettings(format: .gif, fps: .fps24, resolution: .hd720)
+    }
+  }
+}
+
 enum ExportCodec: Sendable, CaseIterable, Identifiable {
   case h265
   case h264

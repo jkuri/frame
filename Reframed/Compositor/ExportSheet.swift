@@ -3,6 +3,7 @@ import SwiftUI
 struct ExportSheet: View {
   @Binding var isPresented: Bool
   @State private var settings = ExportSettings()
+  @State private var selectedPreset: ExportPreset = .custom
   let sourceFPS: Int
   let hasAudio: Bool
   let onExport: (ExportSettings) -> Void
@@ -22,11 +23,19 @@ struct ExportSheet: View {
       .padding(.bottom, 20)
 
       VStack(alignment: .leading, spacing: 18) {
+        settingsRow(label: "Preset") {
+          SegmentPicker(
+            items: ExportPreset.allCases,
+            label: { $0.label },
+            selection: $selectedPreset
+          )
+        }
+
         settingsRow(label: "Format") {
           SegmentPicker(
             items: ExportFormat.allCases,
             label: { $0.label },
-            selection: $settings.format
+            selection: manualBinding(\.format)
           )
         }
 
@@ -35,7 +44,7 @@ struct ExportSheet: View {
             SegmentPicker(
               items: GIFQuality.allCases,
               label: { $0.label },
-              selection: $settings.gifQuality
+              selection: manualBinding(\.gifQuality)
             )
           }
 
@@ -48,7 +57,7 @@ struct ExportSheet: View {
             SegmentPicker(
               items: ExportCodec.allCases,
               label: { $0.label },
-              selection: $settings.codec
+              selection: manualBinding(\.codec)
             )
           }
 
@@ -62,7 +71,7 @@ struct ExportSheet: View {
           SegmentPicker(
             items: gifAllowedFPSCases,
             label: { $0.label },
-            selection: $settings.fps
+            selection: manualBinding(\.fps)
           )
           .onChange(of: settings.fps) { _, newValue in
             if let fpsVal = newValue.numericValue, fpsVal > sourceFPS {
@@ -82,7 +91,7 @@ struct ExportSheet: View {
           SegmentPicker(
             items: ExportResolution.allCases,
             label: { $0.label },
-            selection: $settings.resolution
+            selection: manualBinding(\.resolution)
           )
         }
 
@@ -91,7 +100,7 @@ struct ExportSheet: View {
             SegmentPicker(
               items: ExportAudioBitrate.allCases,
               label: { $0.label },
-              selection: $settings.audioBitrate
+              selection: manualBinding(\.audioBitrate)
             )
           }
         }
@@ -101,7 +110,7 @@ struct ExportSheet: View {
             SegmentPicker(
               items: ExportMode.allCases,
               label: { $0.label },
-              selection: $settings.mode
+              selection: manualBinding(\.mode)
             )
           }
 
@@ -112,6 +121,10 @@ struct ExportSheet: View {
         }
       }
       .padding(.horizontal, 28)
+      .onChange(of: selectedPreset) { _, newPreset in
+        guard let presetSettings = newPreset.settings else { return }
+        settings = presetSettings
+      }
       .onChange(of: settings.format) { _, newFormat in
         if newFormat.isGIF {
           if let fpsVal = settings.fps.numericValue, fpsVal > 30 {
@@ -147,8 +160,18 @@ struct ExportSheet: View {
       .padding(.top, 20)
       .padding(.bottom, 24)
     }
-    .frame(width: 520)
+    .frame(width: 720)
     .background(ReframedColors.backgroundPopover)
+  }
+
+  private func manualBinding<T: Equatable>(_ keyPath: WritableKeyPath<ExportSettings, T>) -> Binding<T> {
+    Binding(
+      get: { settings[keyPath: keyPath] },
+      set: { newValue in
+        settings[keyPath: keyPath] = newValue
+        selectedPreset = .custom
+      }
+    )
   }
 
   private var gifAllowedFPSCases: [ExportFPS] {
