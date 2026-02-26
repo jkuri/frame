@@ -9,14 +9,21 @@ extension PropertiesPanel {
           editorState.cursorStyle = style
         } label: {
           VStack(spacing: 3) {
-            Image(nsImage: CursorRenderer.previewImage(for: style, size: 42))
-              .frame(width: 42, height: 42)
-              .background(ReframedColors.muted)
-              .clipShape(RoundedRectangle(cornerRadius: Radius.md))
-              .overlay(
-                RoundedRectangle(cornerRadius: Radius.md)
-                  .stroke(isSelected ? ReframedColors.ring : Color.clear, lineWidth: 2)
+            Image(
+              nsImage: CursorRenderer.previewImage(
+                for: style,
+                size: 42,
+                fillColor: editorState.cursorFillColor,
+                strokeColor: editorState.cursorStrokeColor
               )
+            )
+            .frame(width: 42, height: 42)
+            .background(ReframedColors.muted)
+            .clipShape(RoundedRectangle(cornerRadius: Radius.md))
+            .overlay(
+              RoundedRectangle(cornerRadius: Radius.md)
+                .stroke(isSelected ? ReframedColors.ring : Color.clear, lineWidth: 2)
+            )
             Text(style.label)
               .font(.system(size: 8, weight: isSelected ? .semibold : .regular))
               .foregroundStyle(isSelected ? ReframedColors.primaryText : ReframedColors.secondaryText)
@@ -41,12 +48,51 @@ extension PropertiesPanel {
           label: "Size",
           labelWidth: Layout.labelWidth,
           value: $editorState.cursorSize,
-          range: 16...64,
+          range: 16...128,
           step: 2,
-          formattedValue: "\(Int(editorState.cursorSize))px"
+          formattedValue: "\(Int(editorState.cursorSize))px",
+          valueWidth: Layout.labelWidth
         )
+
+        HStack(spacing: 8) {
+          Text("Fill")
+            .font(.system(size: 12))
+            .foregroundStyle(ReframedColors.secondaryText)
+            .frame(width: Layout.labelWidth, alignment: .leading)
+          cursorFillColorPicker
+        }
+
+        HStack(spacing: 8) {
+          Text("Stroke")
+            .font(.system(size: 12))
+            .foregroundStyle(ReframedColors.secondaryText)
+            .frame(width: Layout.labelWidth, alignment: .leading)
+          cursorStrokeColorPicker
+        }
       }
     }
+  }
+
+  var cursorFillColorPicker: some View {
+    let currentName =
+      TailwindColors.all.first { $0.color == editorState.cursorFillColor }?.name ?? "White"
+    return TailwindColorPicker(
+      displayColor: Color(cgColor: editorState.cursorFillColor.cgColor),
+      displayName: currentName,
+      isSelected: { $0.color == editorState.cursorFillColor },
+      onSelect: { editorState.cursorFillColor = $0.color }
+    )
+  }
+
+  var cursorStrokeColorPicker: some View {
+    let currentName =
+      TailwindColors.all.first { $0.color == editorState.cursorStrokeColor }?.name ?? "Black"
+    return TailwindColorPicker(
+      displayColor: Color(cgColor: editorState.cursorStrokeColor.cgColor),
+      displayName: currentName,
+      isSelected: { $0.color == editorState.cursorStrokeColor },
+      onSelect: { editorState.cursorStrokeColor = $0.color }
+    )
   }
 
   var clickHighlightsSubsection: some View {

@@ -20,6 +20,8 @@ extension EditorState {
         showCursor: showCursor,
         cursorStyleRaw: cursorStyle.rawValue,
         cursorSize: cursorSize,
+        cursorFillColor: cursorFillColor,
+        cursorStrokeColor: cursorStrokeColor,
         showClickHighlights: showClickHighlights,
         clickHighlightColor: clickHighlightColor,
         clickHighlightSize: clickHighlightSize
@@ -122,8 +124,10 @@ extension EditorState {
 
     if let cursorSettings = data.cursorSettings {
       showCursor = cursorSettings.showCursor
-      cursorStyle = CursorStyle(rawValue: cursorSettings.cursorStyleRaw) ?? .defaultArrow
+      cursorStyle = CursorStyle(rawValue: cursorSettings.cursorStyleRaw) ?? .centerDefault
       cursorSize = cursorSettings.cursorSize
+      cursorFillColor = cursorSettings.cursorFillColor ?? CodableColor(r: 1, g: 1, b: 1)
+      cursorStrokeColor = cursorSettings.cursorStrokeColor ?? CodableColor(r: 0, g: 0, b: 0)
       showClickHighlights = cursorSettings.showClickHighlights
       if let savedColor = cursorSettings.clickHighlightColor {
         clickHighlightColor = savedColor
@@ -280,6 +284,8 @@ extension EditorState {
       _ = self.showCursor
       _ = self.cursorStyle
       _ = self.cursorSize
+      _ = self.cursorFillColor
+      _ = self.cursorStrokeColor
       _ = self.showClickHighlights
       _ = self.clickHighlightColor
       _ = self.clickHighlightSize

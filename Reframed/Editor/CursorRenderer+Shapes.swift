@@ -1,184 +1,52 @@
-import CoreGraphics
+import Foundation
 
-extension CursorRenderer {
-  static func drawCircleDotCursor(in context: CGContext, at point: CGPoint, size: CGFloat) {
-    let outerRadius = size / 2
-    let innerRadius = size * 0.15
-    let lineWidth = max(1.5, size / 12)
-
-    let outerRect = CGRect(
-      x: point.x - outerRadius,
-      y: point.y - outerRadius,
-      width: outerRadius * 2,
-      height: outerRadius * 2
-    )
-
-    context.setStrokeColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.9))
-    context.setLineWidth(lineWidth + 1)
-    context.strokeEllipse(in: outerRect)
-
-    context.setStrokeColor(CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 0.7))
-    context.setLineWidth(lineWidth)
-    context.strokeEllipse(in: outerRect)
-
-    let innerRect = CGRect(
-      x: point.x - innerRadius,
-      y: point.y - innerRadius,
-      width: innerRadius * 2,
-      height: innerRadius * 2
-    )
-    context.setFillColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1))
-    context.fillEllipse(in: innerRect)
-  }
-
-  static func drawDotCursor(in context: CGContext, at point: CGPoint, size: CGFloat) {
-    let radius = size * 0.35
-    let dotRect = CGRect(
-      x: point.x - radius,
-      y: point.y - radius,
-      width: radius * 2,
-      height: radius * 2
-    )
-
-    context.setFillColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1))
-    context.fillEllipse(in: dotRect)
-    context.setStrokeColor(CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 0.6))
-    context.setLineWidth(max(1.0, size / 16))
-    context.strokeEllipse(in: dotRect)
-  }
-
-  static func drawCircleCursor(in context: CGContext, at point: CGPoint, size: CGFloat) {
-    let radius = size / 2
-    let lineWidth = max(1.5, size / 10)
-    let circleRect = CGRect(
-      x: point.x - radius,
-      y: point.y - radius,
-      width: radius * 2,
-      height: radius * 2
-    )
-
-    context.setStrokeColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.95))
-    context.setLineWidth(lineWidth + 1)
-    context.strokeEllipse(in: circleRect)
-
-    context.setStrokeColor(CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 0.7))
-    context.setLineWidth(lineWidth)
-    context.strokeEllipse(in: circleRect)
-  }
-
-  static func drawBullseyeCursor(in context: CGContext, at point: CGPoint, size: CGFloat) {
-    let outerRadius = size / 2
-    let midRadius = size * 0.3
-    let innerRadius = size * 0.12
-    let lineWidth = max(1.0, size / 16)
-
-    let outerRect = CGRect(
-      x: point.x - outerRadius,
-      y: point.y - outerRadius,
-      width: outerRadius * 2,
-      height: outerRadius * 2
-    )
-    context.setStrokeColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.9))
-    context.setLineWidth(lineWidth + 1)
-    context.strokeEllipse(in: outerRect)
-    context.setStrokeColor(CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 0.7))
-    context.setLineWidth(lineWidth)
-    context.strokeEllipse(in: outerRect)
-
-    let midRect = CGRect(
-      x: point.x - midRadius,
-      y: point.y - midRadius,
-      width: midRadius * 2,
-      height: midRadius * 2
-    )
-    context.setStrokeColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.9))
-    context.setLineWidth(lineWidth + 1)
-    context.strokeEllipse(in: midRect)
-    context.setStrokeColor(CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 0.7))
-    context.setLineWidth(lineWidth)
-    context.strokeEllipse(in: midRect)
-
-    let innerRect = CGRect(
-      x: point.x - innerRadius,
-      y: point.y - innerRadius,
-      width: innerRadius * 2,
-      height: innerRadius * 2
-    )
-    context.setFillColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1))
-    context.fillEllipse(in: innerRect)
-  }
-
-  static func drawDiamondCursor(in context: CGContext, at point: CGPoint, size: CGFloat) {
-    let half = size / 2
-    let lineWidth = max(1.5, size / 14)
-
-    let path = CGMutablePath()
-    path.move(to: CGPoint(x: point.x, y: point.y - half))
-    path.addLine(to: CGPoint(x: point.x + half, y: point.y))
-    path.addLine(to: CGPoint(x: point.x, y: point.y + half))
-    path.addLine(to: CGPoint(x: point.x - half, y: point.y))
-    path.closeSubpath()
-
-    context.addPath(path)
-    context.setFillColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.15))
-    context.fillPath()
-
-    context.addPath(path)
-    context.setStrokeColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1))
-    context.setLineWidth(lineWidth + 1)
-    context.strokePath()
-
-    context.addPath(path)
-    context.setStrokeColor(CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 0.7))
-    context.setLineWidth(lineWidth)
-    context.strokePath()
-  }
-
-  static func drawPlusCursor(in context: CGContext, at point: CGPoint, size: CGFloat) {
-    let halfLen = size / 2
-    let thickness = max(2.0, size / 6)
-
-    let hRect = CGRect(
-      x: point.x - halfLen,
-      y: point.y - thickness / 2,
-      width: size,
-      height: thickness
-    )
-    let vRect = CGRect(
-      x: point.x - thickness / 2,
-      y: point.y - halfLen,
-      width: thickness,
-      height: size
-    )
-
-    let plusPath = CGMutablePath()
-    plusPath.addRect(hRect)
-    plusPath.addRect(vRect)
-
-    context.addPath(plusPath)
-    context.setFillColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1))
-    context.fillPath()
-
-    context.addPath(plusPath)
-    context.setStrokeColor(CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 0.6))
-    context.setLineWidth(max(1.0, size / 20))
-    context.strokePath()
-  }
-
-  static func drawSpotlightCursor(in context: CGContext, at point: CGPoint, size: CGFloat) {
-    let radius = size / 2
-    let circleRect = CGRect(
-      x: point.x - radius,
-      y: point.y - radius,
-      width: radius * 2,
-      height: radius * 2
-    )
-
-    context.setFillColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.3))
-    context.fillEllipse(in: circleRect)
-
-    context.setStrokeColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.9))
-    context.setLineWidth(max(1.5, size / 12))
-    context.strokeEllipse(in: circleRect)
+extension CursorStyle {
+  var svgTemplate: String {
+    switch self {
+    case .centerDefault:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" fill=\"none\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" fill-rule=\"evenodd\" d=\"m16.314 23.692 1.31-.649 1.136-.543-1.806-3.117H20L12 12v10.365l2.331-2.085z\" clip-rule=\"evenodd\"/><path fill=\"#000\" fill-rule=\"evenodd\" d=\"m16.513 22.74 1.242-.61-1.952-3.367h2.534l-5.642-5.205v7.24l1.78-1.58z\" clip-rule=\"evenodd\"/></svg>"
+    case .centerSecondary:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" fill=\"none\" viewBox=\"0 0 24 24\"><path stroke=\"currentColor\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"m12 12 3.684 10 1.08-3.239a3.16 3.16 0 0 1 1.997-1.997L22 15.684z\"/></svg>"
+    case .centerPointer:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" fill=\"none\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" d=\"M11.15 20.003c-.226-.3-.45-.825-.9-1.5-.226-.375-.9-1.125-1.126-1.425-.15-.3-.15-.45-.075-.75.075-.45.525-.825 1.05-.825.375 0 .75.3 1.05.525.15.15.375.45.525.6s.15.225.3.375c.15.225.225.375.15.075-.075-.375-.15-.975-.3-1.575-.075-.45-.15-.525-.225-.825-.075-.375-.15-.6-.225-.975-.075-.225-.15-.825-.225-1.125-.075-.375-.075-1.05.225-1.35.225-.225.675-.3.975-.15.375.225.6.75.675.975.15.375.3.9.375 1.5.15.75.375 1.875.375 2.1 0-.3-.075-.825 0-1.125.075-.225.225-.525.525-.6.225-.075.45-.075.675-.075.225.075.45.225.6.375.3.45.3 1.425.3 1.35.075-.3.075-.9.225-1.2.075-.15.375-.3.525-.375.225-.075.525-.075.75 0 .15 0 .45.225.525.375.15.225.225.975.3 1.275 0 .075.075-.3.225-.525.3-.45 1.35-.6 1.425.45v1.725c0 .3-.075.975-.15 1.275-.075.225-.3.75-.525 1.05 0 0-.825.9-.9 1.35s-.075.45-.075.75.075.675.075.675-.6.075-.9 0-.675-.6-.75-.825c-.15-.225-.375-.225-.525 0-.15.3-.525.825-.825.825-.525.075-1.575 0-2.325 0 0 0 .15-.75-.15-1.05l-.825-.825z\"/><path stroke=\"#000\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\".75\" d=\"M11.15 20.003c-.226-.3-.45-.825-.9-1.5-.226-.375-.9-1.125-1.126-1.425-.15-.3-.15-.45-.075-.75.075-.45.525-.825 1.05-.825.375 0 .75.3 1.05.525.15.15.375.45.525.6s.15.225.3.375c.15.225.225.375.15.075-.075-.375-.15-.975-.3-1.575-.075-.45-.15-.525-.225-.825-.075-.375-.15-.6-.225-.975-.075-.225-.15-.825-.225-1.125-.075-.375-.075-1.05.225-1.35.225-.225.675-.3.975-.15.375.225.6.75.675.975.15.375.3.9.375 1.5.15.75.375 1.875.375 2.1 0-.3-.075-.825 0-1.125.075-.225.225-.525.525-.6.225-.075.45-.075.675-.075.225.075.45.225.6.375.3.45.3 1.425.3 1.35.075-.3.075-.9.225-1.2.075-.15.375-.3.525-.375.225-.075.525-.075.75 0 .15 0 .45.225.525.375.15.225.225.975.3 1.275 0 .075.075-.3.225-.525.3-.45 1.35-.6 1.425.45v1.725c0 .3-.075.975-.15 1.275-.075.225-.3.75-.525 1.05 0 0-.825.9-.9 1.35s-.075.45-.075.75.075.675.075.675-.6.075-.9 0-.675-.6-.75-.825c-.15-.225-.375-.225-.525 0-.15.3-.525.825-.825.825-.525.075-1.575 0-2.325 0 0 0 .15-.75-.15-1.05l-.825-.825z\"/><path stroke=\"#000\" stroke-linecap=\"round\" stroke-width=\".75\" d=\"M17.375 20.228v-2.55M15.874 20.228l-.075-2.55M14.375 17.678v2.55\"/></svg>"
+    case .centerFoff:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" fill=\"none\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" d=\"M8.973 15.36c.36-.134 1.07-.051 1.258.356.16.345.297.93.305.805.018-.277-.018-4.625.102-4.938.088-.228.26-.442.515-.518.213-.064.465-.086.688-.041.234.048.481.215.573.374.272.467.276 5.174.289 5.123.048-.203.053-.921.212-1.188a.94.94 0 0 1 .516-.359 2.1 2.1 0 0 1 .723-.006c.187.037.44.258.508.364.164.258.256.988.284 1.244.012.106.056-.295.22-.552.304-.48 1.383-.572 1.424.48.018.49.015.468.015.797 0 .387-.01.621-.03.902-.023.299-.087.978-.181 1.307a4.4 4.4 0 0 1-.49 1.037s-.805.938-.893 1.36c-.087.42-.058.424-.076.723-.018.3.09.693.09.693s-.6.078-.925.025c-.293-.047-.656-.63-.75-.809-.129-.246-.404-.2-.511-.017-.169.287-.532.803-.789.835-.501.063-1.54.023-2.355.015 0 0 .14-.758-.17-1.018-.229-.195-.622-.587-.858-.796l-.624-.69c-.212-.269-.751-.697-.932-1.488-.16-.703-.144-1.047.028-1.328.174-.286.502-.442.64-.469.156-.031.52-.029.656.047.168.092.235.118.366.293.173.23.234.343.16.09-.057-.196-.241-.446-.325-.728-.082-.27-.301-.706-.285-1.143.004-.166.075-.578.622-.782\"/><path stroke=\"#000\" stroke-linejoin=\"round\" stroke-width=\".75\" d=\"M8.973 15.36c.36-.134 1.07-.051 1.258.356.16.345.297.93.305.805.018-.277-.018-4.625.102-4.938.088-.228.26-.442.515-.518.213-.064.465-.086.688-.041.234.048.481.215.573.374.272.467.276 5.174.289 5.123.048-.203.053-.921.212-1.188a.94.94 0 0 1 .516-.359 2.1 2.1 0 0 1 .723-.006c.187.037.44.258.508.364.164.258.256.988.284 1.244.012.106.056-.295.22-.552.304-.48 1.383-.572 1.424.48.018.49.015.468.015.797 0 .387-.01.621-.03.902-.023.299-.087.978-.181 1.307a4.4 4.4 0 0 1-.49 1.037s-.805.938-.893 1.36c-.087.42-.058.424-.076.723-.018.3.09.693.09.693s-.6.078-.925.025c-.293-.047-.656-.63-.75-.809-.129-.246-.404-.2-.511-.017-.169.287-.532.803-.789.835-.501.063-1.54.023-2.355.015 0 0 .14-.758-.17-1.018-.229-.195-.622-.587-.858-.796l-.624-.69c-.212-.269-.751-.697-.932-1.488-.16-.703-.144-1.047.028-1.328.174-.286.502-.442.64-.469.156-.031.52-.029.656.047.168.092.235.118.366.293.173.23.234.343.16.09-.057-.196-.241-.446-.325-.728-.082-.27-.301-.706-.285-1.143.004-.166.075-.578.622-.782Z\"/><path stroke=\"#000\" stroke-linecap=\"round\" stroke-width=\".75\" d=\"M14.218 21.134v-2.595m-1.511 2.604-.012-2.605m-1.485.023.016 2.57\"/></svg>"
+    case .cursorPen:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" fill=\"none\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" d=\"M23.444 23.444a1.907 1.907 0 0 1-2.564.117l-.331.332-.908-.913.077-.077-.323-.302-.073.07c-.691.693-1.489 1.41-2.55.982-1.443-.585-2.133-3.71-2.931-4.891-.697-1.028-2.445-2.117-4.008-2.937.078-.077.232-.309.334-.335.435.192.877.363 1.307.563.898.417 1.771.903 2.543 1.527 1.58 1.28 2.217 5.114 3.345 5.189.471.034.932-.404 1.322-.833L10.518 14.3l.322-.323-7.877-7.89L.488 1.719l.327-.328L.112.458C-.008.318-.036.133.049.048c.084-.083.27-.055.409.065l.934.7.327-.326 4.368 2.475 7.878 7.891.006-.006.33-.33 8.597 9.207.087-.088.907.913-.33.33c.618.753.585 1.862-.118 2.565M1.787.985l-.801.801 2.066 3.646 2.38-2.381zM14.3 11.083l-3.216 3.216.6.592 3.211-3.212zm8.683 9.12-2.778 2.778.343.345 2.778-2.778z\"/></svg>"
+    case .cursorMarker:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" fill=\"none\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" d=\"m6.37 3.351-3.019 3.02a8.44 8.44 0 0 1-2.006-5.026 8.44 8.44 0 0 1 5.026 2.006M4.276 7.332l3.057-3.057 15.062 15.062a.933.933 0 0 1 0 1.32l-1.737 1.737a.933.933 0 0 1-1.32 0zm11.445 13.33c-.993.922-2.547.9-3.513-.066l-4.404-4.403a.667.667 0 1 0-.942.942l4.403 4.403a3.866 3.866 0 0 0 5.4.067l1.73 1.731c.885.885 2.32.885 3.205 0l1.737-1.737a2.266 2.266 0 0 0 0-3.205L7.803 2.861A9.77 9.77 0 0 0 .895 0H.667A.667.667 0 0 0 0 .667v.228a9.77 9.77 0 0 0 2.861 6.908z\"/></svg>"
+    case .centerDot:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><circle cx=\"16\" cy=\"16\" r=\"3\" fill=\"#000\"/><circle cx=\"16\" cy=\"16\" r=\"2\" fill=\"currentColor\"/></svg>"
+    case .centerCircle:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\"><circle cx=\"16\" cy=\"16\" r=\"5\" stroke=\"#000\" stroke-width=\"3\"/><circle cx=\"16\" cy=\"16\" r=\"5\" stroke=\"currentColor\" stroke-width=\"1.5\"/></g></svg>"
+    case .centerRingDot:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\"><circle cx=\"16\" cy=\"16\" r=\"6\" stroke=\"#000\" stroke-width=\"3\"/><circle cx=\"16\" cy=\"16\" r=\"2.5\" fill=\"#000\"/><circle cx=\"16\" cy=\"16\" r=\"6\" stroke=\"currentColor\" stroke-width=\"1.5\"/><circle cx=\"16\" cy=\"16\" r=\"1.5\" fill=\"currentColor\"/></g></svg>"
+    case .centerBullseye:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\"><circle cx=\"16\" cy=\"16\" r=\"9\" stroke=\"#000\" stroke-width=\"3\"/><circle cx=\"16\" cy=\"16\" r=\"5\" stroke=\"#000\" stroke-width=\"3\"/><circle cx=\"16\" cy=\"16\" r=\"2.5\" fill=\"#000\"/><circle cx=\"16\" cy=\"16\" r=\"9\" stroke=\"currentColor\" stroke-width=\"1.5\"/><circle cx=\"16\" cy=\"16\" r=\"5\" stroke=\"currentColor\" stroke-width=\"1.5\"/><circle cx=\"16\" cy=\"16\" r=\"1.5\" fill=\"currentColor\"/></g></svg>"
+    case .centerDiamond:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\" stroke-linejoin=\"round\"><path stroke=\"#000\" stroke-width=\"3\" d=\"m16 8 7 8-7 8-7-8z\"/><path stroke=\"currentColor\" stroke-width=\"1.5\" d=\"m16 8 7 8-7 8-7-8z\"/></g></svg>"
+    case .centerPlus:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\" stroke-linecap=\"round\"><path stroke=\"#000\" stroke-width=\"3\" d=\"M10 16h12m-6-6v12\"/><path stroke=\"currentColor\" stroke-width=\"1.5\" d=\"M10 16h12m-6-6v12\"/></g></svg>"
+    case .centerCrosshair:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\" stroke-linecap=\"round\"><path stroke=\"#000\" stroke-width=\"3\" d=\"M8 16h4m8 0h4m-8-8v4m0 8v4\"/><path stroke=\"currentColor\" stroke-width=\"1.5\" d=\"M8 16h4m8 0h4m-8-8v4m0 8v4\"/></g></svg>"
+    case .centerCrossDot:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\"><path stroke=\"#000\" stroke-linecap=\"round\" stroke-width=\"3\" d=\"M6 16h5m10 0h5M16 6v5m0 10v5\"/><circle cx=\"16\" cy=\"16\" r=\"2.5\" fill=\"#000\"/><path stroke=\"currentColor\" stroke-linecap=\"round\" stroke-width=\"1.5\" d=\"M6 16h5m10 0h5M16 6v5m0 10v5\"/><circle cx=\"16\" cy=\"16\" r=\"1.5\" fill=\"currentColor\"/></g></svg>"
+    case .centerCrossGap:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\" stroke-linecap=\"round\"><path stroke=\"#000\" stroke-width=\"3\" d=\"M4 16h4m16 0h4M16 4v4m0 16v4\"/><path stroke=\"currentColor\" stroke-width=\"1.5\" d=\"M4 16h4m16 0h4M16 4v4m0 16v4\"/></g></svg>"
+    case .centerSpotlight:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\"><circle cx=\"16\" cy=\"16\" r=\"12\" stroke=\"#000\" stroke-width=\"3\" opacity=\".3\"/><circle cx=\"16\" cy=\"16\" r=\"12\" stroke=\"currentColor\" stroke-width=\"1.5\" opacity=\".3\"/><circle cx=\"16\" cy=\"16\" r=\"3\" fill=\"#000\"/><circle cx=\"16\" cy=\"16\" r=\"2\" fill=\"currentColor\"/></g></svg>"
+    case .centerBrackets:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path stroke=\"#000\" stroke-width=\"3\" d=\"M13 10H9v12h4m6-12h4v12h-4\"/><path stroke=\"currentColor\" stroke-width=\"1.5\" d=\"M13 10H9v12h4m6-12h4v12h-4\"/></g></svg>"
+    case .centerCorners:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path stroke=\"#000\" stroke-width=\"3\" d=\"M10 14v-4h4m8 4v-4h-4m-8 8v4h4m8-4v4h-4\"/><path stroke=\"currentColor\" stroke-width=\"1.5\" d=\"M10 14v-4h4m8 4v-4h-4m-8 8v4h4m8-4v4h-4\"/></g></svg>"
+    case .centerSquare:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\" stroke-linejoin=\"round\"><path stroke=\"#000\" stroke-width=\"3\" d=\"M10 10h12v12H10z\"/><path stroke=\"currentColor\" stroke-width=\"1.5\" d=\"M10 10h12v12H10z\"/></g></svg>"
+    case .centerStar:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\" stroke-linejoin=\"round\"><path stroke=\"#000\" stroke-width=\"3\" d=\"m16 5 3 8 8 3-8 3-3 8-3-8-8-3 8-3z\"/><path stroke=\"currentColor\" stroke-width=\"1.5\" d=\"m16 5 3 8 8 3-8 3-3 8-3-8-8-3 8-3z\"/></g></svg>"
+    case .centerTriangle:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\" stroke-linejoin=\"round\"><path stroke=\"#000\" stroke-width=\"3\" d=\"m16 8 8 14H8z\"/><path stroke=\"currentColor\" stroke-width=\"1.5\" d=\"m16 8 8 14H8z\"/></g></svg>"
+    case .centerX:
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><g fill=\"none\" stroke-linecap=\"round\"><path stroke=\"#000\" stroke-width=\"3\" d=\"m10 10 12 12m0-12L10 22\"/><path stroke=\"currentColor\" stroke-width=\"1.5\" d=\"m10 10 12 12m0-12L10 22\"/></g></svg>"
+    }
   }
 }

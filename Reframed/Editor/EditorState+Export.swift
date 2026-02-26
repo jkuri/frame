@@ -160,6 +160,8 @@ extension EditorState {
       cursorSnapshot: cursorSnapshot,
       cursorStyle: cursorStyle,
       cursorSize: cursorSize,
+      cursorFillColor: cursorFillColor,
+      cursorStrokeColor: cursorStrokeColor,
       showClickHighlights: showClickHighlights,
       clickHighlightColor: clickHighlightColor.cgColor,
       clickHighlightSize: clickHighlightSize,

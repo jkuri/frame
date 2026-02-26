@@ -17,6 +17,13 @@ struct CodableColor: Sendable, Equatable, Codable {
     self.a = a
   }
 
+  var hexString: String {
+    let ri = Int(min(max(r, 0), 1) * 255)
+    let gi = Int(min(max(g, 0), 1) * 255)
+    let bi = Int(min(max(b, 0), 1) * 255)
+    return String(format: "#%02x%02x%02x", ri, gi, bi)
+  }
+
   init(cgColor: CGColor) {
     let components = cgColor.components ?? [0, 0, 0, 1]
     if components.count >= 4 {

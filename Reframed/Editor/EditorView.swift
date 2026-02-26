@@ -241,6 +241,8 @@ struct EditorView: View {
           showCursor: editorState.showCursor,
           cursorStyle: editorState.cursorStyle,
           cursorSize: editorState.cursorSize,
+          cursorFillColor: editorState.cursorFillColor,
+          cursorStrokeColor: editorState.cursorStrokeColor,
           showClickHighlights: editorState.showClickHighlights,
           clickHighlightColor: editorState.clickHighlightColor.cgColor,
           clickHighlightSize: editorState.clickHighlightSize,

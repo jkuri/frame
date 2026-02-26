@@ -273,7 +273,7 @@ final class History {
     }
 
     if old?.cursorStyleRaw != new?.cursorStyleRaw {
-      let style = CursorStyle(rawValue: new?.cursorStyleRaw ?? 0) ?? .defaultArrow
+      let style = CursorStyle(rawValue: new?.cursorStyleRaw ?? 0) ?? .centerDefault
       changes.append("Cursor style set to \(style.label)")
     }
     if old?.cursorSize != new?.cursorSize {

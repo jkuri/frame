@@ -21,6 +21,8 @@ struct CursorSettingsData: Codable, Sendable, Equatable {
   var showCursor: Bool
   var cursorStyleRaw: Int
   var cursorSize: CGFloat
+  var cursorFillColor: CodableColor?
+  var cursorStrokeColor: CodableColor?
   var showClickHighlights: Bool = true
   var clickHighlightColor: CodableColor? = nil
   var clickHighlightSize: CGFloat = 36

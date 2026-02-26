@@ -4,14 +4,18 @@ import QuartzCore
 final class CursorOverlayLayer: CALayer {
   private let cursorLayer = CALayer()
   private var clickLayers: [CALayer] = []
-  private var currentStyle: CursorStyle = .defaultArrow
+  private var currentStyle: CursorStyle = .centerDefault
   private var currentSize: CGFloat = 24
   private var cursorVisible = true
   private var clickColor: CGColor?
   private var clickSize: CGFloat = 36
+  private var cursorFillColor: CodableColor = CodableColor(r: 1, g: 1, b: 1)
+  private var cursorStrokeColor: CodableColor = CodableColor(r: 0, g: 0, b: 0)
   private var cachedImage: CGImage?
-  private var cachedImageStyle: CursorStyle = .defaultArrow
+  private var cachedImageStyle: CursorStyle = .centerDefault
   private var cachedImageSize: CGFloat = 0
+  private var cachedFillHex: String = ""
+  private var cachedStrokeHex: String = ""
 
   override init() {
     super.init()
@@ -37,7 +41,9 @@ final class CursorOverlayLayer: CALayer {
     containerSize: CGSize,
     clicks: [(point: CGPoint, progress: Double)] = [],
     highlightColor: CGColor? = nil,
-    highlightSize: CGFloat = 36
+    highlightSize: CGFloat = 36,
+    fillColor: CodableColor = CodableColor(r: 1, g: 1, b: 1),
+    strokeColor: CodableColor = CodableColor(r: 0, g: 0, b: 0)
   ) {
     CATransaction.begin()
     CATransaction.setDisableActions(true)
@@ -47,6 +53,8 @@ final class CursorOverlayLayer: CALayer {
     currentSize = size
     clickColor = highlightColor
     clickSize = highlightSize
+    cursorFillColor = fillColor
+    cursorStrokeColor = strokeColor
 
     frame = CGRect(origin: .zero, size: containerSize)
 
@@ -78,7 +86,11 @@ final class CursorOverlayLayer: CALayer {
     }
     cursorLayer.frame = cursorRect
 
-    let needsImageUpdate = style != cachedImageStyle || abs(size - cachedImageSize) > 0.01
+    let fillHex = fillColor.hexString
+    let strokeHex = strokeColor.hexString
+    let needsImageUpdate =
+      style != cachedImageStyle || abs(size - cachedImageSize) > 0.01
+      || fillHex != cachedFillHex || strokeHex != cachedStrokeHex
     if needsImageUpdate {
       let scale = NSScreen.main?.backingScaleFactor ?? 2.0
       cursorLayer.contentsScale = scale
@@ -86,11 +98,21 @@ final class CursorOverlayLayer: CALayer {
       let imgH = Int(cursorRect.height * scale)
       let padPx = pad * scale
 
-      if let cgImage = renderCursorImage(style: style, size: size * scale, padPx: padPx, width: imgW, height: imgH) {
+      if let cgImage = renderCursorImage(
+        style: style,
+        size: size * scale,
+        padPx: padPx,
+        width: imgW,
+        height: imgH,
+        fillColor: fillColor,
+        strokeColor: strokeColor
+      ) {
         cursorLayer.contents = cgImage
         cachedImage = cgImage
         cachedImageStyle = style
         cachedImageSize = size
+        cachedFillHex = fillHex
+        cachedStrokeHex = strokeHex
       }
     }
 
@@ -104,10 +126,21 @@ final class CursorOverlayLayer: CALayer {
     size: CGFloat,
     padPx: CGFloat,
     width: Int,
-    height: Int
+    height: Int,
+    fillColor: CodableColor,
+    strokeColor: CodableColor
   )
     -> CGImage?
   {
+    let pixelSize = Int(ceil(size))
+    let svg = CursorRenderer.colorizedSVG(
+      for: style,
+      fillHex: fillColor.hexString,
+      strokeHex: strokeColor.hexString
+    )
+    guard let cursorImage = CursorRenderer.renderSVGToImage(svgString: svg, pixelSize: pixelSize)
+    else { return nil }
+
     let bitmapInfo =
       CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
     guard
@@ -126,13 +159,15 @@ final class CursorOverlayLayer: CALayer {
     ctx.translateBy(x: 0, y: CGFloat(height))
     ctx.scaleBy(x: 1, y: -1)
 
-    let drawPoint: CGPoint
+    let drawRect: CGRect
     if style.isCentered {
-      drawPoint = CGPoint(x: CGFloat(width) / 2, y: CGFloat(height) / 2)
+      let cx = CGFloat(width) / 2
+      let cy = CGFloat(height) / 2
+      drawRect = CGRect(x: cx - size / 2, y: cy - size / 2, width: size, height: size)
     } else {
-      drawPoint = CGPoint(x: padPx, y: padPx)
+      drawRect = CGRect(x: padPx, y: padPx, width: size, height: size)
     }
-    CursorRenderer.drawCursor(in: ctx, position: drawPoint, style: style, size: size, scale: 1.0)
+    ctx.draw(cursorImage, in: drawRect)
     return ctx.makeImage()
   }
 

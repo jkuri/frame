@@ -49,7 +49,9 @@ extension CameraVideoCompositor {
       in: context,
       position: CGPoint(x: pixelX, y: pixelY),
       style: instruction.cursorStyle,
-      size: instruction.cursorSize * drawScale * zoomScale
+      size: instruction.cursorSize * drawScale * zoomScale,
+      fillColor: instruction.cursorFillColor,
+      strokeColor: instruction.cursorStrokeColor
     )
 
     if instruction.showClickHighlights {

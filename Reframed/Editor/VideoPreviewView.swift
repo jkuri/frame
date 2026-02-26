@@ -20,8 +20,10 @@ struct VideoPreviewView: NSViewRepresentable {
   var cameraMirrored: Bool = false
   var cursorMetadataProvider: CursorMetadataProvider?
   var showCursor: Bool = false
-  var cursorStyle: CursorStyle = .defaultArrow
+  var cursorStyle: CursorStyle = .centerDefault
   var cursorSize: CGFloat = 24
+  var cursorFillColor: CodableColor = CodableColor(r: 1, g: 1, b: 1)
+  var cursorStrokeColor: CodableColor = CodableColor(r: 0, g: 0, b: 0)
   var showClickHighlights: Bool = true
   var clickHighlightColor: CGColor = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1.0)
   var clickHighlightSize: CGFloat = 36
@@ -231,12 +233,14 @@ struct VideoPreviewView: NSViewRepresentable {
         visible: true,
         clicks: clicks,
         clickHighlightColor: clickHighlightColor,
-        clickHighlightSize: clickHighlightSize
+        clickHighlightSize: clickHighlightSize,
+        cursorFillColor: cursorFillColor,
+        cursorStrokeColor: cursorStrokeColor
       )
     } else {
       nsView.updateCursorOverlay(
         normalizedPosition: .zero,
-        style: .defaultArrow,
+        style: .centerDefault,
         size: 24,
         visible: false,
         clicks: []
@@ -302,12 +306,14 @@ final class VideoPreviewContainer: NSView {
   var trackingArea: NSTrackingArea?
   var currentZoomRect = CGRect(x: 0, y: 0, width: 1, height: 1)
   var lastCursorNormalizedPosition: CGPoint = .zero
-  var lastCursorStyle: CursorStyle = .defaultArrow
+  var lastCursorStyle: CursorStyle = .centerDefault
   var lastCursorSize: CGFloat = 24
   var lastCursorVisible = false
   var lastCursorClicks: [(point: CGPoint, progress: Double)] = []
   var lastClickHighlightColor: CGColor?
   var lastClickHighlightSize: CGFloat = 36
+  var lastCursorFillColor: CodableColor = CodableColor(r: 1, g: 1, b: 1)
+  var lastCursorStrokeColor: CodableColor = CodableColor(r: 0, g: 0, b: 0)
 
   override init(frame: NSRect) {
     super.init(frame: frame)

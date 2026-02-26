@@ -49,8 +49,11 @@ final class EditorState {
 
   var cursorMetadataProvider: CursorMetadataProvider?
   var showCursor: Bool = true
-  var cursorStyle: CursorStyle = .defaultArrow
+  var cursorStyle: CursorStyle = .centerDefault
   var cursorSize: CGFloat = 24
+
+  var cursorFillColor: CodableColor = CodableColor(r: 1, g: 1, b: 1)
+  var cursorStrokeColor: CodableColor = CodableColor(r: 0, g: 0, b: 0)
 
   var showClickHighlights: Bool = false
   var clickHighlightColor: CodableColor = CodableColor(r: 0, g: 0, b: 0, a: 1.0)
@@ -211,8 +214,10 @@ final class EditorState {
       }
       if let cursorSettings = saved.cursorSettings {
         showCursor = cursorSettings.showCursor
-        cursorStyle = CursorStyle(rawValue: cursorSettings.cursorStyleRaw) ?? .defaultArrow
+        cursorStyle = CursorStyle(rawValue: cursorSettings.cursorStyleRaw) ?? .centerDefault
         cursorSize = cursorSettings.cursorSize
+        cursorFillColor = cursorSettings.cursorFillColor ?? CodableColor(r: 1, g: 1, b: 1)
+        cursorStrokeColor = cursorSettings.cursorStrokeColor ?? CodableColor(r: 0, g: 0, b: 0)
         showClickHighlights = cursorSettings.showClickHighlights
         if let savedColor = cursorSettings.clickHighlightColor {
           clickHighlightColor = savedColor

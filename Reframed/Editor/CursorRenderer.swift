@@ -3,56 +3,59 @@ import CoreGraphics
 import Foundation
 
 enum CursorStyle: Int, Codable, Sendable, CaseIterable {
-  case defaultArrow = 0
-  case crosshair = 1
-  case circleDot = 2
-  case outlineArrow = 3
-  case dot = 4
-  case circle = 5
-  case bullseye = 6
-  case diamond = 7
-  case plus = 8
-  case spotlight = 9
-  case crosshairDot = 10
-  case invertedArrow = 11
-  case pointer = 12
-  case grab = 13
-  case pencil = 14
-  case pen = 15
-  case blueArrow = 16
-  case goldPointer = 17
-  case target = 18
-  case marker = 19
+  case centerDefault = 0
+  case centerSecondary = 1
+  case centerPointer = 2
+  case centerFoff = 3
+  case centerDot = 4
+  case centerCircle = 5
+  case centerRingDot = 6
+  case centerBullseye = 7
+  case centerDiamond = 8
+  case centerPlus = 9
+  case centerCrosshair = 10
+  case centerCrossDot = 11
+  case centerCrossGap = 12
+  case centerSpotlight = 13
+  case centerBrackets = 14
+  case centerCorners = 15
+  case centerSquare = 16
+  case centerStar = 17
+  case centerTriangle = 18
+  case centerX = 19
+  case cursorPen = 20
+  case cursorMarker = 21
 
   var label: String {
     switch self {
-    case .defaultArrow: "Arrow"
-    case .crosshair: "Crosshair"
-    case .circleDot: "Ring Dot"
-    case .outlineArrow: "Outline"
-    case .dot: "Dot"
-    case .circle: "Circle"
-    case .bullseye: "Bullseye"
-    case .diamond: "Diamond"
-    case .plus: "Plus"
-    case .spotlight: "Spotlight"
-    case .crosshairDot: "Cross Dot"
-    case .invertedArrow: "Inverted"
-    case .pointer: "Pointer"
-    case .grab: "Grab"
-    case .pencil: "Pencil"
-    case .pen: "Pen"
-    case .blueArrow: "Blue Arrow"
-    case .goldPointer: "Gold Hand"
-    case .target: "Target"
-    case .marker: "Marker"
+    case .centerDefault: "Default"
+    case .centerSecondary: "Secondary"
+    case .centerPointer: "Pointer"
+    case .centerFoff: "Foff"
+    case .centerDot: "Dot"
+    case .centerCircle: "Circle"
+    case .centerRingDot: "Ring Dot"
+    case .centerBullseye: "Bullseye"
+    case .centerDiamond: "Diamond"
+    case .centerPlus: "Plus"
+    case .centerCrosshair: "Crosshair"
+    case .centerCrossDot: "Cross Dot"
+    case .centerCrossGap: "Cross Gap"
+    case .centerSpotlight: "Spotlight"
+    case .centerBrackets: "Brackets"
+    case .centerCorners: "Corners"
+    case .centerSquare: "Square"
+    case .centerStar: "Star"
+    case .centerTriangle: "Triangle"
+    case .centerX: "X"
+    case .cursorPen: "Pen"
+    case .cursorMarker: "Marker"
     }
   }
 
   var isCentered: Bool {
     switch self {
-    case .defaultArrow, .outlineArrow, .invertedArrow,
-      .pointer, .pencil, .pen, .blueArrow, .goldPointer, .marker:
+    case .cursorPen, .cursorMarker:
       false
     default: true
     }
@@ -60,59 +63,66 @@ enum CursorStyle: Int, Codable, Sendable, CaseIterable {
 }
 
 enum CursorRenderer {
+  static func colorizedSVG(for style: CursorStyle, fillHex: String, strokeHex: String) -> String {
+    style.svgTemplate
+      .replacingOccurrences(of: "#000", with: strokeHex)
+      .replacingOccurrences(of: "currentColor", with: fillHex)
+  }
+
+  static func renderSVGToImage(svgString: String, pixelSize: Int) -> CGImage? {
+    guard pixelSize > 0,
+      let data = svgString.data(using: .utf8),
+      let nsImage = NSImage(data: data)
+    else { return nil }
+    let bitmapInfo =
+      CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
+    guard
+      let ctx = CGContext(
+        data: nil,
+        width: pixelSize,
+        height: pixelSize,
+        bitsPerComponent: 8,
+        bytesPerRow: 0,
+        space: CGColorSpaceCreateDeviceRGB(),
+        bitmapInfo: bitmapInfo
+      )
+    else { return nil }
+    ctx.clear(CGRect(x: 0, y: 0, width: pixelSize, height: pixelSize))
+    ctx.translateBy(x: 0, y: CGFloat(pixelSize))
+    ctx.scaleBy(x: 1, y: -1)
+    NSGraphicsContext.saveGraphicsState()
+    NSGraphicsContext.current = NSGraphicsContext(cgContext: ctx, flipped: true)
+    nsImage.draw(
+      in: NSRect(x: 0, y: 0, width: pixelSize, height: pixelSize),
+      from: .zero,
+      operation: .sourceOver,
+      fraction: 1.0
+    )
+    NSGraphicsContext.restoreGraphicsState()
+    return ctx.makeImage()
+  }
+
   static func drawCursor(
     in context: CGContext,
     position: CGPoint,
     style: CursorStyle,
     size: CGFloat,
-    scale: CGFloat = 1.0
+    scale: CGFloat = 1.0,
+    fillColor: CodableColor = CodableColor(r: 1, g: 1, b: 1),
+    strokeColor: CodableColor = CodableColor(r: 0, g: 0, b: 0)
   ) {
     let s = size * scale
+    let pixelSize = Int(ceil(s))
+    let svg = colorizedSVG(for: style, fillHex: fillColor.hexString, strokeHex: strokeColor.hexString)
+    guard let image = renderSVGToImage(svgString: svg, pixelSize: pixelSize) else { return }
     context.saveGState()
-
-    switch style {
-    case .defaultArrow:
-      drawArrowCursor(in: context, at: position, size: s)
-    case .crosshair:
-      drawCrosshairCursor(in: context, at: position, size: s)
-    case .circleDot:
-      drawCircleDotCursor(in: context, at: position, size: s)
-    case .outlineArrow:
-      drawOutlineArrowCursor(in: context, at: position, size: s)
-    case .dot:
-      drawDotCursor(in: context, at: position, size: s)
-    case .circle:
-      drawCircleCursor(in: context, at: position, size: s)
-    case .bullseye:
-      drawBullseyeCursor(in: context, at: position, size: s)
-    case .diamond:
-      drawDiamondCursor(in: context, at: position, size: s)
-    case .plus:
-      drawPlusCursor(in: context, at: position, size: s)
-    case .spotlight:
-      drawSpotlightCursor(in: context, at: position, size: s)
-    case .crosshairDot:
-      drawCrosshairDotCursor(in: context, at: position, size: s)
-    case .invertedArrow:
-      drawInvertedArrowCursor(in: context, at: position, size: s)
-    case .pointer:
-      drawPointerCursor(in: context, at: position, size: s)
-    case .grab:
-      drawGrabCursor(in: context, at: position, size: s)
-    case .pencil:
-      drawPencilCursor(in: context, at: position, size: s)
-    case .pen:
-      drawPenCursor(in: context, at: position, size: s)
-    case .blueArrow:
-      drawBlueArrowCursor(in: context, at: position, size: s)
-    case .goldPointer:
-      drawGoldPointerCursor(in: context, at: position, size: s)
-    case .target:
-      drawTargetCursor(in: context, at: position, size: s)
-    case .marker:
-      drawMarkerCursor(in: context, at: position, size: s)
+    let drawRect: CGRect
+    if style.isCentered {
+      drawRect = CGRect(x: position.x - s / 2, y: position.y - s / 2, width: s, height: s)
+    } else {
+      drawRect = CGRect(x: position.x, y: position.y, width: s, height: s)
     }
-
+    context.draw(image, in: drawRect)
     context.restoreGState()
   }
 
@@ -152,58 +162,19 @@ enum CursorRenderer {
     context.restoreGState()
   }
 
-  static func arrowPath(at point: CGPoint, scale s: CGFloat) -> CGMutablePath {
-    let x = point.x
-    let y = point.y
-    let path = CGMutablePath()
-    path.move(to: CGPoint(x: x, y: y))
-    path.addLine(to: CGPoint(x: x, y: y + 20 * s))
-    path.addLine(to: CGPoint(x: x + 5.5 * s, y: y + 15.5 * s))
-    path.addLine(to: CGPoint(x: x + 9 * s, y: y + 22 * s))
-    path.addLine(to: CGPoint(x: x + 12 * s, y: y + 20.5 * s))
-    path.addLine(to: CGPoint(x: x + 8.5 * s, y: y + 13.5 * s))
-    path.addLine(to: CGPoint(x: x + 15 * s, y: y + 13.5 * s))
-    path.closeSubpath()
-    return path
-  }
-
-  static func pointerPath(at point: CGPoint, scale s: CGFloat) -> CGMutablePath {
-    let x = point.x
-    let y = point.y
-    let path = CGMutablePath()
-
-    path.move(to: CGPoint(x: x + 2 * s, y: y + 1.5 * s))
-    path.addQuadCurve(
-      to: CGPoint(x: x + 6 * s, y: y + 1.5 * s),
-      control: CGPoint(x: x + 4 * s, y: y - 1 * s)
-    )
-
-    path.addLine(to: CGPoint(x: x + 6 * s, y: y + 10 * s))
-
-    path.addQuadCurve(
-      to: CGPoint(x: x + 9 * s, y: y + 11.5 * s),
-      control: CGPoint(x: x + 8 * s, y: y + 9 * s)
-    )
-    path.addQuadCurve(
-      to: CGPoint(x: x + 11.5 * s, y: y + 13 * s),
-      control: CGPoint(x: x + 10.5 * s, y: y + 10.5 * s)
-    )
-
-    path.addLine(to: CGPoint(x: x + 12 * s, y: y + 17 * s))
-    path.addQuadCurve(
-      to: CGPoint(x: x + 10 * s, y: y + 21 * s),
-      control: CGPoint(x: x + 12 * s, y: y + 20 * s)
-    )
-
-    path.addLine(to: CGPoint(x: x + 2 * s, y: y + 21 * s))
-    path.addQuadCurve(
-      to: CGPoint(x: x + 0.5 * s, y: y + 17 * s),
-      control: CGPoint(x: x + 0.5 * s, y: y + 20 * s)
-    )
-
-    path.addLine(to: CGPoint(x: x + 0.5 * s, y: y + 10 * s))
-    path.addLine(to: CGPoint(x: x + 2 * s, y: y + 1.5 * s))
-    path.closeSubpath()
-    return path
+  @MainActor static func previewImage(
+    for style: CursorStyle,
+    size: CGFloat,
+    fillColor: CodableColor = CodableColor(r: 1, g: 1, b: 1),
+    strokeColor: CodableColor = CodableColor(r: 0, g: 0, b: 0)
+  ) -> NSImage {
+    let svg = colorizedSVG(for: style, fillHex: fillColor.hexString, strokeHex: strokeColor.hexString)
+    guard let data = svg.data(using: .utf8),
+      let nsImage = NSImage(data: data)
+    else {
+      return NSImage(size: NSSize(width: size, height: size))
+    }
+    nsImage.size = NSSize(width: size, height: size)
+    return nsImage
   }
 }

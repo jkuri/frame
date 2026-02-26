@@ -9,7 +9,9 @@ extension VideoPreviewContainer {
     visible: Bool,
     clicks: [(point: CGPoint, progress: Double)],
     clickHighlightColor: CGColor? = nil,
-    clickHighlightSize: CGFloat = 36
+    clickHighlightSize: CGFloat = 36,
+    cursorFillColor: CodableColor = CodableColor(r: 1, g: 1, b: 1),
+    cursorStrokeColor: CodableColor = CodableColor(r: 0, g: 0, b: 0)
   ) {
     lastCursorNormalizedPosition = normalizedPosition
     lastCursorStyle = style
@@ -18,6 +20,8 @@ extension VideoPreviewContainer {
     lastCursorClicks = clicks
     lastClickHighlightColor = clickHighlightColor
     lastClickHighlightSize = clickHighlightSize
+    lastCursorFillColor = cursorFillColor
+    lastCursorStrokeColor = cursorStrokeColor
 
     applyCursorOverlay()
   }
@@ -80,7 +84,9 @@ extension VideoPreviewContainer {
       containerSize: screenRect.size,
       clicks: adjustedClicks,
       highlightColor: clickHighlightColor,
-      highlightSize: clickHighlightSize * baseScale * zoomScale
+      highlightSize: clickHighlightSize * baseScale * zoomScale,
+      fillColor: lastCursorFillColor,
+      strokeColor: lastCursorStrokeColor
     )
   }
 }
