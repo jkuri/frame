@@ -124,8 +124,6 @@ struct ExportSheet: View {
       .onChange(of: selectedPreset) { _, newPreset in
         if let presetSettings = newPreset.settings {
           settings = presetSettings
-        } else {
-          settings = ExportSettings()
         }
       }
       .onChange(of: settings.format) { _, newFormat in
