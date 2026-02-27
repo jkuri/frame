@@ -219,6 +219,16 @@ final class History {
       changes.append("Camera background set to \(describeCameraBackground(new.cameraBackgroundStyle))")
     }
 
+    if old.captionSettings != new.captionSettings || old.captionSegments != new.captionSegments {
+      describeCaptionChanges(
+        from: old.captionSettings,
+        to: new.captionSettings,
+        oldSegments: old.captionSegments,
+        newSegments: new.captionSegments,
+        into: &changes
+      )
+    }
+
     if old.videoRegions != new.videoRegions {
       let oldCount = old.videoRegions?.count ?? 0
       let newCount = new.videoRegions?.count ?? 0
@@ -239,6 +249,9 @@ final class History {
         changes.append("Animation settings updated")
       }
       if old.cameraLayout != new.cameraLayout { changes.append("Camera layout updated") }
+      if old.captionSettings != new.captionSettings || old.captionSegments != new.captionSegments {
+        changes.append("Caption settings updated")
+      }
     }
 
     if changes.isEmpty {
@@ -379,6 +392,76 @@ final class History {
     if old?.cursorMovementSpeed != new?.cursorMovementSpeed {
       let speed = new?.cursorMovementSpeed ?? .medium
       changes.append("Cursor smoothing speed set to \(speed.label)")
+    }
+  }
+
+  private static func describeCaptionChanges(
+    from old: CaptionSettingsData?,
+    to new: CaptionSettingsData?,
+    oldSegments: [CaptionSegment]?,
+    newSegments: [CaptionSegment]?,
+    into changes: inout [String]
+  ) {
+    let oldSegs = oldSegments ?? []
+    let newSegs = newSegments ?? []
+    if oldSegs.isEmpty && !newSegs.isEmpty {
+      changes.append("Captions generated (\(newSegs.count) segments)")
+      return
+    }
+    if !oldSegs.isEmpty && newSegs.isEmpty {
+      changes.append("Captions cleared")
+      return
+    }
+    if oldSegs != newSegs && !oldSegs.isEmpty && !newSegs.isEmpty {
+      if oldSegs.count != newSegs.count {
+        changes.append("Caption segments updated (\(newSegs.count) segments)")
+      } else {
+        changes.append("Caption segments edited")
+      }
+    }
+
+    if old?.enabled != new?.enabled {
+      let enabled = new?.enabled ?? true
+      changes.append(enabled ? "Captions enabled" : "Captions disabled")
+    }
+    if old?.fontSize != new?.fontSize {
+      changes.append("Caption font size set to \(Int(new?.fontSize ?? 48))px")
+    }
+    if old?.fontWeight != new?.fontWeight {
+      let weight = new?.fontWeight ?? .bold
+      changes.append("Caption font weight set to \(weight.label)")
+    }
+    if old?.position != new?.position {
+      let pos = new?.position ?? .bottom
+      changes.append("Caption position set to \(pos.label.lowercased())")
+    }
+    if old?.textColor != new?.textColor {
+      changes.append("Caption text color updated")
+    }
+    if old?.backgroundColor != new?.backgroundColor {
+      changes.append("Caption background color updated")
+    }
+    if old?.backgroundOpacity != new?.backgroundOpacity {
+      changes.append("Caption background opacity set to \(Int((new?.backgroundOpacity ?? 0.6) * 100))%")
+    }
+    if old?.showBackground != new?.showBackground {
+      let show = new?.showBackground ?? true
+      changes.append(show ? "Caption background enabled" : "Caption background disabled")
+    }
+    if old?.maxWordsPerLine != new?.maxWordsPerLine {
+      changes.append("Caption words per line set to \(new?.maxWordsPerLine ?? 6)")
+    }
+    if old?.model != new?.model {
+      let modelName = WhisperModel(rawValue: new?.model ?? "")?.shortLabel ?? "unknown"
+      changes.append("Caption model set to \(modelName)")
+    }
+    if old?.language != new?.language {
+      let lang = new?.language ?? .auto
+      changes.append("Caption language set to \(lang.label)")
+    }
+    if old?.audioSource != new?.audioSource {
+      let source = new?.audioSource ?? .microphone
+      changes.append("Caption audio source set to \(source.label)")
     }
   }
 

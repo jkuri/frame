@@ -23,10 +23,10 @@ enum TranscriptionService {
     let modelsBase = FileManager.default.homeDirectoryForCurrentUser
       .appendingPathComponent(".reframed")
     let computeOptions = ModelComputeOptions(
-      melCompute: .cpuAndGPU,
-      audioEncoderCompute: .cpuAndNeuralEngine,
-      textDecoderCompute: .cpuAndNeuralEngine,
-      prefillCompute: .cpuAndGPU
+      melCompute: .all,
+      audioEncoderCompute: .all,
+      textDecoderCompute: .all,
+      prefillCompute: .all
     )
     let config = WhisperKitConfig(
       downloadBase: modelsBase,
@@ -41,8 +41,10 @@ enum TranscriptionService {
 
     await onProgress?(0.15)
 
+    let workerCount = max(16, ProcessInfo.processInfo.activeProcessorCount)
     var options = DecodingOptions(
       wordTimestamps: true,
+      concurrentWorkerCount: workerCount,
       chunkingStrategy: .vad
     )
     if let language {
@@ -51,11 +53,15 @@ enum TranscriptionService {
 
     let progressCallback = onProgress
     let expectedWindows = totalWindows
+    nonisolated(unsafe) var highWaterMark: Double = 0.15
     let callback: TranscriptionCallback = { (progress: TranscriptionProgress) -> Bool? in
       let windowProgress = Double(progress.windowId + 1) / Double(expectedWindows)
-      let overall = 0.15 + windowProgress * 0.8
+      let overall = min(0.15 + windowProgress * 0.8, 0.95)
+      guard overall > highWaterMark else { return nil }
+      highWaterMark = overall
+      let value = overall
       Task { @MainActor in
-        progressCallback?(min(overall, 0.95))
+        progressCallback?(value)
       }
       return nil
     }
