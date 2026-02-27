@@ -127,44 +127,21 @@ enum VideoCompositor {
       }
     }
 
-    func remapAudioRegions(_ regions: [CMTimeRange]) -> [CMTimeRange] {
-      guard hasVideoRegions else { return regions }
-      var result: [CMTimeRange] = []
-      for audioRegion in regions {
-        for seg in videoSegments {
-          let overlapStart = max(CMTimeGetSeconds(audioRegion.start), CMTimeGetSeconds(seg.sourceRange.start))
-          let overlapEnd = min(CMTimeGetSeconds(audioRegion.end), CMTimeGetSeconds(seg.sourceRange.end))
-          guard overlapEnd > overlapStart else { continue }
-          let segStart = CMTimeGetSeconds(seg.sourceRange.start)
-          let compStart = CMTimeGetSeconds(seg.compositionStart)
-          let mappedStart = compStart + (overlapStart - segStart)
-          let mappedEnd = compStart + (overlapEnd - segStart)
-          result.append(
-            CMTimeRange(
-              start: CMTime(seconds: mappedStart, preferredTimescale: 600),
-              end: CMTime(seconds: mappedEnd, preferredTimescale: 600)
-            )
-          )
-        }
-      }
-      return result
-    }
-
     let effectiveAudioRegions: [CMTimeRange] =
       hasVideoRegions
-      ? videoSegments.map { CMTimeRange(start: $0.compositionStart, duration: $0.sourceRange.duration) }
+      ? videoSegments.map { $0.sourceRange }
       : [effectiveTrim]
 
     var audioSources: [AudioSource] = []
     if let sysURL = result.systemAudioURL, systemAudioVolume > 0 {
-      let sysRegs = systemAudioRegions.map { remapAudioRegions($0) } ?? effectiveAudioRegions
+      let sysRegs = systemAudioRegions ?? effectiveAudioRegions
       audioSources.append(
         AudioSource(url: sysURL, regions: sysRegs, volume: systemAudioVolume)
       )
     }
     if let micURL = result.microphoneAudioURL, micAudioVolume > 0 {
       let effectiveMicURL = processedMicURL ?? micURL
-      let micRegs = micAudioRegions.map { remapAudioRegions($0) } ?? effectiveAudioRegions
+      let micRegs = micAudioRegions ?? effectiveAudioRegions
       audioSources.append(
         AudioSource(
           url: effectiveMicURL,
