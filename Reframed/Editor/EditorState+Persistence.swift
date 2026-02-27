@@ -65,6 +65,23 @@ extension EditorState {
         cachedNoiseReductionIntensity: cachedIntensity
       )
     }
+    var captionSettings: CaptionSettingsData?
+    if !captionSegments.isEmpty {
+      captionSettings = CaptionSettingsData(
+        enabled: captionsEnabled,
+        fontSize: captionFontSize,
+        fontWeight: captionFontWeight,
+        textColor: captionTextColor,
+        backgroundColor: captionBackgroundColor,
+        backgroundOpacity: captionBackgroundOpacity,
+        showBackground: captionShowBackground,
+        position: captionPosition,
+        maxWordsPerLine: captionMaxWordsPerLine,
+        model: captionModel,
+        language: captionLanguage,
+        audioSource: captionAudioSource
+      )
+    }
     return EditorStateData(
       trimStartSeconds: CMTimeGetSeconds(trimStart),
       trimEndSeconds: CMTimeGetSeconds(trimEnd),
@@ -92,7 +109,9 @@ extension EditorState {
       micAudioRegions: micAudioRegions.isEmpty ? nil : micAudioRegions,
       cameraRegions: cameraRegions.isEmpty ? nil : cameraRegions,
       videoRegions: videoRegions.isEmpty ? nil : videoRegions,
-      cameraBackgroundStyle: cameraBackgroundStyle == .none ? nil : cameraBackgroundStyle
+      cameraBackgroundStyle: cameraBackgroundStyle == .none ? nil : cameraBackgroundStyle,
+      captionSettings: captionSettings,
+      captionSegments: captionSegments.isEmpty ? nil : captionSegments
     )
   }
 
@@ -182,6 +201,26 @@ extension EditorState {
       micAudioMuted = audioSettings.micAudioMuted
       micNoiseReductionEnabled = audioSettings.micNoiseReductionEnabled
       micNoiseReductionIntensity = audioSettings.micNoiseReductionIntensity
+    }
+
+    if let captionSettings = data.captionSettings {
+      captionsEnabled = captionSettings.enabled
+      captionFontSize = captionSettings.fontSize
+      captionFontWeight = captionSettings.fontWeight
+      captionTextColor = captionSettings.textColor
+      captionBackgroundColor = captionSettings.backgroundColor
+      captionBackgroundOpacity = captionSettings.backgroundOpacity
+      captionShowBackground = captionSettings.showBackground
+      captionPosition = captionSettings.position
+      captionMaxWordsPerLine = captionSettings.maxWordsPerLine
+      captionModel = captionSettings.model
+      captionLanguage = captionSettings.language
+      captionAudioSource = captionSettings.audioSource
+    }
+    if let savedSegments = data.captionSegments, !savedSegments.isEmpty {
+      captionSegments = savedSegments
+    } else {
+      captionSegments = []
     }
 
     if case .image(let filename) = data.backgroundStyle, let bundleURL = project?.bundleURL {
@@ -326,6 +365,18 @@ extension EditorState {
       _ = self.micNoiseReductionEnabled
       _ = self.micNoiseReductionIntensity
       _ = self.isPreviewMode
+      _ = self.captionsEnabled
+      _ = self.captionSegments
+      _ = self.captionFontSize
+      _ = self.captionFontWeight
+      _ = self.captionTextColor
+      _ = self.captionBackgroundColor
+      _ = self.captionBackgroundOpacity
+      _ = self.captionShowBackground
+      _ = self.captionPosition
+      _ = self.captionMaxWordsPerLine
+      _ = self.captionLanguage
+      _ = self.captionAudioSource
     } onChange: {
       Task { @MainActor [weak self] in
         guard let self else { return }
@@ -345,6 +396,8 @@ extension EditorState {
     pendingUndoTask?.cancel()
     micProcessingTask?.cancel()
     micProcessingTask = nil
+    transcriptionTask?.cancel()
+    transcriptionTask = nil
     saveState()
     if let project {
       try? project.saveHistory(history.toData())

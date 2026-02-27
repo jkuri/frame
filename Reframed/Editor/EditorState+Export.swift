@@ -174,11 +174,32 @@ extension EditorState {
       cameraBackgroundStyle: cameraBackgroundStyle,
       cameraBackgroundImageURL: cameraBackgroundImageURL(),
       processedMicAudioURL: processedMicAudioURL,
+      captionSegments: settings.burnInCaptions ? captionSegments : [],
+      captionsEnabled: settings.burnInCaptions && captionsEnabled,
+      captionFontSize: captionFontSize,
+      captionFontWeight: captionFontWeight,
+      captionTextColor: captionTextColor,
+      captionBackgroundColor: captionBackgroundColor,
+      captionBackgroundOpacity: captionBackgroundOpacity,
+      captionShowBackground: captionShowBackground,
+      captionPosition: captionPosition,
+      captionMaxWordsPerLine: captionMaxWordsPerLine,
       progressHandler: { progress, eta in
         state.exportProgress = progress
         state.exportETA = eta
       }
     )
+    if !captionSegments.isEmpty {
+      if settings.exportSRT {
+        let srtURL = url.deletingPathExtension().appendingPathExtension("srt")
+        try? SubtitleExporter.exportSRT(segments: captionSegments, to: srtURL)
+      }
+      if settings.exportVTT {
+        let vttURL = url.deletingPathExtension().appendingPathExtension("vtt")
+        try? SubtitleExporter.exportVTT(segments: captionSegments, to: vttURL)
+      }
+    }
+
     exportProgress = 1.0
     lastExportedURL = url
     logger.info("Export finished: \(url.path)")

@@ -2,7 +2,7 @@ import CoreMedia
 import SwiftUI
 
 enum EditorTab: String, CaseIterable, Identifiable {
-  case general, video, camera, audio, cursor, zoom
+  case general, video, camera, audio, cursor, zoom, captions
 
   var id: String { rawValue }
 
@@ -14,6 +14,7 @@ enum EditorTab: String, CaseIterable, Identifiable {
     case .audio: "Audio"
     case .cursor: "Cursor"
     case .zoom: "Zoom"
+    case .captions: "Captions"
     }
   }
 
@@ -25,7 +26,24 @@ enum EditorTab: String, CaseIterable, Identifiable {
     case .audio: "speaker.wave.2"
     case .cursor: "cursorarrow"
     case .zoom: "plus.magnifyingglass"
+    case .captions: "captions.bubble"
     }
+  }
+
+  static let isAppleSilicon: Bool = {
+    var sysinfo = utsname()
+    uname(&sysinfo)
+    let machine = withUnsafePointer(to: &sysinfo.machine) {
+      $0.withMemoryRebound(to: CChar.self, capacity: 1) { String(cString: $0) }
+    }
+    return machine.hasPrefix("arm64")
+  }()
+
+  static var availableCases: [EditorTab] {
+    if isAppleSilicon {
+      return allCases
+    }
+    return allCases.filter { $0 != .captions }
   }
 }
 
@@ -131,7 +149,8 @@ struct EditorView: View {
         isPresented: $editorState.showExportSheet,
         sourceFPS: editorState.result.fps,
         hasAudio: (editorState.hasSystemAudio && !editorState.systemAudioMuted)
-          || (editorState.hasMicAudio && !editorState.micAudioMuted)
+          || (editorState.hasMicAudio && !editorState.micAudioMuted),
+        hasCaptions: editorState.captionsEnabled && !editorState.captionSegments.isEmpty
       ) { settings in
         handleExport(settings: settings)
       }
@@ -157,10 +176,11 @@ struct EditorView: View {
     VStack(spacing: 0) {
       HoverEffectScope {
         VStack(spacing: 2) {
-          ForEach(EditorTab.allCases) { tab in
+          ForEach(EditorTab.availableCases) { tab in
             let disabled =
               (tab == .camera && !editorState.hasWebcam)
               || (tab == .audio && !editorState.hasSystemAudio && !editorState.hasMicAudio)
+              || (tab == .captions && !editorState.hasMicAudio && !editorState.hasSystemAudio)
             Button {
               selectedTab = tab
             } label: {
@@ -303,6 +323,21 @@ struct EditorView: View {
           cameraBackgroundStyle: editorState.webcamEnabled ? editorState.cameraBackgroundStyle : .none,
           cameraBackgroundImage: editorState.cameraBackgroundImage
         )
+
+        if let captionText = editorState.visibleCaptionText(
+          at: CMTimeGetSeconds(editorState.currentTime)
+        ) {
+          CaptionOverlayView(
+            text: captionText,
+            position: editorState.captionPosition,
+            fontSize: editorState.captionFontSize,
+            fontWeight: editorState.captionFontWeight,
+            textColor: editorState.captionTextColor,
+            backgroundColor: editorState.captionBackgroundColor,
+            backgroundOpacity: editorState.captionBackgroundOpacity,
+            showBackground: editorState.captionShowBackground
+          )
+        }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .aspectRatio(hasEffects ? canvasAspect : screenSize.width / max(screenSize.height, 1), contentMode: .fit)

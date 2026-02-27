@@ -94,6 +94,23 @@ final class EditorState {
   var micProcessingProgress: Double = 0
   var micProcessingTask: Task<Void, Never>?
 
+  var captionsEnabled: Bool = true
+  var captionSegments: [CaptionSegment] = []
+  var captionFontSize: CGFloat = 48
+  var captionFontWeight: CaptionFontWeight = .bold
+  var captionTextColor: CodableColor = CodableColor(r: 1, g: 1, b: 1)
+  var captionBackgroundColor: CodableColor = CodableColor(r: 0, g: 0, b: 0, a: 1.0)
+  var captionBackgroundOpacity: CGFloat = 0.6
+  var captionShowBackground: Bool = true
+  var captionPosition: CaptionPosition = .bottom
+  var captionMaxWordsPerLine: Int = 6
+  var captionModel: String = "openai_whisper-base"
+  var captionLanguage: CaptionLanguage = .auto
+  var captionAudioSource: CaptionAudioSource = .microphone
+  var isTranscribing: Bool = false
+  var transcriptionProgress: Double = 0
+  var transcriptionTask: Task<Void, Never>?
+
   var hasSystemAudio: Bool { result.systemAudioURL != nil }
   var hasMicAudio: Bool { result.microphoneAudioURL != nil }
 
@@ -178,6 +195,28 @@ final class EditorState {
         let url = project.bundleURL.appendingPathComponent(filename)
         self.cameraBackgroundImage = NSImage(contentsOf: url)
       }
+      if let captionSettings = saved.captionSettings {
+        self.captionsEnabled = captionSettings.enabled
+        self.captionFontSize = captionSettings.fontSize
+        self.captionFontWeight = captionSettings.fontWeight
+        self.captionTextColor = captionSettings.textColor
+        self.captionBackgroundColor = captionSettings.backgroundColor
+        self.captionBackgroundOpacity = captionSettings.backgroundOpacity
+        self.captionShowBackground = captionSettings.showBackground
+        self.captionPosition = captionSettings.position
+        self.captionMaxWordsPerLine = captionSettings.maxWordsPerLine
+        self.captionModel = captionSettings.model
+        self.captionLanguage = captionSettings.language
+        self.captionAudioSource = captionSettings.audioSource
+      }
+      if let savedSegments = saved.captionSegments, !savedSegments.isEmpty {
+        self.captionSegments = savedSegments
+      }
+    }
+    if captionAudioSource == .microphone && result.microphoneAudioURL == nil && result.systemAudioURL != nil {
+      captionAudioSource = .system
+    } else if captionAudioSource == .system && result.systemAudioURL == nil && result.microphoneAudioURL != nil {
+      captionAudioSource = .microphone
     }
   }
 

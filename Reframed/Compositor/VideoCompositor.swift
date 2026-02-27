@@ -55,6 +55,16 @@ enum VideoCompositor {
     cameraBackgroundStyle: CameraBackgroundStyle = .none,
     cameraBackgroundImageURL: URL? = nil,
     processedMicAudioURL: URL? = nil,
+    captionSegments: [CaptionSegment] = [],
+    captionsEnabled: Bool = false,
+    captionFontSize: CGFloat = 48,
+    captionFontWeight: CaptionFontWeight = .bold,
+    captionTextColor: CodableColor = CodableColor(r: 1, g: 1, b: 1),
+    captionBackgroundColor: CodableColor = CodableColor(r: 0, g: 0, b: 0, a: 1.0),
+    captionBackgroundOpacity: CGFloat = 0.6,
+    captionShowBackground: Bool = true,
+    captionPosition: CaptionPosition = .bottom,
+    captionMaxWordsPerLine: Int = 6,
     progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)? = nil
   ) async throws -> URL {
     let composition = AVMutableComposition()
@@ -174,9 +184,10 @@ enum VideoCompositor {
     let needsReencode =
       !sourceCodecMatchesExport || exportSettings.resolution != .original
       || exportSettings.fps != .original
+    let hasCaptions = captionsEnabled && !captionSegments.isEmpty
     let needsCompositor =
       hasVisualEffects || hasWebcam || needsReencode || hasCursor || hasZoom
-      || exportSettings.format.isGIF || hasVideoRegions
+      || exportSettings.format.isGIF || hasVideoRegions || hasCaptions
 
     let canvasSize: CGSize
     if let baseSize = canvasAspect.size(for: screenNaturalSize) {
@@ -408,6 +419,65 @@ enum VideoCompositor {
         return result
       }()
 
+      let remappedCaptionSegments: [CaptionSegment] = {
+        guard captionsEnabled, !captionSegments.isEmpty else { return [] }
+        if hasVideoRegions {
+          var results: [CaptionSegment] = []
+          for seg in captionSegments {
+            for vs in videoSegments {
+              let overlapStart = max(seg.startSeconds, CMTimeGetSeconds(vs.sourceRange.start))
+              let overlapEnd = min(seg.endSeconds, CMTimeGetSeconds(vs.sourceRange.end))
+              guard overlapEnd > overlapStart else { continue }
+              let segStart = CMTimeGetSeconds(vs.sourceRange.start)
+              let compStart = CMTimeGetSeconds(vs.compositionStart)
+              let mappedStart = compStart + (overlapStart - segStart)
+              let mappedEnd = compStart + (overlapEnd - segStart)
+              let remappedWords = seg.words?.compactMap { w -> CaptionWord? in
+                let wStart = max(w.startSeconds, overlapStart)
+                let wEnd = min(w.endSeconds, overlapEnd)
+                guard wEnd > wStart else { return nil }
+                return CaptionWord(
+                  word: w.word,
+                  startSeconds: compStart + (wStart - segStart),
+                  endSeconds: compStart + (wEnd - segStart)
+                )
+              }
+              results.append(
+                CaptionSegment(
+                  startSeconds: mappedStart,
+                  endSeconds: mappedEnd,
+                  text: seg.text,
+                  words: remappedWords
+                )
+              )
+            }
+          }
+          return results
+        }
+        let trimStart = CMTimeGetSeconds(effectiveTrim.start)
+        return captionSegments.compactMap { seg in
+          let overlapStart = max(seg.startSeconds, trimStart)
+          let overlapEnd = min(seg.endSeconds, CMTimeGetSeconds(effectiveTrim.end))
+          guard overlapEnd > overlapStart else { return nil }
+          let remappedWords = seg.words?.compactMap { w -> CaptionWord? in
+            let wStart = max(w.startSeconds, trimStart)
+            let wEnd = min(w.endSeconds, CMTimeGetSeconds(effectiveTrim.end))
+            guard wEnd > wStart else { return nil }
+            return CaptionWord(
+              word: w.word,
+              startSeconds: wStart - trimStart,
+              endSeconds: wEnd - trimStart
+            )
+          }
+          return CaptionSegment(
+            startSeconds: overlapStart - trimStart,
+            endSeconds: overlapEnd - trimStart,
+            text: seg.text,
+            words: remappedWords
+          )
+        }
+      }()
+
       let instruction = CompositionInstruction(
         timeRange: CMTimeRange(start: .zero, duration: compositionDuration),
         screenTrackID: 1,
@@ -466,7 +536,17 @@ enum VideoCompositor {
         cameraFullscreenFillMode: cameraFullscreenFillMode,
         cameraFullscreenAspect: cameraFullscreenAspect,
         cameraBackgroundStyle: cameraBackgroundStyle,
-        cameraBackgroundImage: camBgImage
+        cameraBackgroundImage: camBgImage,
+        captionSegments: remappedCaptionSegments,
+        captionsEnabled: captionsEnabled,
+        captionFontSize: captionFontSize,
+        captionFontWeight: captionFontWeight,
+        captionTextColor: captionTextColor,
+        captionBackgroundColor: captionBackgroundColor,
+        captionBackgroundOpacity: captionBackgroundOpacity,
+        captionShowBackground: captionShowBackground,
+        captionPosition: captionPosition,
+        captionMaxWordsPerLine: captionMaxWordsPerLine
       )
 
       if exportSettings.format.isGIF {

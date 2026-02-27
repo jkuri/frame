@@ -9,6 +9,35 @@ struct ExportSettings: Sendable {
   var audioBitrate: ExportAudioBitrate = .kbps320
   var mode: ExportMode = .parallel
   var gifQuality: GIFQuality = .high
+  var captionExportMode: CaptionExportMode = .burnIn
+
+  var burnInCaptions: Bool { captionExportMode == .burnIn }
+  var exportSRT: Bool { captionExportMode == .srt }
+  var exportVTT: Bool { captionExportMode == .vtt }
+}
+
+enum CaptionExportMode: Sendable, CaseIterable, Identifiable {
+  case burnIn
+  case srt
+  case vtt
+
+  var id: Self { self }
+
+  var label: String {
+    switch self {
+    case .burnIn: "Burn In"
+    case .srt: "SRT"
+    case .vtt: "VTT"
+    }
+  }
+
+  var description: String {
+    switch self {
+    case .burnIn: "Render captions directly into the video."
+    case .srt: "Export SubRip (.srt) subtitle file alongside the video."
+    case .vtt: "Export WebVTT (.vtt) subtitle file alongside the video."
+    }
+  }
 }
 
 enum GIFQuality: Sendable, CaseIterable, Identifiable {

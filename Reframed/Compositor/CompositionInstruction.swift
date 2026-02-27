@@ -75,6 +75,17 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
   let cameraBackgroundStyle: CameraBackgroundStyle
   let cameraBackgroundImage: CGImage?
 
+  let captionSegments: [CaptionSegment]
+  let captionsEnabled: Bool
+  let captionFontSize: CGFloat
+  let captionFontWeight: CaptionFontWeight
+  let captionTextColor: CodableColor
+  let captionBackgroundColor: CodableColor
+  let captionBackgroundOpacity: CGFloat
+  let captionShowBackground: Bool
+  let captionPosition: CaptionPosition
+  let captionMaxWordsPerLine: Int
+
   init(
     timeRange: CMTimeRange,
     screenTrackID: CMPersistentTrackID,
@@ -117,7 +128,17 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     cameraFullscreenFillMode: CameraFullscreenFillMode = .fit,
     cameraFullscreenAspect: CameraFullscreenAspect = .original,
     cameraBackgroundStyle: CameraBackgroundStyle = .none,
-    cameraBackgroundImage: CGImage? = nil
+    cameraBackgroundImage: CGImage? = nil,
+    captionSegments: [CaptionSegment] = [],
+    captionsEnabled: Bool = false,
+    captionFontSize: CGFloat = 48,
+    captionFontWeight: CaptionFontWeight = .bold,
+    captionTextColor: CodableColor = CodableColor(r: 1, g: 1, b: 1),
+    captionBackgroundColor: CodableColor = CodableColor(r: 0, g: 0, b: 0, a: 1.0),
+    captionBackgroundOpacity: CGFloat = 0.6,
+    captionShowBackground: Bool = true,
+    captionPosition: CaptionPosition = .bottom,
+    captionMaxWordsPerLine: Int = 6
   ) {
     self.timeRange = timeRange
     self.screenTrackID = screenTrackID
@@ -161,6 +182,16 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     self.cameraFullscreenAspect = cameraFullscreenAspect
     self.cameraBackgroundStyle = cameraBackgroundStyle
     self.cameraBackgroundImage = cameraBackgroundImage
+    self.captionSegments = captionSegments
+    self.captionsEnabled = captionsEnabled
+    self.captionFontSize = captionFontSize
+    self.captionFontWeight = captionFontWeight
+    self.captionTextColor = captionTextColor
+    self.captionBackgroundColor = captionBackgroundColor
+    self.captionBackgroundOpacity = captionBackgroundOpacity
+    self.captionShowBackground = captionShowBackground
+    self.captionPosition = captionPosition
+    self.captionMaxWordsPerLine = captionMaxWordsPerLine
 
     var trackIDs: [NSValue] = [NSNumber(value: screenTrackID)]
     if let wid = webcamTrackID {

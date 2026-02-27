@@ -10,6 +10,7 @@
 		0255AD69477B42D2B028628B /* CaptureTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFD921258364EA6A604537F /* CaptureTarget.swift */; };
 		3DCA03E12F3B511C003FE309 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DCA03E02F3B511C003FE309 /* Assets.xcassets */; };
 		3DFD8D482F4E1CA100B8BB8F /* RNNoise in Frameworks */ = {isa = PBXBuildFile; productRef = E10000000000000000000006 /* RNNoise */; };
+		E10000000000000000000009 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = E10000000000000000000008 /* WhisperKit */; };
 		A10000000000000000000001 /* ReframedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* ReframedApp.swift */; };
 		A10000000000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* AppDelegate.swift */; };
 		A10000000000000000000003 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* Permissions.swift */; };
@@ -176,6 +177,14 @@
 		CD88FB9E14F75D2DA0513D3C /* CameraVideoCompositor+Cursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDF80A89DF90D50CD417CEE5 /* CameraVideoCompositor+Cursor.swift */; };
 		CAB001000000000000000001 /* CameraBackgroundStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB002000000000000000001 /* CameraBackgroundStyle.swift */; };
 		CAB001000000000000000002 /* PersonSegmentationProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB002000000000000000002 /* PersonSegmentationProcessor.swift */; };
+		CA10000000000000000000A1 /* WhisperModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A1 /* WhisperModelManager.swift */; };
+		CA10000000000000000000A2 /* TranscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A2 /* TranscriptionService.swift */; };
+		CA10000000000000000000A3 /* SubtitleExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A3 /* SubtitleExporter.swift */; };
+		CA10000000000000000000A4 /* EditorState+Captions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A4 /* EditorState+Captions.swift */; };
+		CA10000000000000000000A5 /* PropertiesPanel+CaptionsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A5 /* PropertiesPanel+CaptionsTab.swift */; };
+		CA10000000000000000000A6 /* CaptionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A6 /* CaptionOverlayView.swift */; };
+		CA10000000000000000000A7 /* CaptionSegmentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A7 /* CaptionSegmentRow.swift */; };
+		CA10000000000000000000A8 /* CameraVideoCompositor+Captions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A8 /* CameraVideoCompositor+Captions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -349,6 +358,14 @@
 		BDF80A89DF90D50CD417CEE5 /* CameraVideoCompositor+Cursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraVideoCompositor+Cursor.swift"; sourceTree = "<group>"; };
 		CAB002000000000000000001 /* CameraBackgroundStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraBackgroundStyle.swift; sourceTree = "<group>"; };
 		CAB002000000000000000002 /* PersonSegmentationProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonSegmentationProcessor.swift; sourceTree = "<group>"; };
+		CA20000000000000000000A1 /* WhisperModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperModelManager.swift; sourceTree = "<group>"; };
+		CA20000000000000000000A2 /* TranscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionService.swift; sourceTree = "<group>"; };
+		CA20000000000000000000A3 /* SubtitleExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleExporter.swift; sourceTree = "<group>"; };
+		CA20000000000000000000A4 /* EditorState+Captions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorState+Captions.swift"; sourceTree = "<group>"; };
+		CA20000000000000000000A5 /* PropertiesPanel+CaptionsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+CaptionsTab.swift"; sourceTree = "<group>"; };
+		CA20000000000000000000A6 /* CaptionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionOverlayView.swift; sourceTree = "<group>"; };
+		CA20000000000000000000A7 /* CaptionSegmentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionSegmentRow.swift; sourceTree = "<group>"; };
+		CA20000000000000000000A8 /* CameraVideoCompositor+Captions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraVideoCompositor+Captions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -356,6 +373,7 @@
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				3DFD8D482F4E1CA100B8BB8F /* RNNoise in Frameworks */,
+				E10000000000000000000009 /* WhisperKit in Frameworks */,
 				A10000000000000000000017 /* ScreenCaptureKit.framework in Frameworks */,
 				A10000000000000000000018 /* AVFoundation.framework in Frameworks */,
 				A10000000000000000000019 /* Logging in Frameworks */,
@@ -473,6 +491,9 @@
 				DA000000000000000000001D /* RNNoiseProcessor.swift */,
 				B1000000000000000000003E /* KeyboardShortcut.swift */,
 				B1000000000000000000004C /* UpdateChecker.swift */,
+			CA20000000000000000000A1 /* WhisperModelManager.swift */,
+			CA20000000000000000000A2 /* TranscriptionService.swift */,
+			CA20000000000000000000A3 /* SubtitleExporter.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -532,6 +553,8 @@
 				B1000000000000000000004B /* SettingsAboutTab.swift */,
 				B1000000000000000000004D /* PrimaryButton.swift */,
 				B1000000000000000000004E /* SelectButton.swift */,
+			CA20000000000000000000A6 /* CaptionOverlayView.swift */,
+			CA20000000000000000000A7 /* CaptionSegmentRow.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -643,6 +666,8 @@
 				B17A303B9C60827322EAE0A9 /* VideoPreviewContainer+Cursor.swift */,
 				5F3469C70747A78B7BDD2B5C /* VideoPreviewContainer+Interaction.swift */,
 				BC84C35E4DD49FCEA9DE6CBB /* CursorRenderer+Shapes.swift */,
+			CA20000000000000000000A4 /* EditorState+Captions.swift */,
+			CA20000000000000000000A5 /* PropertiesPanel+CaptionsTab.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -678,6 +703,7 @@
 				BDF80A89DF90D50CD417CEE5 /* CameraVideoCompositor+Cursor.swift */,
 				CAB002000000000000000001 /* CameraBackgroundStyle.swift */,
 				CAB002000000000000000002 /* PersonSegmentationProcessor.swift */,
+			CA20000000000000000000A8 /* CameraVideoCompositor+Captions.swift */,
 			);
 			path = Compositor;
 			sourceTree = "<group>";
@@ -700,6 +726,7 @@
 				E10000000000000000000001 /* Logging */,
 				E10000000000000000000002 /* MenuBarExtraAccess */,
 				E10000000000000000000006 /* RNNoise */,
+				E10000000000000000000008 /* WhisperKit */,
 			);
 			productName = Reframed;
 			productReference = B1000000000000000000001B /* Reframed.app */;
@@ -732,6 +759,7 @@
 				E10000000000000000000003 /* XCRemoteSwiftPackageReference "swift-log" */,
 				E10000000000000000000004 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */,
 				E10000000000000000000005 /* XCRemoteSwiftPackageReference "rnnoise-spm" */,
+				E10000000000000000000007 /* XCRemoteSwiftPackageReference "WhisperKit" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = D1000000000000000000000B /* Products */;
@@ -920,6 +948,14 @@
 				CD88FB9E14F75D2DA0513D3C /* CameraVideoCompositor+Cursor.swift in Sources */,
 				CAB001000000000000000001 /* CameraBackgroundStyle.swift in Sources */,
 				CAB001000000000000000002 /* PersonSegmentationProcessor.swift in Sources */,
+				CA10000000000000000000A1 /* WhisperModelManager.swift in Sources */,
+				CA10000000000000000000A2 /* TranscriptionService.swift in Sources */,
+				CA10000000000000000000A3 /* SubtitleExporter.swift in Sources */,
+				CA10000000000000000000A4 /* EditorState+Captions.swift in Sources */,
+				CA10000000000000000000A5 /* PropertiesPanel+CaptionsTab.swift in Sources */,
+				CA10000000000000000000A6 /* CaptionOverlayView.swift in Sources */,
+				CA10000000000000000000A7 /* CaptionSegmentRow.swift in Sources */,
+				CA10000000000000000000A8 /* CameraVideoCompositor+Captions.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */
@@ -1183,6 +1219,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		E10000000000000000000007 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1200,6 +1244,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E10000000000000000000005 /* XCRemoteSwiftPackageReference "rnnoise-spm" */;
 			productName = RNNoise;
+		};
+		E10000000000000000000008 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E10000000000000000000007 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

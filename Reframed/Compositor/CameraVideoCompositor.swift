@@ -182,6 +182,17 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
       }()
 
       if hiddenRegion != nil && (hiddenTransition == nil || hiddenTransition!.type == .none) {
+        let screenAspect = CGSize(
+          width: CVPixelBufferGetWidth(screenBuffer),
+          height: CVPixelBufferGetHeight(screenBuffer)
+        )
+        let vRect = AVMakeRect(aspectRatio: screenAspect, insideRect: paddedArea)
+        drawCaptions(
+          in: context,
+          videoRect: vRect,
+          instruction: instruction,
+          compositionTime: compositionTime
+        )
         return
       }
 
@@ -227,6 +238,17 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
           colorSpace: colorSpace
         )
       }
+    }
+
+    if let img = screenImage {
+      let screenAspect = CGSize(width: img.width, height: img.height)
+      let vRect = AVMakeRect(aspectRatio: screenAspect, insideRect: paddedArea)
+      drawCaptions(
+        in: context,
+        videoRect: vRect,
+        instruction: instruction,
+        compositionTime: compositionTime
+      )
     }
   }
 

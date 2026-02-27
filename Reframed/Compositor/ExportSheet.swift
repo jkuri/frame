@@ -6,6 +6,7 @@ struct ExportSheet: View {
   @State private var selectedPreset: ExportPreset = .custom
   let sourceFPS: Int
   let hasAudio: Bool
+  let hasCaptions: Bool
   let onExport: (ExportSettings) -> Void
   @Environment(\.colorScheme) private var colorScheme
 
@@ -115,6 +116,21 @@ struct ExportSheet: View {
           }
 
           Text(settings.mode.description)
+            .font(.system(size: 11))
+            .foregroundStyle(ReframedColors.dimLabel)
+            .padding(.top, -10)
+        }
+
+        if hasCaptions {
+          settingsRow(label: "Captions") {
+            SegmentPicker(
+              items: CaptionExportMode.allCases,
+              label: { $0.label },
+              selection: manualBinding(\.captionExportMode)
+            )
+          }
+
+          Text(settings.captionExportMode.description)
             .font(.system(size: 11))
             .foregroundStyle(ReframedColors.dimLabel)
             .padding(.top, -10)

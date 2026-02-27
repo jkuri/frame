@@ -43,6 +43,7 @@ struct PropertiesPanel: View {
   @State var selectedCameraGradientId: Int = 0
   @State var selectedCameraColorId: String? = "Black"
   @State var cameraBackgroundImageFilename: String?
+  @State var captionSegmentsExpanded: Bool = false
   @State private var screenInfo: MediaFileInfo?
   @State private var webcamInfo: MediaFileInfo?
   @State private var systemAudioInfo: MediaFileInfo?
@@ -78,6 +79,8 @@ struct PropertiesPanel: View {
           }
         case .zoom:
           zoomSection
+        case .captions:
+          captionsSection
         }
       }
       .padding(Layout.panelPadding)
