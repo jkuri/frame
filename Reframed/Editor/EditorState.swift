@@ -190,6 +190,7 @@ final class EditorState {
 
   func setup() async {
     await playerController.loadDuration()
+    await playerController.computeDriftRatios()
     trimEnd = playerController.duration
     let dur = CMTimeGetSeconds(playerController.duration)
     if result.systemAudioURL != nil {

@@ -501,7 +501,13 @@ enum VideoCompositor {
         hasVideoRegions
         ? videoSegments.map { VideoSegmentInfo(sourceRange: $0.sourceRange, compositionStart: $0.compositionStart) }
         : nil
-      try await addAudioTracks(to: composition, sources: audioSources, videoTrimRange: effectiveTrim, videoSegments: audioSegInfo)
+      try await addAudioTracks(
+        to: composition,
+        sources: audioSources,
+        videoTrimRange: effectiveTrim,
+        videoSegments: audioSegInfo,
+        videoDuration: screenTimeRange.duration
+      )
       let audioMix = buildAudioMix(for: composition, sources: audioSources)
 
       let outputURL = FileManager.default.tempRecordingURL()
@@ -545,7 +551,7 @@ enum VideoCompositor {
       return destination
     }
 
-    try await addAudioTracks(to: composition, sources: audioSources, videoTrimRange: effectiveTrim)
+    try await addAudioTracks(to: composition, sources: audioSources, videoTrimRange: effectiveTrim, videoDuration: screenTimeRange.duration)
 
     let outputURL = FileManager.default.tempRecordingURL()
     guard

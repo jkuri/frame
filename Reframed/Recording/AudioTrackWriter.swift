@@ -16,6 +16,17 @@ final class AudioTrackWriter: @unchecked Sendable {
   private var pauseOffset = CMTime.zero
   private var hasRegistered = false
   nonisolated(unsafe) private(set) var currentPeakLevel: Float = 0
+  var writtenSamples = 0
+  var droppedSamples = 0
+  nonisolated(unsafe) private(set) var lastWrittenPTS: CMTime = .invalid
+  private var lastLogTime: CFAbsoluteTime = 0
+
+  private var videoPTSProvider: (@Sendable () -> CMTime)?
+  private var driftCorrection = CMTime.zero
+  private var totalBuffersReceived = 0
+  private var nextDriftCheckBuffer = 100
+  private let driftCheckInterval = 100
+  private let driftCorrectionThreshold: Double = 0.005
 
   init(outputURL: URL, label: String, sampleRate: Double, channelCount: Int, clock: SharedRecordingClock) throws {
     self.outputURL = outputURL
@@ -34,6 +45,17 @@ final class AudioTrackWriter: @unchecked Sendable {
     }
 
     self.assetWriter = try AVAssetWriter(outputURL: outputURL, fileType: .m4a)
+  }
+
+  func setVideoPTSProvider(_ provider: @escaping @Sendable () -> CMTime) {
+    queue.async {
+      self.videoPTSProvider = provider
+    }
+  }
+
+  func resetStats() {
+    writtenSamples = 0
+    droppedSamples = 0
   }
 
   func pause() {
@@ -68,6 +90,23 @@ final class AudioTrackWriter: @unchecked Sendable {
 
     guard let adjustedPTS = clock.adjustPTS(rawPTS, pauseOffset: pauseOffset) else { return }
 
+    totalBuffersReceived += 1
+    if isStarted && totalBuffersReceived >= nextDriftCheckBuffer {
+      nextDriftCheckBuffer = totalBuffersReceived + driftCheckInterval
+      if let getVideoPTS = videoPTSProvider {
+        let videoPTS = getVideoPTS()
+        if videoPTS.isValid {
+          let audioPTS = CMTimeAdd(adjustedPTS, driftCorrection)
+          let drift = CMTimeGetSeconds(videoPTS) - CMTimeGetSeconds(audioPTS)
+          if drift > driftCorrectionThreshold {
+            driftCorrection = CMTimeAdd(driftCorrection, CMTime(seconds: drift, preferredTimescale: 600))
+          }
+        }
+      }
+    }
+
+    let finalPTS = CMTimeAdd(adjustedPTS, driftCorrection)
+
     if !isStarted {
       let formatHint = CMSampleBufferGetFormatDescription(sampleBuffer)
       let input = AVAssetWriterInput(mediaType: .audio, outputSettings: outputSettings, sourceFormatHint: formatHint)
@@ -81,17 +120,20 @@ final class AudioTrackWriter: @unchecked Sendable {
         self.audioInput = nil
         return
       }
-      assetWriter.startSession(atSourceTime: adjustedPTS)
-      firstSamplePTS = adjustedPTS
+      assetWriter.startSession(atSourceTime: finalPTS)
+      firstSamplePTS = finalPTS
       isStarted = true
-      logger.info("Audio writing started at PTS \(String(format: "%.3f", CMTimeGetSeconds(adjustedPTS)))s")
+      logger.info("Audio writing started at PTS \(String(format: "%.3f", CMTimeGetSeconds(finalPTS)))s")
     }
 
-    guard let audioInput, audioInput.isReadyForMoreMediaData else { return }
+    guard let audioInput, audioInput.isReadyForMoreMediaData else {
+      droppedSamples += 1
+      return
+    }
 
     var timingInfo = CMSampleTimingInfo(
       duration: CMSampleBufferGetDuration(sampleBuffer),
-      presentationTimeStamp: adjustedPTS,
+      presentationTimeStamp: finalPTS,
       decodeTimeStamp: .invalid
     )
     var adjustedBuffer: CMSampleBuffer?
@@ -104,6 +146,19 @@ final class AudioTrackWriter: @unchecked Sendable {
     )
     if status == noErr, let adjusted = adjustedBuffer {
       audioInput.append(adjusted)
+      writtenSamples += 1
+      lastWrittenPTS = finalPTS
+    } else {
+      droppedSamples += 1
+    }
+
+    let now = CFAbsoluteTimeGetCurrent()
+    if now - lastLogTime >= 2.0 {
+      logger.info(
+        "Audio stats: \(writtenSamples) written, \(droppedSamples) dropped, PTS \(String(format: "%.3f", CMTimeGetSeconds(finalPTS)))s"
+      )
+      resetStats()
+      lastLogTime = now
     }
   }
 
@@ -158,6 +213,12 @@ final class AudioTrackWriter: @unchecked Sendable {
           logger.warning("Audio writer was never started, nothing to finish")
           continuation.resume(returning: nil)
           return
+        }
+
+        if self.lastWrittenPTS.isValid {
+          self.logger.info(
+            "Audio final: last PTS \(String(format: "%.3f", CMTimeGetSeconds(self.lastWrittenPTS)))s, drift correction \(String(format: "%.3f", CMTimeGetSeconds(self.driftCorrection)))s"
+          )
         }
 
         audioInput.markAsFinished()

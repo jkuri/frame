@@ -26,6 +26,9 @@ final class SyncedPlayerController {
   private var micAudioFile: AVAudioFile?
   private var micVolumeLevel: Float = 1.0
   private var micIsMutedByRegion: Bool = true
+  private var systemAudioDriftRatio: Double = 1.0
+  private var webcamDriftRatio: Double = 1.0
+  private var micAudioDriftRatio: Double = 1.0
 
   init(result: RecordingResult) {
     let screenAsset = AVURLAsset(url: result.screenVideoURL)
@@ -123,6 +126,50 @@ final class SyncedPlayerController {
     trimEnd = duration
   }
 
+  func computeDriftRatios() async {
+    let videoDuration = CMTimeGetSeconds(duration)
+    guard videoDuration > 0 else { return }
+
+    if let sysItem = systemAudioPlayer?.currentItem {
+      if let sysDur = try? await sysItem.asset.load(.duration) {
+        let audioSec = CMTimeGetSeconds(sysDur)
+        if audioSec > 0 {
+          let ratio = audioSec / videoDuration
+          if abs(videoDuration - audioSec) > 0.01 {
+            systemAudioDriftRatio = ratio
+            logger.info(
+              "System audio drift ratio: \(String(format: "%.6f", ratio)) (delta=\(String(format: "%.3f", videoDuration - audioSec))s)"
+            )
+          }
+        }
+      }
+    }
+
+    if let wcItem = webcamPlayer?.currentItem {
+      if let wcDur = try? await wcItem.asset.load(.duration) {
+        let wcSec = CMTimeGetSeconds(wcDur)
+        if wcSec > 0 {
+          let ratio = wcSec / videoDuration
+          if abs(videoDuration - wcSec) > 0.01 {
+            webcamDriftRatio = ratio
+            logger.info("Webcam drift ratio: \(String(format: "%.6f", ratio)) (delta=\(String(format: "%.3f", videoDuration - wcSec))s)")
+          }
+        }
+      }
+    }
+
+    if let micFile = micAudioFile {
+      let micSec = Double(micFile.length) / micFile.processingFormat.sampleRate
+      if micSec > 0 {
+        let ratio = micSec / videoDuration
+        if abs(videoDuration - micSec) > 0.01 {
+          micAudioDriftRatio = ratio
+          logger.info("Mic audio drift ratio: \(String(format: "%.6f", ratio)) (delta=\(String(format: "%.3f", videoDuration - micSec))s)")
+        }
+      }
+    }
+  }
+
   func setupTimeObserver() {
     let interval = CMTime(value: 1, timescale: 60)
     timeObserver = screenPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) {
@@ -150,8 +197,8 @@ final class SyncedPlayerController {
         let seekTime = CMTime(seconds: next.start, preferredTimescale: 600)
         seek(to: seekTime)
         screenPlayer.play()
-        webcamPlayer?.play()
-        systemAudioPlayer?.play()
+        webcamPlayer?.rate = Float(webcamDriftRatio)
+        systemAudioPlayer?.rate = Float(systemAudioDriftRatio)
         scheduleMicPlayback(from: seekTime)
       } else {
         pause()
@@ -181,8 +228,8 @@ final class SyncedPlayerController {
       return
     }
     screenPlayer.play()
-    webcamPlayer?.play()
-    systemAudioPlayer?.play()
+    webcamPlayer?.rate = Float(webcamDriftRatio)
+    systemAudioPlayer?.rate = Float(systemAudioDriftRatio)
     scheduleMicPlayback(from: currentTime)
     isPlaying = true
   }
@@ -200,8 +247,10 @@ final class SyncedPlayerController {
     let toleranceBefore = CMTime(value: 1, timescale: 600)
     let toleranceAfter = CMTime(value: 1, timescale: 600)
     screenPlayer.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter)
-    webcamPlayer?.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter)
-    systemAudioPlayer?.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter)
+    let wcTime = CMTimeMultiplyByFloat64(time, multiplier: webcamDriftRatio)
+    webcamPlayer?.seek(to: wcTime, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter)
+    let sysTime = CMTimeMultiplyByFloat64(time, multiplier: systemAudioDriftRatio)
+    systemAudioPlayer?.seek(to: sysTime, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter)
     micPlayerNode?.stop()
     currentTime = time
   }
@@ -240,7 +289,8 @@ final class SyncedPlayerController {
     guard let playerNode = micPlayerNode, let audioFile = micAudioFile else { return }
     playerNode.stop()
     let sampleRate = audioFile.processingFormat.sampleRate
-    let startFrame = AVAudioFramePosition(CMTimeGetSeconds(time) * sampleRate)
+    let audioTime = CMTimeGetSeconds(time) * micAudioDriftRatio
+    let startFrame = AVAudioFramePosition(audioTime * sampleRate)
     let totalFrames = AVAudioFramePosition(audioFile.length)
     guard startFrame < totalFrames else { return }
     let frameCount = AVAudioFrameCount(totalFrames - startFrame)
@@ -256,7 +306,9 @@ final class SyncedPlayerController {
   private func syncAuxPlayers() {
     let screenTime = screenPlayer.currentTime()
     let tolerance = CMTime(value: 1, timescale: 600)
-    webcamPlayer?.seek(to: screenTime, toleranceBefore: tolerance, toleranceAfter: tolerance)
-    systemAudioPlayer?.seek(to: screenTime, toleranceBefore: tolerance, toleranceAfter: tolerance)
+    let wcTime = CMTimeMultiplyByFloat64(screenTime, multiplier: webcamDriftRatio)
+    webcamPlayer?.seek(to: wcTime, toleranceBefore: tolerance, toleranceAfter: tolerance)
+    let sysTime = CMTimeMultiplyByFloat64(screenTime, multiplier: systemAudioDriftRatio)
+    systemAudioPlayer?.seek(to: sysTime, toleranceBefore: tolerance, toleranceAfter: tolerance)
   }
 }

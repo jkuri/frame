@@ -15,6 +15,7 @@ final class VideoTrackWriter: @unchecked Sendable {
   var writtenFrames = 0
   var droppedFrames = 0
   private(set) var firstSamplePTS: CMTime = .invalid
+  nonisolated(unsafe) private(set) var lastWrittenPTS: CMTime = .invalid
   private var isPaused = false
   private var pauseOffset = CMTime.zero
   private var hasRegistered = false
@@ -157,6 +158,7 @@ final class VideoTrackWriter: @unchecked Sendable {
     if status == noErr, let adjusted = adjustedBuffer {
       videoInput.append(adjusted)
       writtenFrames += 1
+      lastWrittenPTS = adjustedPTS
     } else {
       droppedFrames += 1
     }

@@ -206,6 +206,10 @@ actor RecordingCoordinator {
       self.systemAudioCapture = sysCapture
     }
 
+    let videoRef = vidWriter
+    systemAudioWriter?.setVideoPTSProvider { videoRef.lastWrittenPTS }
+    micAudioWriter?.setVideoPTSProvider { videoRef.lastWrittenPTS }
+
     let startedAt = Date()
     logger.info(
       "Recording started",
@@ -356,6 +360,10 @@ actor RecordingCoordinator {
       mic.attachWriter(micWriter)
       self.microphoneCapture = mic
     }
+
+    let videoRef = vidWriter
+    deviceAudioWriter?.setVideoPTSProvider { videoRef.lastWrittenPTS }
+    micAudioWriter?.setVideoPTSProvider { videoRef.lastWrittenPTS }
 
     let startedAt = Date()
     logger.info(
