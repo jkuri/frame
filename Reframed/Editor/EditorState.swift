@@ -63,6 +63,7 @@ final class EditorState {
   var spotlightRadius: CGFloat = 200
   var spotlightDimOpacity: CGFloat = 0.6
   var spotlightEdgeSoftness: CGFloat = 50
+  var spotlightRegions: [SpotlightRegionData] = []
 
   var clickSoundEnabled: Bool = false
   var clickSoundVolume: Float = 0.5
@@ -318,6 +319,12 @@ final class EditorState {
       }
       if let savedVideoRegions = saved.videoRegions, !savedVideoRegions.isEmpty {
         videoRegions = savedVideoRegions
+      }
+      if let savedSpotlightRegions = saved.spotlightRegions, !savedSpotlightRegions.isEmpty {
+        spotlightRegions = savedSpotlightRegions
+      } else if spotlightEnabled && saved.spotlightRegions == nil {
+        let dur = CMTimeGetSeconds(playerController.duration)
+        spotlightRegions = [SpotlightRegionData(startSeconds: 0, endSeconds: dur)]
       }
       if let audioSettings = saved.audioSettings {
         systemAudioVolume = audioSettings.systemAudioVolume

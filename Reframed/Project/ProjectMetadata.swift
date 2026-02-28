@@ -66,6 +66,16 @@ struct AudioRegionData: Codable, Sendable, Identifiable, Equatable {
   var endSeconds: Double
 }
 
+struct SpotlightRegionData: Codable, Sendable, Identifiable, Equatable {
+  var id: UUID = UUID()
+  var startSeconds: Double
+  var endSeconds: Double
+  var customRadius: CGFloat?
+  var customDimOpacity: CGFloat?
+  var customEdgeSoftness: CGFloat?
+  var fadeDuration: Double?
+}
+
 enum RegionTransitionType: String, Codable, Sendable, CaseIterable, Identifiable {
   case none, fade, scale, slide
 
@@ -362,6 +372,7 @@ struct EditorStateData: Codable, Sendable {
   var cameraBackgroundStyle: CameraBackgroundStyle?
   var captionSettings: CaptionSettingsData?
   var captionSegments: [CaptionSegment]?
+  var spotlightRegions: [SpotlightRegionData]?
 }
 
 struct CodableSize: Codable, Sendable {

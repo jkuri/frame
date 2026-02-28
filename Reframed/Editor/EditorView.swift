@@ -329,11 +329,17 @@ struct EditorView: View {
             && editorState.cursorMetadataProvider != nil,
           clickSoundVolume: editorState.clickSoundVolume,
           clickSoundStyle: editorState.clickSoundStyle,
-          spotlightEnabled: editorState.spotlightEnabled && editorState.showCursor
-            && editorState.cursorMetadataProvider != nil,
-          spotlightRadius: editorState.spotlightRadius,
-          spotlightDimOpacity: editorState.spotlightDimOpacity,
-          spotlightEdgeSoftness: editorState.spotlightEdgeSoftness,
+          spotlightEnabled: editorState.isSpotlightActive(at: CMTimeGetSeconds(editorState.currentTime))
+            && editorState.showCursor && editorState.cursorMetadataProvider != nil,
+          spotlightRadius: editorState.effectiveSpotlightSettings(
+            at: CMTimeGetSeconds(editorState.currentTime)
+          ).radius,
+          spotlightDimOpacity: editorState.effectiveSpotlightSettings(
+            at: CMTimeGetSeconds(editorState.currentTime)
+          ).dimOpacity,
+          spotlightEdgeSoftness: editorState.effectiveSpotlightSettings(
+            at: CMTimeGetSeconds(editorState.currentTime)
+          ).edgeSoftness,
           cameraBackgroundStyle: editorState.webcamEnabled ? editorState.cameraBackgroundStyle : .none,
           cameraBackgroundImage: editorState.cameraBackgroundImage
         )

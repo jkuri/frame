@@ -405,6 +405,12 @@ final class History {
       removed: "Video region removed",
       adjusted: "Video region adjusted"
     ),
+    regions(
+      \.spotlightRegions,
+      added: "Spotlight region added",
+      removed: "Spotlight region removed",
+      adjusted: "Spotlight region adjusted"
+    ),
 
     { old, new in
       guard old.captionSettings != new.captionSettings || old.captionSegments != new.captionSegments

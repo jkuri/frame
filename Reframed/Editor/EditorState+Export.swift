@@ -184,7 +184,7 @@ extension EditorState {
       captionShowBackground: captionShowBackground,
       captionPosition: captionPosition,
       captionMaxWordsPerLine: captionMaxWordsPerLine,
-      spotlightEnabled: spotlightEnabled && showCursor,
+      spotlightRegions: spotlightEnabled && showCursor ? spotlightRegions : [],
       spotlightRadius: spotlightRadius,
       spotlightDimOpacity: spotlightDimOpacity,
       spotlightEdgeSoftness: spotlightEdgeSoftness,

@@ -65,7 +65,7 @@ enum VideoCompositor {
     captionShowBackground: Bool = true,
     captionPosition: CaptionPosition = .bottom,
     captionMaxWordsPerLine: Int = 6,
-    spotlightEnabled: Bool = false,
+    spotlightRegions: [SpotlightRegionData] = [],
     spotlightRadius: CGFloat = 200,
     spotlightDimOpacity: CGFloat = 0.6,
     spotlightEdgeSoftness: CGFloat = 50,
@@ -141,11 +141,25 @@ enum VideoCompositor {
     var clickSoundURL: URL?
     if clickSoundEnabled, let snapshot = cursorSnapshot, !snapshot.clicks.isEmpty {
       let totalDur = CMTimeGetSeconds(compositionDuration)
-      let trimStartSec = CMTimeGetSeconds(effectiveTrim.start)
-      let trimEndSec = CMTimeGetSeconds(effectiveTrim.end)
-      let clicks: [(time: Double, button: Int)] = snapshot.clicks.compactMap {
-        guard $0.t >= trimStartSec, $0.t <= trimEndSec else { return nil }
-        return (time: $0.t - trimStartSec, button: $0.button)
+      let clicks: [(time: Double, button: Int)]
+      if hasVideoRegions, !videoSegments.isEmpty {
+        clicks = snapshot.clicks.compactMap { click in
+          for seg in videoSegments {
+            let segStart = CMTimeGetSeconds(seg.sourceRange.start)
+            let segEnd = CMTimeGetSeconds(seg.sourceRange.end)
+            guard click.t >= segStart, click.t <= segEnd else { continue }
+            let compStart = CMTimeGetSeconds(seg.compositionStart)
+            return (time: compStart + (click.t - segStart), button: click.button)
+          }
+          return nil
+        }
+      } else {
+        let trimStartSec = CMTimeGetSeconds(effectiveTrim.start)
+        let trimEndSec = CMTimeGetSeconds(effectiveTrim.end)
+        clicks = snapshot.clicks.compactMap {
+          guard $0.t >= trimStartSec, $0.t <= trimEndSec else { return nil }
+          return (time: $0.t - trimStartSec, button: $0.button)
+        }
       }
       if !clicks.isEmpty {
         let tempURL = FileManager.default.temporaryDirectory
@@ -193,8 +207,18 @@ enum VideoCompositor {
       )
     }
     if let csURL = clickSoundURL {
-      let clickRegion = CMTimeRange(start: .zero, duration: compositionDuration)
-      audioSources.append(AudioSource(url: csURL, regions: [clickRegion], volume: 1.0))
+      let clickAsset = AVURLAsset(url: csURL)
+      if let clickAudioTrack = try await clickAsset.loadTracks(withMediaType: .audio).first {
+        let clickCompTrack = composition.addMutableTrack(
+          withMediaType: .audio,
+          preferredTrackID: kCMPersistentTrackID_Invalid
+        )
+        try clickCompTrack?.insertTimeRange(
+          CMTimeRange(start: .zero, duration: compositionDuration),
+          of: clickAudioTrack,
+          at: .zero
+        )
+      }
     }
 
     let hasNonDefaultBackground: Bool = {
@@ -221,7 +245,7 @@ enum VideoCompositor {
       !sourceCodecMatchesExport || exportSettings.resolution != .original
       || exportSettings.fps != .original
     let hasCaptions = captionsEnabled && !captionSegments.isEmpty
-    let hasSpotlight = spotlightEnabled && cursorSnapshot != nil
+    let hasSpotlight = !spotlightRegions.isEmpty && cursorSnapshot != nil
     let hasClickSound = clickSoundURL != nil
     let needsCompositor =
       hasVisualEffects || hasWebcam || needsReencode || hasCursor || hasZoom
@@ -429,6 +453,36 @@ enum VideoCompositor {
         ]
       }
 
+      func remapSpotlightRegion(_ region: SpotlightRegionData) -> [SpotlightRegionData] {
+        if hasVideoRegions {
+          var results: [SpotlightRegionData] = []
+          for seg in videoSegments {
+            let overlapStart = max(region.startSeconds, CMTimeGetSeconds(seg.sourceRange.start))
+            let overlapEnd = min(region.endSeconds, CMTimeGetSeconds(seg.sourceRange.end))
+            guard overlapEnd > overlapStart else { continue }
+            let segStart = CMTimeGetSeconds(seg.sourceRange.start)
+            let compStart = CMTimeGetSeconds(seg.compositionStart)
+            let mappedStart = compStart + (overlapStart - segStart)
+            let mappedEnd = compStart + (overlapEnd - segStart)
+            var mapped = region
+            mapped.id = UUID()
+            mapped.startSeconds = mappedStart
+            mapped.endSeconds = mappedEnd
+            results.append(mapped)
+          }
+          return results
+        }
+        let trimStart = CMTimeGetSeconds(effectiveTrim.start)
+        let trimEnd = CMTimeGetSeconds(effectiveTrim.end)
+        let overlapStart = max(region.startSeconds, trimStart)
+        let overlapEnd = min(region.endSeconds, trimEnd)
+        guard overlapEnd > overlapStart else { return [] }
+        var mapped = region
+        mapped.startSeconds = overlapStart - trimStart
+        mapped.endSeconds = overlapEnd - trimStart
+        return [mapped]
+      }
+
       let remappedVideoRegions: [RegionTransitionInfo] = {
         guard hasVideoRegions else { return [] }
         var result: [RegionTransitionInfo] = []
@@ -586,7 +640,7 @@ enum VideoCompositor {
         captionShowBackground: captionShowBackground,
         captionPosition: captionPosition,
         captionMaxWordsPerLine: captionMaxWordsPerLine,
-        spotlightEnabled: spotlightEnabled,
+        spotlightRegions: spotlightRegions.flatMap { remapSpotlightRegion($0) },
         spotlightRadius: spotlightRadius,
         spotlightDimOpacity: spotlightDimOpacity,
         spotlightEdgeSoftness: spotlightEdgeSoftness

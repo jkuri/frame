@@ -6,12 +6,14 @@ extension CameraVideoCompositor {
     in context: CGContext,
     videoRect: CGRect,
     instruction: CompositionInstruction,
+    compositionSeconds: Double,
     metadataTime: Double,
     zoomRect: CGRect?,
     outputHeight: Int
   ) {
-    guard instruction.spotlightEnabled, let snapshot = instruction.cursorSnapshot else { return }
+    guard !instruction.spotlightRegions.isEmpty, let snapshot = instruction.cursorSnapshot else { return }
 
+    let settings = instruction.effectiveSpotlightSettings(at: compositionSeconds)
     let cursorPos = snapshot.sample(at: metadataTime)
 
     var relX = cursorPos.x
@@ -29,8 +31,8 @@ extension CameraVideoCompositor {
       if let zr = zoomRect, zr.width < 1.0 { return 1.0 / zr.width }
       return 1.0
     }()
-    let scaledRadius = instruction.spotlightRadius * drawScale * zoomScale
-    let scaledSoftness = instruction.spotlightEdgeSoftness * drawScale * zoomScale
+    let scaledRadius = settings.radius * drawScale * zoomScale
+    let scaledSoftness = settings.edgeSoftness * drawScale * zoomScale
 
     context.saveGState()
     if instruction.videoCornerRadius > 0 {
@@ -46,7 +48,7 @@ extension CameraVideoCompositor {
       context.clip(to: videoRect)
     }
 
-    let dimColor = CGColor(red: 0, green: 0, blue: 0, alpha: instruction.spotlightDimOpacity)
+    let dimColor = CGColor(red: 0, green: 0, blue: 0, alpha: settings.dimOpacity * settings.fadeFactor)
     let center = CGPoint(x: pixelX, y: pixelY)
 
     if scaledSoftness <= 0 {

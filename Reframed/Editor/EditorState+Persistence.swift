@@ -118,7 +118,8 @@ extension EditorState {
       videoRegions: videoRegions.isEmpty ? nil : videoRegions,
       cameraBackgroundStyle: cameraBackgroundStyle == .none ? nil : cameraBackgroundStyle,
       captionSettings: captionSettings,
-      captionSegments: captionSegments.isEmpty ? nil : captionSegments
+      captionSegments: captionSegments.isEmpty ? nil : captionSegments,
+      spotlightRegions: spotlightRegions.isEmpty ? nil : spotlightRegions
     )
   }
 
@@ -234,6 +235,15 @@ extension EditorState {
       captionSegments = savedSegments
     } else {
       captionSegments = []
+    }
+
+    if let savedSpotlightRegions = data.spotlightRegions, !savedSpotlightRegions.isEmpty {
+      spotlightRegions = savedSpotlightRegions
+    } else if spotlightEnabled && data.spotlightRegions == nil {
+      let dur = CMTimeGetSeconds(duration)
+      spotlightRegions = [SpotlightRegionData(startSeconds: 0, endSeconds: dur)]
+    } else {
+      spotlightRegions = []
     }
 
     if case .image(let filename) = data.backgroundStyle, let bundleURL = project?.bundleURL {
@@ -360,6 +370,7 @@ extension EditorState {
       _ = self.spotlightRadius
       _ = self.spotlightDimOpacity
       _ = self.spotlightEdgeSoftness
+      _ = self.spotlightRegions
       _ = self.clickSoundEnabled
       _ = self.clickSoundVolume
       _ = self.clickSoundStyle

@@ -51,6 +51,11 @@ struct TimelineView: View {
   @State var videoDragRegionId: UUID?
   @State var popoverVideoRegionId: UUID?
 
+  @State var spotlightDragOffset: CGFloat = 0
+  @State var spotlightDragType: RegionDragType?
+  @State var spotlightDragRegionId: UUID?
+  @State var popoverSpotlightRegionId: UUID?
+
   private var showSystemAudioTrack: Bool {
     !systemAudioSamples.isEmpty || editorState.hasSystemAudio
   }
@@ -59,12 +64,17 @@ struct TimelineView: View {
     (!micAudioSamples.isEmpty && !editorState.isMicProcessing) || editorState.hasMicAudio
   }
 
+  private var showSpotlightTrack: Bool {
+    editorState.spotlightEnabled && editorState.cursorMetadataProvider != nil
+  }
+
   private var visibleTrackCount: Int {
     var count = 1
     if editorState.hasWebcam { count += 1 }
     if showSystemAudioTrack { count += 1 }
     if showMicAudioTrack { count += 1 }
     if editorState.zoomEnabled { count += 1 }
+    if showSpotlightTrack { count += 1 }
     return count
   }
 
@@ -99,6 +109,11 @@ struct TimelineView: View {
 
           if editorState.zoomEnabled {
             trackSidebar(label: "Zoom", icon: "plus.magnifyingglass")
+              .frame(height: trackHeight)
+          }
+
+          if showSpotlightTrack {
+            trackSidebar(label: "Spotlight", icon: "light.max")
               .frame(height: trackHeight)
           }
         }
@@ -151,6 +166,10 @@ struct TimelineView: View {
 
                 if editorState.zoomEnabled {
                   zoomTrackContent(width: cw, keyframes: editorState.zoomTimeline?.allKeyframes ?? [])
+                }
+
+                if showSpotlightTrack {
+                  spotlightTrackContent(width: cw)
                 }
               }
             }

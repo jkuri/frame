@@ -196,6 +196,9 @@
 		FA10000000000000000000D1 /* ClickSoundData.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000D1 /* ClickSoundData.swift */; };
 		FA10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift */; };
 		FA10000000000000000000B2 /* LenientCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000B2 /* LenientCodable.swift */; };
+		FA10000000000000000000C1 /* EditorState+SpotlightRegions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000C1 /* EditorState+SpotlightRegions.swift */; };
+		FA10000000000000000000C2 /* TimelineView+SpotlightTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000C2 /* TimelineView+SpotlightTrack.swift */; };
+		FA10000000000000000000C3 /* SpotlightRegionEditPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000C3 /* SpotlightRegionEditPopover.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -388,6 +391,9 @@
 		FB10000000000000000000D1 /* ClickSoundData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickSoundData.swift; sourceTree = "<group>"; };
 		FB10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraVideoCompositor+Spotlight.swift"; sourceTree = "<group>"; };
 		FB10000000000000000000B2 /* LenientCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LenientCodable.swift; sourceTree = "<group>"; };
+		FB10000000000000000000C1 /* EditorState+SpotlightRegions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorState+SpotlightRegions.swift"; sourceTree = "<group>"; };
+		FB10000000000000000000C2 /* TimelineView+SpotlightTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineView+SpotlightTrack.swift"; sourceTree = "<group>"; };
+		FB10000000000000000000C3 /* SpotlightRegionEditPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightRegionEditPopover.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -700,6 +706,9 @@
 			FB10000000000000000000A1 /* SpotlightOverlayLayer.swift */,
 			FB10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift */,
 			FB10000000000000000000A7 /* ClickSoundPlayer.swift */,
+			FB10000000000000000000C1 /* EditorState+SpotlightRegions.swift */,
+			FB10000000000000000000C2 /* TimelineView+SpotlightTrack.swift */,
+			FB10000000000000000000C3 /* SpotlightRegionEditPopover.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -1000,6 +1009,9 @@
 				FA10000000000000000000D1 /* ClickSoundData.swift in Sources */,
 				FA10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift in Sources */,
 				FA10000000000000000000B2 /* LenientCodable.swift in Sources */,
+				FA10000000000000000000C1 /* EditorState+SpotlightRegions.swift in Sources */,
+				FA10000000000000000000C2 /* TimelineView+SpotlightTrack.swift in Sources */,
+				FA10000000000000000000C3 /* SpotlightRegionEditPopover.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

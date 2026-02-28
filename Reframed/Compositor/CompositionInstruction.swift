@@ -86,7 +86,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
   let captionPosition: CaptionPosition
   let captionMaxWordsPerLine: Int
 
-  let spotlightEnabled: Bool
+  let spotlightRegions: [SpotlightRegionData]
   let spotlightRadius: CGFloat
   let spotlightDimOpacity: CGFloat
   let spotlightEdgeSoftness: CGFloat
@@ -144,7 +144,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     captionShowBackground: Bool = true,
     captionPosition: CaptionPosition = .bottom,
     captionMaxWordsPerLine: Int = 6,
-    spotlightEnabled: Bool = false,
+    spotlightRegions: [SpotlightRegionData] = [],
     spotlightRadius: CGFloat = 200,
     spotlightDimOpacity: CGFloat = 0.6,
     spotlightEdgeSoftness: CGFloat = 50
@@ -201,7 +201,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     self.captionShowBackground = captionShowBackground
     self.captionPosition = captionPosition
     self.captionMaxWordsPerLine = captionMaxWordsPerLine
-    self.spotlightEnabled = spotlightEnabled
+    self.spotlightRegions = spotlightRegions
     self.spotlightRadius = spotlightRadius
     self.spotlightDimOpacity = spotlightDimOpacity
     self.spotlightEdgeSoftness = spotlightEdgeSoftness
@@ -211,5 +211,45 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     }
     self.requiredSourceTrackIDs = trackIDs
     super.init()
+  }
+
+  func isSpotlightActive(at metadataTime: Double) -> Bool {
+    if spotlightRegions.isEmpty { return false }
+    return spotlightRegions.contains { metadataTime >= $0.startSeconds && metadataTime <= $0.endSeconds }
+  }
+
+  func effectiveSpotlightSettings(
+    at metadataTime: Double
+  ) -> (
+    radius: CGFloat, dimOpacity: CGFloat, edgeSoftness: CGFloat, fadeFactor: CGFloat
+  ) {
+    if let region = spotlightRegions.first(where: {
+      metadataTime >= $0.startSeconds && metadataTime <= $0.endSeconds
+    }) {
+      let fade = region.fadeDuration ?? 0
+      var factor: CGFloat = 1.0
+      if fade > 0 {
+        let elapsed = metadataTime - region.startSeconds
+        let remaining = region.endSeconds - metadataTime
+        if elapsed < fade {
+          factor = min(1.0, CGFloat(elapsed / fade))
+        }
+        if remaining < fade {
+          factor = min(factor, CGFloat(remaining / fade))
+        }
+      }
+      return (
+        radius: region.customRadius ?? spotlightRadius,
+        dimOpacity: region.customDimOpacity ?? spotlightDimOpacity,
+        edgeSoftness: region.customEdgeSoftness ?? spotlightEdgeSoftness,
+        fadeFactor: factor
+      )
+    }
+    return (
+      radius: spotlightRadius,
+      dimOpacity: spotlightDimOpacity,
+      edgeSoftness: spotlightEdgeSoftness,
+      fadeFactor: 1.0
+    )
   }
 }

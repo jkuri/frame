@@ -75,11 +75,13 @@ extension CameraVideoCompositor {
     }
     context.restoreGState()
 
-    if instruction.spotlightEnabled, instruction.cursorSnapshot != nil {
+    let compositionSeconds = CMTimeGetSeconds(compositionTime)
+    if instruction.isSpotlightActive(at: compositionSeconds), instruction.cursorSnapshot != nil {
       drawSpotlightOverlay(
         in: context,
         videoRect: videoRect,
         instruction: instruction,
+        compositionSeconds: compositionSeconds,
         metadataTime: metadataTime,
         zoomRect: zoomRect,
         outputHeight: outputHeight
