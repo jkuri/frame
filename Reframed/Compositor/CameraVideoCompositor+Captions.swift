@@ -11,11 +11,12 @@ extension CameraVideoCompositor {
   ) {
     guard instruction.captionsEnabled, !instruction.captionSegments.isEmpty else { return }
 
-    let time = CMTimeGetSeconds(compositionTime)
+    let time = CMTimeGetSeconds(compositionTime) + instruction.trimStartSeconds
     guard
-      let segment = instruction.captionSegments.first(where: {
-        time >= $0.startSeconds && time < $0.endSeconds
-      })
+      let segment = captionSegmentAt(
+        time: time,
+        in: instruction.captionSegments
+      )
     else { return }
 
     let displayText = visibleText(
@@ -131,6 +132,30 @@ extension CameraVideoCompositor {
     context.textMatrix = .identity
     CTFrameDraw(frame, context)
     context.restoreGState()
+  }
+
+  static func captionSegmentAt(
+    time: Double,
+    in segments: [CaptionSegment]
+  ) -> CaptionSegment? {
+    if let segment = segments.first(where: {
+      time >= $0.startSeconds && time < $0.endSeconds
+    }) {
+      return segment
+    }
+
+    let maxLinger = 1.5
+    guard
+      let previous = segments.last(where: { $0.endSeconds <= time }),
+      time - previous.endSeconds < maxLinger
+    else { return nil }
+
+    let nextStart = segments.first(where: { $0.startSeconds > time })?.startSeconds
+    if let nextStart, time >= nextStart {
+      return nil
+    }
+
+    return previous
   }
 
   private static func visibleText(

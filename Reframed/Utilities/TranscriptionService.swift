@@ -112,31 +112,43 @@ enum TranscriptionService {
     guard segments.count > 1 else { return segments }
 
     let minWordCount = 4
-    let maxGap = 2.0
+    let maxMergedWordCount = 16
+    let maxGap = 1.5
 
     var merged: [CaptionSegment] = []
     for segment in segments {
-      let wordCount = segment.text.split(separator: " ").count
-      if wordCount < minWordCount,
-        let last = merged.last,
-        segment.startSeconds - last.endSeconds < maxGap
-      {
-        let combinedText = last.text + " " + segment.text
-        let combinedWords: [CaptionWord]? = {
-          guard let lw = last.words, let sw = segment.words else { return last.words ?? segment.words }
-          return lw + sw
-        }()
-        merged[merged.count - 1] = CaptionSegment(
-          id: last.id,
-          startSeconds: last.startSeconds,
-          endSeconds: segment.endSeconds,
-          text: combinedText,
-          words: combinedWords
-        )
+      let currentWordCount = segment.text.split(separator: " ").count
+
+      if let lastIdx = merged.indices.last {
+        let last = merged[lastIdx]
+        let lastWordCount = last.text.split(separator: " ").count
+        let gap = segment.startSeconds - last.endSeconds
+        let canMerge =
+          gap < maxGap && (lastWordCount + currentWordCount) <= maxMergedWordCount
+
+        if canMerge && (currentWordCount < minWordCount || lastWordCount < minWordCount) {
+          let combinedText = last.text + " " + segment.text
+          let combinedWords: [CaptionWord]? = {
+            guard let lw = last.words, let sw = segment.words else {
+              return last.words ?? segment.words
+            }
+            return lw + sw
+          }()
+          merged[lastIdx] = CaptionSegment(
+            id: last.id,
+            startSeconds: last.startSeconds,
+            endSeconds: segment.endSeconds,
+            text: combinedText,
+            words: combinedWords
+          )
+        } else {
+          merged.append(segment)
+        }
       } else {
         merged.append(segment)
       }
     }
+
     return merged
   }
 
