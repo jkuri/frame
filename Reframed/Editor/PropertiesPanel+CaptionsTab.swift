@@ -18,48 +18,27 @@ extension PropertiesPanel {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
       SectionHeader(icon: "waveform", title: "Generate")
 
-      HStack(spacing: 8) {
+      VStack(alignment: .leading, spacing: Layout.compactSpacing) {
         Text("Model")
           .font(.system(size: 12))
           .foregroundStyle(ReframedColors.secondaryText)
-          .frame(width: captionLabelWidth, alignment: .leading)
-        SelectButton(label: selectedModelLabel) { dismiss in
-          VStack(spacing: 2) {
-            ForEach(WhisperModel.allCases) { model in
-              let downloaded = WhisperModelManager.shared.isDownloaded(model)
-              Button {
-                editorState.captionModel = model.rawValue
-                dismiss()
-              } label: {
-                HStack {
-                  Text(model.label)
-                    .font(.system(size: 12))
-                  Spacer()
-                  if editorState.captionModel == model.rawValue {
-                    Image(systemName: "checkmark")
-                      .font(.system(size: 10, weight: .semibold))
-                  } else if !downloaded {
-                    Image(systemName: "arrow.down.circle")
-                      .font(.system(size: 10))
-                      .foregroundStyle(ReframedColors.dimLabel)
-                  }
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .contentShape(Rectangle())
-              }
-              .buttonStyle(.plain)
-            }
-          }
-          .padding(4)
-          .frame(width: 220)
-        }
+        SegmentPicker(
+          items: WhisperModel.allCases,
+          label: { $0.shortLabel },
+          selection: Binding(
+            get: { WhisperModel(rawValue: editorState.captionModel) ?? .base },
+            set: { editorState.captionModel = $0.rawValue }
+          )
+        )
       }
 
       if let model = WhisperModel(rawValue: editorState.captionModel) {
         Text(model.description)
           .font(.system(size: 11))
           .foregroundStyle(ReframedColors.dimLabel)
+          .lineLimit(2)
+          .fixedSize(horizontal: false, vertical: true)
+          .frame(minHeight: 28, alignment: .top)
       }
 
       HStack(spacing: 8) {
@@ -142,10 +121,6 @@ extension PropertiesPanel {
         }
       }
     }
-  }
-
-  private var selectedModelLabel: String {
-    WhisperModel(rawValue: editorState.captionModel)?.shortLabel ?? "Base"
   }
 
   private var transcriptionStatusText: String {

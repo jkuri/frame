@@ -29,10 +29,10 @@ enum WhisperModel: String, CaseIterable, Identifiable, Sendable {
 
   var description: String {
     switch self {
-    case .base: "Fast, lower accuracy. Good for clear English audio."
-    case .small: "Balanced speed and accuracy. Good for most use cases."
-    case .medium: "High accuracy, slower. Recommended for multilingual."
-    case .large: "Best accuracy, slowest. Best for difficult audio."
+    case .base: "~140 MB. Fast, lower accuracy. Good for clear English audio."
+    case .small: "~460 MB. Balanced speed and accuracy. Good for most use cases."
+    case .medium: "~1.5 GB. High accuracy, slower. Recommended for multilingual."
+    case .large: "~3 GB. Best accuracy, slowest. Best for difficult audio."
     }
   }
 }
