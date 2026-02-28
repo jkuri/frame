@@ -43,7 +43,12 @@ enum TranscriptionService {
 
     let workerCount = max(16, ProcessInfo.processInfo.activeProcessorCount)
     var options = DecodingOptions(
+      temperatureFallbackCount: 2,
+      skipSpecialTokens: true,
       wordTimestamps: true,
+      compressionRatioThreshold: 2.8,
+      logProbThreshold: -1.5,
+      noSpeechThreshold: 0.5,
       concurrentWorkerCount: workerCount,
       chunkingStrategy: .vad
     )
