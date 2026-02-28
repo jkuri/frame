@@ -57,11 +57,13 @@ struct TimelineView: View {
   @State var popoverSpotlightRegionId: UUID?
 
   private var showSystemAudioTrack: Bool {
-    !systemAudioSamples.isEmpty || editorState.hasSystemAudio
+    !editorState.systemAudioMuted
+      && (!systemAudioSamples.isEmpty || editorState.hasSystemAudio)
   }
 
   private var showMicAudioTrack: Bool {
-    (!micAudioSamples.isEmpty && !editorState.isMicProcessing) || editorState.hasMicAudio
+    !editorState.micAudioMuted
+      && ((!micAudioSamples.isEmpty && !editorState.isMicProcessing) || editorState.hasMicAudio)
   }
 
   private var showSpotlightTrack: Bool {
@@ -70,7 +72,7 @@ struct TimelineView: View {
 
   private var visibleTrackCount: Int {
     var count = 1
-    if editorState.hasWebcam { count += 1 }
+    if editorState.hasWebcam && editorState.webcamEnabled { count += 1 }
     if showSystemAudioTrack { count += 1 }
     if showMicAudioTrack { count += 1 }
     if editorState.zoomEnabled { count += 1 }
@@ -92,7 +94,7 @@ struct TimelineView: View {
           trackSidebar(label: "Screen", icon: "display")
             .frame(height: trackHeight)
 
-          if editorState.hasWebcam {
+          if editorState.hasWebcam && editorState.webcamEnabled {
             trackSidebar(label: "Camera", icon: "web.camera")
               .frame(height: trackHeight)
           }
@@ -133,35 +135,39 @@ struct TimelineView: View {
               VStack(spacing: 10) {
                 screenTrackContent(width: cw)
 
-                if editorState.hasWebcam {
+                if editorState.hasWebcam && editorState.webcamEnabled {
                   cameraTrackContent(width: cw)
                 }
 
-                if !systemAudioSamples.isEmpty {
-                  audioTrackContent(
-                    trackType: .system,
-                    samples: systemAudioSamples,
-                    width: cw
-                  )
-                } else if editorState.hasSystemAudio {
-                  audioLoadingContent(
-                    progress: systemAudioProgress ?? 0,
-                    width: cw
-                  )
+                if showSystemAudioTrack {
+                  if !systemAudioSamples.isEmpty {
+                    audioTrackContent(
+                      trackType: .system,
+                      samples: systemAudioSamples,
+                      width: cw
+                    )
+                  } else {
+                    audioLoadingContent(
+                      progress: systemAudioProgress ?? 0,
+                      width: cw
+                    )
+                  }
                 }
 
-                if !micAudioSamples.isEmpty && !editorState.isMicProcessing {
-                  audioTrackContent(
-                    trackType: .mic,
-                    samples: micAudioSamples,
-                    width: cw
-                  )
-                } else if editorState.hasMicAudio {
-                  audioLoadingContent(
-                    progress: micAudioProgress ?? 0,
-                    message: micAudioMessage,
-                    width: cw
-                  )
+                if showMicAudioTrack {
+                  if !micAudioSamples.isEmpty && !editorState.isMicProcessing {
+                    audioTrackContent(
+                      trackType: .mic,
+                      samples: micAudioSamples,
+                      width: cw
+                    )
+                  } else {
+                    audioLoadingContent(
+                      progress: micAudioProgress ?? 0,
+                      message: micAudioMessage,
+                      width: cw
+                    )
+                  }
                 }
 
                 if editorState.zoomEnabled {
