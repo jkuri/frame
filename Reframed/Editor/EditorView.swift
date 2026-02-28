@@ -423,7 +423,7 @@ struct EditorView: View {
 
   private func regenerateMicWaveform() {
     let url = editorState.processedMicAudioURL ?? editorState.result.microphoneAudioURL
-    guard let url else { return }
+    guard let url, FileManager.default.fileExists(atPath: url.path) else { return }
     micWaveformTask?.cancel()
     micWaveformTask = Task {
       guard !Task.isCancelled else { return }

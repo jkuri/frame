@@ -5,6 +5,10 @@ extension EditorState {
   func deleteRecording() {
     pendingSaveTask?.cancel()
     pendingSaveTask = nil
+    micProcessingTask?.cancel()
+    micProcessingTask = nil
+    transcriptionTask?.cancel()
+    transcriptionTask = nil
     if let project {
       self.project = nil
       try? project.delete()
