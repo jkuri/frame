@@ -4,7 +4,7 @@ import Logging
 extension EditorState {
   var captionAudioURL: URL? {
     switch captionAudioSource {
-    case .microphone: result.microphoneAudioURL
+    case .microphone: processedMicAudioURL ?? result.microphoneAudioURL
     case .system: result.systemAudioURL
     }
   }
