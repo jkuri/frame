@@ -75,6 +75,17 @@ extension CameraVideoCompositor {
     }
     context.restoreGState()
 
+    if instruction.spotlightEnabled, instruction.cursorSnapshot != nil {
+      drawSpotlightOverlay(
+        in: context,
+        videoRect: videoRect,
+        instruction: instruction,
+        metadataTime: metadataTime,
+        zoomRect: zoomRect,
+        outputHeight: outputHeight
+      )
+    }
+
     if instruction.showCursor, instruction.cursorSnapshot != nil {
       drawCursorOverlay(
         in: context,

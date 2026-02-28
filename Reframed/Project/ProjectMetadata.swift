@@ -26,6 +26,13 @@ struct CursorSettingsData: Codable, Sendable, Equatable {
   var showClickHighlights: Bool = true
   var clickHighlightColor: CodableColor? = nil
   var clickHighlightSize: CGFloat = 36
+  var spotlightEnabled: Bool = false
+  var spotlightRadius: CGFloat = 200
+  var spotlightDimOpacity: CGFloat = 0.6
+  var spotlightEdgeSoftness: CGFloat = 50
+  var clickSoundEnabled: Bool = false
+  var clickSoundVolume: Float = 0.5
+  var clickSoundStyleRaw: Int = 0
 }
 
 struct ZoomSettingsData: Codable, Sendable, Equatable {
@@ -368,5 +375,103 @@ struct CodableSize: Codable, Sendable {
 
   var cgSize: CGSize {
     CGSize(width: width, height: height)
+  }
+}
+
+// MARK: - Lenient Decoders
+// Moving init(from:) into extensions preserves the auto-generated memberwise init.
+// Use `c.decodeOrDefault( .key,value)` from LenientCodable.swift for fields that
+// may be missing from older project.json files. To add a new field with a default,
+// just add the property above and a decode line below.
+
+extension ProjectMetadata {
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    version = try c.decodeOrDefault(.version, 1)
+    name = try c.decodeIfPresent(String.self, forKey: .name)
+    createdAt = try c.decode(Date.self, forKey: .createdAt)
+    fps = try c.decode(Int.self, forKey: .fps)
+    screenSize = try c.decode(CodableSize.self, forKey: .screenSize)
+    webcamSize = try c.decodeIfPresent(CodableSize.self, forKey: .webcamSize)
+    hasSystemAudio = try c.decode(Bool.self, forKey: .hasSystemAudio)
+    hasMicrophoneAudio = try c.decode(Bool.self, forKey: .hasMicrophoneAudio)
+    hasCursorMetadata = try c.decodeOrDefault(.hasCursorMetadata, false)
+    hasWebcam = try c.decodeOrDefault(.hasWebcam, false)
+    captureMode = try c.decodeIfPresent(CaptureMode.self, forKey: .captureMode)
+    captureQuality = try c.decodeIfPresent(String.self, forKey: .captureQuality)
+    editorState = try c.decodeIfPresent(EditorStateData.self, forKey: .editorState)
+  }
+}
+
+extension CursorSettingsData {
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    showCursor = try c.decode(Bool.self, forKey: .showCursor)
+    cursorStyleRaw = try c.decode(Int.self, forKey: .cursorStyleRaw)
+    cursorSize = try c.decode(CGFloat.self, forKey: .cursorSize)
+    cursorFillColor = try c.decodeIfPresent(CodableColor.self, forKey: .cursorFillColor)
+    cursorStrokeColor = try c.decodeIfPresent(CodableColor.self, forKey: .cursorStrokeColor)
+    showClickHighlights = try c.decodeOrDefault(.showClickHighlights, true)
+    clickHighlightColor = try c.decodeIfPresent(CodableColor.self, forKey: .clickHighlightColor)
+    clickHighlightSize = try c.decodeOrDefault(.clickHighlightSize, 36)
+    spotlightEnabled = try c.decodeOrDefault(.spotlightEnabled, false)
+    spotlightRadius = try c.decodeOrDefault(.spotlightRadius, 200)
+    spotlightDimOpacity = try c.decodeOrDefault(.spotlightDimOpacity, 0.6)
+    spotlightEdgeSoftness = try c.decodeOrDefault(.spotlightEdgeSoftness, 50)
+    clickSoundEnabled = try c.decodeOrDefault(.clickSoundEnabled, false)
+    clickSoundVolume = try c.decodeOrDefault(.clickSoundVolume, 0.5)
+    clickSoundStyleRaw = try c.decodeOrDefault(.clickSoundStyleRaw, 0)
+  }
+}
+
+extension ZoomSettingsData {
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    zoomEnabled = try c.decodeOrDefault(.zoomEnabled, false)
+    autoZoomEnabled = try c.decode(Bool.self, forKey: .autoZoomEnabled)
+    zoomFollowCursor = try c.decodeOrDefault(.zoomFollowCursor, true)
+    zoomLevel = try c.decode(Double.self, forKey: .zoomLevel)
+    transitionDuration = try c.decode(Double.self, forKey: .transitionDuration)
+    dwellThreshold = try c.decode(Double.self, forKey: .dwellThreshold)
+    keyframes = try c.decode([ZoomKeyframe].self, forKey: .keyframes)
+  }
+}
+
+extension AnimationSettingsData {
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    cursorMovementEnabled = try c.decodeOrDefault(.cursorMovementEnabled, false)
+    cursorMovementSpeed = try c.decodeOrDefault(.cursorMovementSpeed, .medium)
+  }
+}
+
+extension AudioSettingsData {
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    systemAudioVolume = try c.decodeOrDefault(.systemAudioVolume, 1.0)
+    micAudioVolume = try c.decodeOrDefault(.micAudioVolume, 1.0)
+    systemAudioMuted = try c.decodeOrDefault(.systemAudioMuted, false)
+    micAudioMuted = try c.decodeOrDefault(.micAudioMuted, false)
+    micNoiseReductionEnabled = try c.decodeOrDefault(.micNoiseReductionEnabled, false)
+    micNoiseReductionIntensity = try c.decodeOrDefault(.micNoiseReductionIntensity, 0.5)
+    cachedNoiseReductionIntensity = try c.decodeIfPresent(Float.self, forKey: .cachedNoiseReductionIntensity)
+  }
+}
+
+extension CaptionSettingsData {
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    enabled = try c.decodeOrDefault(.enabled, true)
+    fontSize = try c.decodeOrDefault(.fontSize, 48)
+    fontWeight = try c.decodeOrDefault(.fontWeight, .bold)
+    textColor = try c.decodeOrDefault(.textColor, CodableColor(r: 1, g: 1, b: 1))
+    backgroundColor = try c.decodeOrDefault(.backgroundColor, CodableColor(r: 0, g: 0, b: 0, a: 1.0))
+    backgroundOpacity = try c.decodeOrDefault(.backgroundOpacity, 0.6)
+    showBackground = try c.decodeOrDefault(.showBackground, true)
+    position = try c.decodeOrDefault(.position, .bottom)
+    maxWordsPerLine = try c.decodeOrDefault(.maxWordsPerLine, 6)
+    model = try c.decodeOrDefault(.model, "openai_whisper-base")
+    language = try c.decodeOrDefault(.language, .auto)
+    audioSource = try c.decodeOrDefault(.audioSource, .microphone)
   }
 }

@@ -63,6 +63,13 @@ final class CursorMetadataProvider: @unchecked Sendable {
     cursorActiveClicks(clicks: metadata.clicks, at: time, within: duration)
   }
 
+  func clickEvents(from startTime: Double, to endTime: Double) -> [(time: Double, button: Int)] {
+    metadata.clicks.compactMap { click in
+      guard click.t > startTime, click.t <= endTime else { return nil }
+      return (time: click.t, button: click.button)
+    }
+  }
+
   func makeSnapshot() -> CursorMetadataSnapshot {
     CursorMetadataSnapshot(
       samples: metadata.samples,

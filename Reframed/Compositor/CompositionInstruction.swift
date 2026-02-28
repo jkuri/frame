@@ -86,6 +86,11 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
   let captionPosition: CaptionPosition
   let captionMaxWordsPerLine: Int
 
+  let spotlightEnabled: Bool
+  let spotlightRadius: CGFloat
+  let spotlightDimOpacity: CGFloat
+  let spotlightEdgeSoftness: CGFloat
+
   init(
     timeRange: CMTimeRange,
     screenTrackID: CMPersistentTrackID,
@@ -138,7 +143,11 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     captionBackgroundOpacity: CGFloat = 0.6,
     captionShowBackground: Bool = true,
     captionPosition: CaptionPosition = .bottom,
-    captionMaxWordsPerLine: Int = 6
+    captionMaxWordsPerLine: Int = 6,
+    spotlightEnabled: Bool = false,
+    spotlightRadius: CGFloat = 200,
+    spotlightDimOpacity: CGFloat = 0.6,
+    spotlightEdgeSoftness: CGFloat = 50
   ) {
     self.timeRange = timeRange
     self.screenTrackID = screenTrackID
@@ -192,7 +201,10 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     self.captionShowBackground = captionShowBackground
     self.captionPosition = captionPosition
     self.captionMaxWordsPerLine = captionMaxWordsPerLine
-
+    self.spotlightEnabled = spotlightEnabled
+    self.spotlightRadius = spotlightRadius
+    self.spotlightDimOpacity = spotlightDimOpacity
+    self.spotlightEdgeSoftness = spotlightEdgeSoftness
     var trackIDs: [NSValue] = [NSNumber(value: screenTrackID)]
     if let wid = webcamTrackID {
       trackIDs.append(NSNumber(value: wid))

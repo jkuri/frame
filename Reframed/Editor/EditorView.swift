@@ -2,7 +2,7 @@ import CoreMedia
 import SwiftUI
 
 enum EditorTab: String, CaseIterable, Identifiable {
-  case general, video, camera, audio, cursor, zoom, captions
+  case general, video, camera, audio, cursor, zoom, effects, captions
 
   var id: String { rawValue }
 
@@ -14,6 +14,7 @@ enum EditorTab: String, CaseIterable, Identifiable {
     case .audio: "Audio"
     case .cursor: "Cursor"
     case .zoom: "Zoom"
+    case .effects: "Effects"
     case .captions: "Captions"
     }
   }
@@ -26,6 +27,7 @@ enum EditorTab: String, CaseIterable, Identifiable {
     case .audio: "speaker.wave.2"
     case .cursor: "cursorarrow"
     case .zoom: "plus.magnifyingglass"
+    case .effects: "wand.and.stars"
     case .captions: "captions.bubble"
     }
   }
@@ -322,6 +324,16 @@ struct EditorView: View {
             )
           },
           isPreviewMode: editorState.isPreviewMode,
+          isPlaying: editorState.isPlaying,
+          clickSoundEnabled: editorState.clickSoundEnabled && editorState.showCursor
+            && editorState.cursorMetadataProvider != nil,
+          clickSoundVolume: editorState.clickSoundVolume,
+          clickSoundStyle: editorState.clickSoundStyle,
+          spotlightEnabled: editorState.spotlightEnabled && editorState.showCursor
+            && editorState.cursorMetadataProvider != nil,
+          spotlightRadius: editorState.spotlightRadius,
+          spotlightDimOpacity: editorState.spotlightDimOpacity,
+          spotlightEdgeSoftness: editorState.spotlightEdgeSoftness,
           cameraBackgroundStyle: editorState.webcamEnabled ? editorState.cameraBackgroundStyle : .none,
           cameraBackgroundImage: editorState.cameraBackgroundImage
         )

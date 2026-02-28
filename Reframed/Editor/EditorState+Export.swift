@@ -184,6 +184,13 @@ extension EditorState {
       captionShowBackground: captionShowBackground,
       captionPosition: captionPosition,
       captionMaxWordsPerLine: captionMaxWordsPerLine,
+      spotlightEnabled: spotlightEnabled && showCursor,
+      spotlightRadius: spotlightRadius,
+      spotlightDimOpacity: spotlightDimOpacity,
+      spotlightEdgeSoftness: spotlightEdgeSoftness,
+      clickSoundEnabled: clickSoundEnabled && showCursor,
+      clickSoundVolume: clickSoundVolume,
+      clickSoundStyle: clickSoundStyle,
       progressHandler: { progress, eta in
         state.exportProgress = progress
         state.exportETA = eta
