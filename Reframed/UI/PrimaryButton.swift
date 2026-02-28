@@ -110,7 +110,7 @@ struct OutlineButtonStyle: ButtonStyle {
       .clipShape(RoundedRectangle(cornerRadius: size.cornerRadius))
       .overlay(
         RoundedRectangle(cornerRadius: size.cornerRadius)
-          .stroke(ReframedColors.border, lineWidth: 1)
+          .strokeBorder(ReframedColors.border, lineWidth: 1)
       )
       .opacity(isEnabled ? 1.0 : 0.4)
       .hoverEffect(hoverColor: ReframedColors.accent)

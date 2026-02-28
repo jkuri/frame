@@ -24,7 +24,14 @@ extension EditorState {
         cursorStrokeColor: cursorStrokeColor,
         showClickHighlights: showClickHighlights,
         clickHighlightColor: clickHighlightColor,
-        clickHighlightSize: clickHighlightSize
+        clickHighlightSize: clickHighlightSize,
+        spotlightEnabled: spotlightEnabled,
+        spotlightRadius: spotlightRadius,
+        spotlightDimOpacity: spotlightDimOpacity,
+        spotlightEdgeSoftness: spotlightEdgeSoftness,
+        clickSoundEnabled: clickSoundEnabled,
+        clickSoundVolume: clickSoundVolume,
+        clickSoundStyleRaw: clickSoundStyle.rawValue
       )
     }
     var zoomSettings: ZoomSettingsData?
@@ -153,6 +160,13 @@ extension EditorState {
         clickHighlightColor = savedColor
       }
       clickHighlightSize = cursorSettings.clickHighlightSize
+      spotlightEnabled = cursorSettings.spotlightEnabled
+      spotlightRadius = cursorSettings.spotlightRadius
+      spotlightDimOpacity = cursorSettings.spotlightDimOpacity
+      spotlightEdgeSoftness = cursorSettings.spotlightEdgeSoftness
+      clickSoundEnabled = cursorSettings.clickSoundEnabled
+      clickSoundVolume = cursorSettings.clickSoundVolume
+      clickSoundStyle = ClickSoundStyle(rawValue: cursorSettings.clickSoundStyleRaw) ?? .click001
     }
 
     if let zoomSettings = data.zoomSettings {
@@ -193,7 +207,6 @@ extension EditorState {
       let dur = CMTimeGetSeconds(duration)
       videoRegions = [VideoRegionData(startSeconds: 0, endSeconds: dur)]
     }
-
     if let audioSettings = data.audioSettings {
       systemAudioVolume = audioSettings.systemAudioVolume
       micAudioVolume = audioSettings.micAudioVolume
@@ -343,6 +356,13 @@ extension EditorState {
       _ = self.showClickHighlights
       _ = self.clickHighlightColor
       _ = self.clickHighlightSize
+      _ = self.spotlightEnabled
+      _ = self.spotlightRadius
+      _ = self.spotlightDimOpacity
+      _ = self.spotlightEdgeSoftness
+      _ = self.clickSoundEnabled
+      _ = self.clickSoundVolume
+      _ = self.clickSoundStyle
       _ = self.zoomEnabled
       _ = self.autoZoomEnabled
       _ = self.zoomFollowCursor

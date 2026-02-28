@@ -58,6 +58,14 @@ struct VideoPreviewView: NSViewRepresentable {
       exitTransition: RegionTransitionType, exitDuration: Double
     )] = []
   var isPreviewMode: Bool = false
+  var isPlaying: Bool = false
+  var clickSoundEnabled: Bool = false
+  var clickSoundVolume: Float = 0.5
+  var clickSoundStyle: ClickSoundStyle = .click001
+  var spotlightEnabled: Bool = false
+  var spotlightRadius: CGFloat = 200
+  var spotlightDimOpacity: CGFloat = 0.6
+  var spotlightEdgeSoftness: CGFloat = 50
   var cameraBackgroundStyle: CameraBackgroundStyle = .none
   var cameraBackgroundImage: NSImage?
 
@@ -262,6 +270,14 @@ struct VideoPreviewView: NSViewRepresentable {
         cursorFillColor: cursorFillColor,
         cursorStrokeColor: cursorStrokeColor
       )
+
+      nsView.updateSpotlightOverlay(
+        normalizedPosition: pos,
+        radius: spotlightRadius,
+        dimOpacity: spotlightDimOpacity,
+        edgeSoftness: spotlightEdgeSoftness,
+        visible: spotlightEnabled
+      )
     } else {
       nsView.updateCursorOverlay(
         normalizedPosition: .zero,
@@ -270,6 +286,39 @@ struct VideoPreviewView: NSViewRepresentable {
         visible: false,
         clicks: []
       )
+      nsView.updateSpotlightOverlay(
+        normalizedPosition: .zero,
+        radius: 0,
+        dimOpacity: 0,
+        edgeSoftness: 0,
+        visible: false
+      )
+    }
+
+    if clickSoundEnabled, isPlaying, let provider = cursorMetadataProvider {
+      let coord = context.coordinator
+      if coord.clickSoundPlayer == nil {
+        coord.clickSoundPlayer = ClickSoundPlayer()
+      }
+      let player = coord.clickSoundPlayer!
+      if !player.isSetup {
+        player.setup()
+      }
+      player.updateStyle(clickSoundStyle, volume: clickSoundVolume)
+      let lastTime = coord.lastProcessedTime
+      if currentTime < lastTime - 0.1 {
+        player.reset()
+      }
+      if lastTime >= 0, currentTime > lastTime {
+        let clicks = provider.clickEvents(from: lastTime, to: currentTime)
+        for click in clicks {
+          player.playClick(at: click.time, button: click.button, volume: clickSoundVolume)
+        }
+      }
+      coord.lastProcessedTime = currentTime
+    } else {
+      context.coordinator.clickSoundPlayer?.reset()
+      context.coordinator.lastProcessedTime = -1
     }
   }
 
@@ -285,12 +334,23 @@ struct VideoPreviewView: NSViewRepresentable {
     var isDragging = false
     var dragStart: CGPoint = .zero
     var startLayout: CameraLayout = CameraLayout()
+    var lastProcessedTime: Double = -1
+    var clickSoundPlayer: ClickSoundPlayer?
 
     init(cameraLayout: Binding<CameraLayout>, screenSize: CGSize, canvasSize: CGSize, webcamSize: CGSize?) {
       self.cameraLayout = cameraLayout
       self.screenSize = screenSize
       self.canvasSize = canvasSize
       self.webcamSize = webcamSize
+    }
+
+    deinit {
+      let player = clickSoundPlayer
+      if player != nil {
+        Task { @MainActor in
+          player?.teardown()
+        }
+      }
     }
   }
 }
@@ -301,6 +361,7 @@ final class VideoPreviewContainer: NSView {
   let webcamWrapper = NSView()
   let webcamView = WebcamCameraView()
   let cursorOverlay = CursorOverlayLayer()
+  let spotlightOverlay = SpotlightOverlayLayer()
   let screenContainerLayer = CALayer()
   var coordinator: VideoPreviewView.Coordinator?
   var isCameraHidden = false
@@ -339,6 +400,11 @@ final class VideoPreviewContainer: NSView {
   var lastClickHighlightSize: CGFloat = 36
   var lastCursorFillColor: CodableColor = CodableColor(r: 1, g: 1, b: 1)
   var lastCursorStrokeColor: CodableColor = CodableColor(r: 0, g: 0, b: 0)
+  var lastSpotlightNormalizedPosition: CGPoint = .zero
+  var lastSpotlightRadius: CGFloat = 200
+  var lastSpotlightDimOpacity: CGFloat = 0.6
+  var lastSpotlightEdgeSoftness: CGFloat = 50
+  var lastSpotlightVisible = false
   var currentCameraBackgroundStyle: CameraBackgroundStyle = .none
   var currentCameraBackgroundImage: NSImage?
   var webcamOutput: AVPlayerItemVideoOutput?
@@ -347,7 +413,6 @@ final class VideoPreviewContainer: NSView {
   private let segmentationQueue = DispatchQueue(label: "eu.jkuri.reframed.segmentation", qos: .userInteractive)
   private var isProcessingWebcamFrame = false
   var lastProcessedWebcamTime: Double = -1
-
   override init(frame: NSRect) {
     super.init(frame: frame)
     wantsLayer = true
@@ -364,6 +429,9 @@ final class VideoPreviewContainer: NSView {
 
     screenPlayerLayer.videoGravity = .resizeAspectFill
     screenContainerLayer.addSublayer(screenPlayerLayer)
+
+    spotlightOverlay.zPosition = 8
+    screenContainerLayer.addSublayer(spotlightOverlay)
 
     cursorOverlay.zPosition = 10
     screenContainerLayer.addSublayer(cursorOverlay)
@@ -396,6 +464,9 @@ final class VideoPreviewContainer: NSView {
     layoutAll()
     if lastCursorVisible {
       applyCursorOverlay()
+    }
+    if lastSpotlightVisible {
+      applySpotlightOverlay()
     }
   }
 }

@@ -271,7 +271,7 @@ final class History {
           "Click sound volume set to \(Int($0 * 100))%"
         },
         sub(\.cursorSettings, \.clickSoundStyleRaw, default: 0) {
-          let style = ClickSoundStyle(rawValue: $0) ?? .click
+          let style = ClickSoundStyle(rawValue: $0) ?? .click001
           return "Click sound style set to \(style.label)"
         },
       ]

@@ -1,3 +1,4 @@
+import AVFoundation
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -48,6 +49,7 @@ struct PropertiesPanel: View {
   @State private var webcamInfo: MediaFileInfo?
   @State private var systemAudioInfo: MediaFileInfo?
   @State private var micAudioInfo: MediaFileInfo?
+  @State var clickSoundPreviewPlayer: AVAudioPlayer?
 
   var body: some View {
     let _ = colorScheme
@@ -71,6 +73,7 @@ struct PropertiesPanel: View {
           cameraFullscreenSection
         case .audio:
           audioSection
+          clickSoundSection
         case .cursor:
           cursorSection
           if editorState.showCursor {
@@ -79,6 +82,8 @@ struct PropertiesPanel: View {
           }
         case .zoom:
           zoomSection
+        case .effects:
+          spotlightSection
         case .captions:
           captionsSection
         }

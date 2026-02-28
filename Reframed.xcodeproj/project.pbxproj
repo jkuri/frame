@@ -61,6 +61,7 @@
 		A10000000000000000000038 /* SettingsDevicesTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000038 /* SettingsDevicesTab.swift */; };
 		A10000000000000000000039 /* CaptureToolbarComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000039 /* CaptureToolbarComponents.swift */; };
 		A1000000000000000000003A /* SliderRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003A /* SliderRow.swift */; };
+		FA10000000000000000000D2 /* Dropdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000D2 /* Dropdown.swift */; };
 		A1000000000000000000003B /* TailwindColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003B /* TailwindColorPicker.swift */; };
 		A1000000000000000000003D /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003D /* Constants.swift */; };
 		A1000000000000000000003E /* KeyboardShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003E /* KeyboardShortcut.swift */; };
@@ -110,6 +111,7 @@
 		A2000000000000000000001E /* PropertiesPanel+CameraTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000001E /* PropertiesPanel+CameraTab.swift */; };
 		A2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift */; };
 		A20000000000000000000021 /* PropertiesPanel+AudioTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000021 /* PropertiesPanel+AudioTab.swift */; };
+		FA20000000000000000000B1 /* PropertiesPanel+EffectsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB20000000000000000000B1 /* PropertiesPanel+EffectsTab.swift */; };
 		A20000000000000000000022 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000022 /* History.swift */; };
 		A20000000000000000000023 /* HistoryPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000023 /* HistoryPopover.swift */; };
 		A2000000000000000000002A /* EditorView+TransportBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002A /* EditorView+TransportBar.swift */; };
@@ -187,6 +189,13 @@
 		CA10000000000000000000A6 /* CaptionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A6 /* CaptionOverlayView.swift */; };
 		CA10000000000000000000A7 /* CaptionSegmentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A7 /* CaptionSegmentRow.swift */; };
 		CA10000000000000000000A8 /* CameraVideoCompositor+Captions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A8 /* CameraVideoCompositor+Captions.swift */; };
+		FA10000000000000000000A1 /* SpotlightOverlayLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A1 /* SpotlightOverlayLayer.swift */; };
+		FA10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift */; };
+		FA10000000000000000000A7 /* ClickSoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A7 /* ClickSoundPlayer.swift */; };
+		FA10000000000000000000A8 /* ClickSoundGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A8 /* ClickSoundGenerator.swift */; };
+		FA10000000000000000000D1 /* ClickSoundData.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000D1 /* ClickSoundData.swift */; };
+		FA10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift */; };
+		FA10000000000000000000B2 /* LenientCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000B2 /* LenientCodable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -245,6 +254,7 @@
 		B10000000000000000000038 /* SettingsDevicesTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDevicesTab.swift; sourceTree = "<group>"; };
 		B10000000000000000000039 /* CaptureToolbarComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbarComponents.swift; sourceTree = "<group>"; };
 		B1000000000000000000003A /* SliderRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderRow.swift; sourceTree = "<group>"; };
+		FB10000000000000000000D2 /* Dropdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dropdown.swift; sourceTree = "<group>"; };
 		B1000000000000000000003B /* TailwindColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailwindColorPicker.swift; sourceTree = "<group>"; };
 		B1000000000000000000003D /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		B1000000000000000000003E /* KeyboardShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcut.swift; sourceTree = "<group>"; };
@@ -294,6 +304,7 @@
 		B2000000000000000000001E /* PropertiesPanel+CameraTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+CameraTab.swift"; sourceTree = "<group>"; };
 		B2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+CursorZoomTab.swift"; sourceTree = "<group>"; };
 		B20000000000000000000021 /* PropertiesPanel+AudioTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+AudioTab.swift"; sourceTree = "<group>"; };
+		FB20000000000000000000B1 /* PropertiesPanel+EffectsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+EffectsTab.swift"; sourceTree = "<group>"; };
 		B20000000000000000000022 /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
 		B20000000000000000000023 /* HistoryPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryPopover.swift; sourceTree = "<group>"; };
 		B2000000000000000000002A /* EditorView+TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorView+TransportBar.swift"; sourceTree = "<group>"; };
@@ -370,6 +381,13 @@
 		CA20000000000000000000A6 /* CaptionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionOverlayView.swift; sourceTree = "<group>"; };
 		CA20000000000000000000A7 /* CaptionSegmentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionSegmentRow.swift; sourceTree = "<group>"; };
 		CA20000000000000000000A8 /* CameraVideoCompositor+Captions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraVideoCompositor+Captions.swift"; sourceTree = "<group>"; };
+		FB10000000000000000000A1 /* SpotlightOverlayLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightOverlayLayer.swift; sourceTree = "<group>"; };
+		FB10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoPreviewContainer+Spotlight.swift"; sourceTree = "<group>"; };
+		FB10000000000000000000A7 /* ClickSoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickSoundPlayer.swift; sourceTree = "<group>"; };
+		FB10000000000000000000A8 /* ClickSoundGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickSoundGenerator.swift; sourceTree = "<group>"; };
+		FB10000000000000000000D1 /* ClickSoundData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickSoundData.swift; sourceTree = "<group>"; };
+		FB10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraVideoCompositor+Spotlight.swift"; sourceTree = "<group>"; };
+		FB10000000000000000000B2 /* LenientCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LenientCodable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -499,6 +517,9 @@
 			CA20000000000000000000A1 /* WhisperModelManager.swift */,
 			CA20000000000000000000A2 /* TranscriptionService.swift */,
 			CA20000000000000000000A3 /* SubtitleExporter.swift */,
+			FB10000000000000000000A8 /* ClickSoundGenerator.swift */,
+				FB10000000000000000000D1 /* ClickSoundData.swift */,
+			FB10000000000000000000B2 /* LenientCodable.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -542,6 +563,7 @@
 				B10000000000000000000038 /* SettingsDevicesTab.swift */,
 				B10000000000000000000039 /* CaptureToolbarComponents.swift */,
 				B1000000000000000000003A /* SliderRow.swift */,
+				FB10000000000000000000D2 /* Dropdown.swift */,
 				B1000000000000000000003B /* TailwindColorPicker.swift */,
 				B10000000000000000000044 /* SegmentPicker.swift */,
 				B1000000000000000000003D /* Constants.swift */,
@@ -652,6 +674,7 @@
 				B2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift */,
 				B9000000000000000000000C /* CursorSmoothing.swift */,
 				B20000000000000000000021 /* PropertiesPanel+AudioTab.swift */,
+				FB20000000000000000000B1 /* PropertiesPanel+EffectsTab.swift */,
 				B2000000000000000000002A /* EditorView+TransportBar.swift */,
 				B2000000000000000000002C /* ExportResultSheet.swift */,
 			
@@ -674,6 +697,9 @@
 				BC84C35E4DD49FCEA9DE6CBB /* CursorRenderer+Shapes.swift */,
 			CA20000000000000000000A4 /* EditorState+Captions.swift */,
 			CA20000000000000000000A5 /* PropertiesPanel+CaptionsTab.swift */,
+			FB10000000000000000000A1 /* SpotlightOverlayLayer.swift */,
+			FB10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift */,
+			FB10000000000000000000A7 /* ClickSoundPlayer.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -710,6 +736,7 @@
 				CAB002000000000000000001 /* CameraBackgroundStyle.swift */,
 				CAB002000000000000000002 /* PersonSegmentationProcessor.swift */,
 			CA20000000000000000000A8 /* CameraVideoCompositor+Captions.swift */,
+			FB10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift */,
 			);
 			path = Compositor;
 			sourceTree = "<group>";
@@ -894,6 +921,7 @@
 				A2000000000000000000001D /* PropertiesPanel+VideoTab.swift in Sources */,
 				A2000000000000000000001E /* PropertiesPanel+CameraTab.swift in Sources */,
 				A2000000000000000000001F /* PropertiesPanel+CursorZoomTab.swift in Sources */,
+				FA20000000000000000000B1 /* PropertiesPanel+EffectsTab.swift in Sources */,
 				A90000000000000000000009 /* ZoomRegion.swift in Sources */,
 				A9000000000000000000000A /* RegionEditPopover.swift in Sources */,
 				A9000000000000000000000D /* CameraRegionEditPopover.swift in Sources */,
@@ -905,6 +933,7 @@
 				A10000000000000000000038 /* SettingsDevicesTab.swift in Sources */,
 				A10000000000000000000039 /* CaptureToolbarComponents.swift in Sources */,
 				A1000000000000000000003A /* SliderRow.swift in Sources */,
+				FA10000000000000000000D2 /* Dropdown.swift in Sources */,
 				A1000000000000000000003B /* TailwindColorPicker.swift in Sources */,
 				A10000000000000000000044 /* SegmentPicker.swift in Sources */,
 				A10000000000000000000045 /* SwatchButton.swift in Sources */,
@@ -964,6 +993,13 @@
 				CA10000000000000000000A6 /* CaptionOverlayView.swift in Sources */,
 				CA10000000000000000000A7 /* CaptionSegmentRow.swift in Sources */,
 				CA10000000000000000000A8 /* CameraVideoCompositor+Captions.swift in Sources */,
+				FA10000000000000000000A1 /* SpotlightOverlayLayer.swift in Sources */,
+				FA10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift in Sources */,
+				FA10000000000000000000A7 /* ClickSoundPlayer.swift in Sources */,
+				FA10000000000000000000A8 /* ClickSoundGenerator.swift in Sources */,
+				FA10000000000000000000D1 /* ClickSoundData.swift in Sources */,
+				FA10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift in Sources */,
+				FA10000000000000000000B2 /* LenientCodable.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

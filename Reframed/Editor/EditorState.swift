@@ -59,6 +59,15 @@ final class EditorState {
   var clickHighlightColor: CodableColor = CodableColor(r: 0, g: 0, b: 0, a: 1.0)
   var clickHighlightSize: CGFloat = 36
 
+  var spotlightEnabled: Bool = false
+  var spotlightRadius: CGFloat = 200
+  var spotlightDimOpacity: CGFloat = 0.6
+  var spotlightEdgeSoftness: CGFloat = 50
+
+  var clickSoundEnabled: Bool = false
+  var clickSoundVolume: Float = 0.5
+  var clickSoundStyle: ClickSoundStyle = .click001
+
   var zoomTimeline: ZoomTimeline?
   var zoomEnabled: Bool = false
   var autoZoomEnabled: Bool = false
@@ -271,6 +280,13 @@ final class EditorState {
           clickHighlightColor = savedColor
         }
         clickHighlightSize = cursorSettings.clickHighlightSize
+        spotlightEnabled = cursorSettings.spotlightEnabled
+        spotlightRadius = cursorSettings.spotlightRadius
+        spotlightDimOpacity = cursorSettings.spotlightDimOpacity
+        spotlightEdgeSoftness = cursorSettings.spotlightEdgeSoftness
+        clickSoundEnabled = cursorSettings.clickSoundEnabled
+        clickSoundVolume = cursorSettings.clickSoundVolume
+        clickSoundStyle = ClickSoundStyle(rawValue: cursorSettings.clickSoundStyleRaw) ?? .click001
       }
       if let zoomSettings = saved.zoomSettings {
         zoomEnabled = zoomSettings.zoomEnabled

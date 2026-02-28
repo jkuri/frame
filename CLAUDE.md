@@ -153,7 +153,7 @@ Uses `MenuBarExtra(.window)` + MenuBarExtraAccess (1.2.x) for the `isPresented` 
 
 - Do not add code comments. Generate only code, no inline comments or doc comments.
 - Always create reusable views if possible and put them in the `UI/` folder.
-- Always reuse existing UI components and styles from `Reframed/UI/` before creating new ones. Check for existing buttons, popovers, sliders, color pickers, section headers, and other shared components first.
+- Always reuse existing UI components and styles from `Reframed/UI/` before creating new ones. Check for existing buttons, popovers, sliders, color pickers, section headers, and other shared components first. Never use `.borderless`, `.plain`, or other generic SwiftUI button styles — always use the project's custom styles (`OutlineButtonStyle`, `PrimaryButtonStyle`, `SecondaryButtonStyle`) from `PrimaryButton.swift`.
 - Always reuse functions if possible (e.g. time formatting) and put them in the `Utilities/` folder.
 - If a view exceeds 200 lines, break it into separate files using Swift extensions.
 - Always run `make format` after changes.

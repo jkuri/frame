@@ -65,6 +65,13 @@ enum VideoCompositor {
     captionShowBackground: Bool = true,
     captionPosition: CaptionPosition = .bottom,
     captionMaxWordsPerLine: Int = 6,
+    spotlightEnabled: Bool = false,
+    spotlightRadius: CGFloat = 200,
+    spotlightDimOpacity: CGFloat = 0.6,
+    spotlightEdgeSoftness: CGFloat = 50,
+    clickSoundEnabled: Bool = false,
+    clickSoundVolume: Float = 0.5,
+    clickSoundStyle: ClickSoundStyle = .click001,
     progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)? = nil
   ) async throws -> URL {
     let composition = AVMutableComposition()
@@ -131,8 +138,33 @@ enum VideoCompositor {
         shouldCleanupProcessedMic = true
       }
     }
+    var clickSoundURL: URL?
+    if clickSoundEnabled, let snapshot = cursorSnapshot, !snapshot.clicks.isEmpty {
+      let totalDur = CMTimeGetSeconds(compositionDuration)
+      let trimStartSec = CMTimeGetSeconds(effectiveTrim.start)
+      let trimEndSec = CMTimeGetSeconds(effectiveTrim.end)
+      let clicks: [(time: Double, button: Int)] = snapshot.clicks.compactMap {
+        guard $0.t >= trimStartSec, $0.t <= trimEndSec else { return nil }
+        return (time: $0.t - trimStartSec, button: $0.button)
+      }
+      if !clicks.isEmpty {
+        let tempURL = FileManager.default.temporaryDirectory
+          .appendingPathComponent("reframed-clicks-\(UUID().uuidString).m4a")
+        try ClickSoundGenerator.generateClickAudioFile(
+          at: tempURL,
+          clickTimes: clicks,
+          volume: clickSoundVolume,
+          totalDuration: totalDur,
+          style: clickSoundStyle
+        )
+        clickSoundURL = tempURL
+      }
+    }
     defer {
       if shouldCleanupProcessedMic, let url = processedMicURL {
+        try? FileManager.default.removeItem(at: url)
+      }
+      if let url = clickSoundURL {
         try? FileManager.default.removeItem(at: url)
       }
     }
@@ -160,6 +192,10 @@ enum VideoCompositor {
         )
       )
     }
+    if let csURL = clickSoundURL {
+      let clickRegion = CMTimeRange(start: .zero, duration: compositionDuration)
+      audioSources.append(AudioSource(url: csURL, regions: [clickRegion], volume: 1.0))
+    }
 
     let hasNonDefaultBackground: Bool = {
       switch backgroundStyle {
@@ -185,9 +221,12 @@ enum VideoCompositor {
       !sourceCodecMatchesExport || exportSettings.resolution != .original
       || exportSettings.fps != .original
     let hasCaptions = captionsEnabled && !captionSegments.isEmpty
+    let hasSpotlight = spotlightEnabled && cursorSnapshot != nil
+    let hasClickSound = clickSoundURL != nil
     let needsCompositor =
       hasVisualEffects || hasWebcam || needsReencode || hasCursor || hasZoom
       || exportSettings.format.isGIF || hasVideoRegions || hasCaptions
+      || hasSpotlight || hasClickSound
 
     let canvasSize: CGSize
     if let baseSize = canvasAspect.size(for: screenNaturalSize) {
@@ -546,7 +585,11 @@ enum VideoCompositor {
         captionBackgroundOpacity: captionBackgroundOpacity,
         captionShowBackground: captionShowBackground,
         captionPosition: captionPosition,
-        captionMaxWordsPerLine: captionMaxWordsPerLine
+        captionMaxWordsPerLine: captionMaxWordsPerLine,
+        spotlightEnabled: spotlightEnabled,
+        spotlightRadius: spotlightRadius,
+        spotlightDimOpacity: spotlightDimOpacity,
+        spotlightEdgeSoftness: spotlightEdgeSoftness
       )
 
       if exportSettings.format.isGIF {
