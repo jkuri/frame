@@ -143,7 +143,7 @@ struct MenuBarView: View {
         .padding(.bottom, 2)
       }
       .padding(.vertical, 8)
-      .frame(width: 320)
+      .frame(width: Layout.menuBarWidth)
     }
     .background(ReframedColors.background)
     .task {

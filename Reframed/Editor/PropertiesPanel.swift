@@ -85,7 +85,7 @@ struct PropertiesPanel: View {
       }
       .padding(Layout.panelPadding)
     }
-    .frame(width: 360)
+    .frame(width: Layout.propertiesPanelWidth)
     .onChange(of: backgroundMode) { _, newValue in
       updateBackgroundStyle(mode: newValue)
     }

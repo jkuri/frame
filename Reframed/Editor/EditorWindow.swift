@@ -38,7 +38,7 @@ final class EditorWindow: NSObject, NSWindowDelegate {
     let hostingView = NSHostingView(rootView: editorView)
 
     let window = NSWindow(
-      contentRect: NSRect(x: 0, y: 0, width: 1400, height: 900),
+      contentRect: NSRect(x: 0, y: 0, width: Layout.editorWindowMinWidth, height: Layout.editorWindowMinHeight),
       styleMask: [.titled, .closable, .miniaturizable, .resizable],
       backing: .buffered,
       defer: false
@@ -49,8 +49,8 @@ final class EditorWindow: NSObject, NSWindowDelegate {
     window.styleMask.insert(.fullSizeContentView)
     window.backgroundColor = ReframedColors.backgroundContainerNS
     window.contentView = hostingView
-    window.contentMinSize = NSSize(width: 1200, height: 800)
-    window.minSize = NSSize(width: 1200, height: 800)
+    window.contentMinSize = NSSize(width: Layout.editorWindowMinWidth, height: Layout.editorWindowMinHeight)
+    window.minSize = NSSize(width: Layout.editorWindowMinWidth, height: Layout.editorWindowMinHeight)
     if let savedFrame = StateService.shared.editorWindowFrame {
       window.setFrame(savedFrame, display: true)
     } else {
