@@ -114,7 +114,10 @@ extension PropertiesPanel {
         }
       } else {
         HStack(spacing: 8) {
-          Button(editorState.captionSegments.isEmpty ? "Generate Captions" : "Regenerate") {
+          Button(
+            editorState.captionSegments.isEmpty && !editorState.transcriptionDidFinishEmpty
+              ? "Generate Captions" : "Regenerate"
+          ) {
             handleGenerateAction()
           }
           .buttonStyle(PrimaryButtonStyle(size: .small, fullWidth: true))
@@ -124,6 +127,17 @@ extension PropertiesPanel {
               editorState.clearCaptions()
             }
             .buttonStyle(OutlineButtonStyle(size: .small, fullWidth: true))
+          }
+        }
+
+        if editorState.transcriptionDidFinishEmpty {
+          HStack(spacing: 6) {
+            Image(systemName: "text.badge.xmark")
+              .font(.system(size: 12))
+              .foregroundStyle(ReframedColors.dimLabel)
+            Text("No speech detected in the audio.")
+              .font(.system(size: 11))
+              .foregroundStyle(ReframedColors.dimLabel)
           }
         }
       }

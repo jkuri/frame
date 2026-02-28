@@ -17,6 +17,7 @@ extension EditorState {
     transcriptionTask?.cancel()
     isTranscribing = true
     transcriptionProgress = 0
+    transcriptionDidFinishEmpty = false
 
     let language = captionLanguage.whisperCode
     let state = self
@@ -56,7 +57,8 @@ extension EditorState {
           }
         }
         state.captionSegments = segments
-        state.captionsEnabled = true
+        state.captionsEnabled = !segments.isEmpty
+        state.transcriptionDidFinishEmpty = segments.isEmpty
         state.isTranscribing = false
         state.transcriptionProgress = 1.0
         state.scheduleSave()
@@ -80,6 +82,7 @@ extension EditorState {
   func clearCaptions() {
     captionSegments = []
     captionsEnabled = false
+    transcriptionDidFinishEmpty = false
     scheduleSave()
     history.pushSnapshot(createSnapshot())
   }

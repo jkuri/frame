@@ -109,6 +109,7 @@ final class EditorState {
   var captionAudioSource: CaptionAudioSource = .microphone
   var isTranscribing: Bool = false
   var transcriptionProgress: Double = 0
+  var transcriptionDidFinishEmpty: Bool = false
   var transcriptionTask: Task<Void, Never>?
 
   var hasSystemAudio: Bool { result.systemAudioURL != nil }
