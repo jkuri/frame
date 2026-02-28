@@ -170,7 +170,7 @@ final class SessionState {
 
   func showToolbar() {
     if let existing = toolbarWindow {
-      existing.makeKeyAndOrderFront(nil)
+      existing.orderFrontRegardless()
       return
     }
 
@@ -180,7 +180,7 @@ final class SessionState {
       }
     }
     toolbarWindow = window
-    window.makeKeyAndOrderFront(nil)
+    window.orderFrontRegardless()
   }
 
   func hideToolbar() {
@@ -639,6 +639,11 @@ final class SessionState {
         webcamPreviewWindow?.hide()
       }
       showToolbar()
+      if case .window(let win) = captureTarget,
+        let pid = win.owningApplication?.processID
+      {
+        focusWindow(pid: pid, frame: win.frame)
+      }
     case .paused:
       if options.hideCameraPreviewWhileRecording {
         webcamPreviewWindow?.unhide()
@@ -648,6 +653,40 @@ final class SessionState {
       stopAudioLevelPolling()
       stopWindowTracking()
     }
+  }
+
+  private func focusWindow(pid: pid_t, frame: CGRect) {
+    let axApp = AXUIElementCreateApplication(pid)
+    var windowsRef: CFTypeRef?
+    AXUIElementCopyAttributeValue(axApp, kAXWindowsAttribute as CFString, &windowsRef)
+    if let windows = windowsRef as? [AXUIElement] {
+      for window in windows {
+        var positionRef: CFTypeRef?
+        var sizeRef: CFTypeRef?
+        AXUIElementCopyAttributeValue(window, kAXPositionAttribute as CFString, &positionRef)
+        AXUIElementCopyAttributeValue(window, kAXSizeAttribute as CFString, &sizeRef)
+
+        var pos = CGPoint.zero
+        var size = CGSize.zero
+        if let posRef = positionRef, CFGetTypeID(posRef) == AXValueGetTypeID() {
+          AXValueGetValue(posRef as! AXValue, .cgPoint, &pos)
+        }
+        if let sRef = sizeRef, CFGetTypeID(sRef) == AXValueGetTypeID() {
+          AXValueGetValue(sRef as! AXValue, .cgSize, &size)
+        }
+
+        if abs(pos.x - frame.origin.x) < 20
+          && abs(pos.y - frame.origin.y) < 20
+          && abs(size.width - frame.width) < 20
+          && abs(size.height - frame.height) < 20
+        {
+          AXUIElementPerformAction(window, kAXRaiseAction as CFString)
+          NSRunningApplication(processIdentifier: pid)?.activate()
+          return
+        }
+      }
+    }
+    NSRunningApplication(processIdentifier: pid)?.activate()
   }
 
   private func updateStatusIcon() {
