@@ -38,7 +38,7 @@ extension PropertiesPanel {
           .foregroundStyle(ReframedColors.dimLabel)
           .lineLimit(2)
           .fixedSize(horizontal: false, vertical: true)
-          .frame(minHeight: 28, alignment: .top)
+          .frame(minHeight: Layout.compactSpacing, alignment: .top)
       }
 
       HStack(spacing: 8) {
@@ -78,9 +78,16 @@ extension PropertiesPanel {
               .foregroundStyle(ReframedColors.secondaryText)
               .frame(width: 32, alignment: .trailing)
           }
-          Text("Downloading model…")
-            .font(.system(size: 11))
-            .foregroundStyle(ReframedColors.dimLabel)
+          HStack {
+            Text("Downloading model…")
+              .font(.system(size: 11))
+              .foregroundStyle(ReframedColors.dimLabel)
+            Spacer()
+            Button("Cancel") {
+              WhisperModelManager.shared.cancelDownload()
+            }
+            .buttonStyle(OutlineButtonStyle(size: .small))
+          }
         }
       }
 

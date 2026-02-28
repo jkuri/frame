@@ -48,7 +48,7 @@ final class WhisperModelManager {
   var downloadingModel: WhisperModel?
 
   private var modelPaths: [String: URL] = [:]
-  private var downloadTask: Task<Void, Never>?
+  private var downloadTask: Task<URL, Error>?
   private let modelsDirectory: URL
 
   private init() {
@@ -92,35 +92,42 @@ final class WhisperModelManager {
     modelPaths[model.rawValue]
   }
 
-  func downloadModel(
-    _ model: WhisperModel,
-    onProgress: (@MainActor @Sendable (Double) -> Void)? = nil
-  ) async throws {
+  func downloadModel(_ model: WhisperModel) async throws {
+    downloadTask?.cancel()
     isDownloading = true
     downloadProgress = 0
     downloadingModel = model
-    defer {
-      isDownloading = false
-      downloadingModel = nil
-    }
 
-    let mgr = self
-    let callback: @Sendable (Progress) -> Void = { progress in
-      Task { @MainActor in
-        mgr.downloadProgress = progress.fractionCompleted
-        onProgress?(progress.fractionCompleted)
+    let task = Task {
+      let mgr = self
+      let callback: @Sendable (Progress) -> Void = { progress in
+        Task { @MainActor in
+          mgr.downloadProgress = progress.fractionCompleted
+        }
       }
+      let modelFolder = try await WhisperKit.download(
+        variant: model.rawValue,
+        downloadBase: mgr.modelsDirectory,
+        progressCallback: callback
+      )
+      try Task.checkCancellation()
+      return modelFolder
     }
-    let modelFolder = try await WhisperKit.download(
-      variant: model.rawValue,
-      downloadBase: modelsDirectory,
-      progressCallback: callback
-    )
+    downloadTask = task
 
-    modelPaths[model.rawValue] = modelFolder
-    downloadedModels.insert(model.rawValue)
-    downloadProgress = 1.0
-    onProgress?(1.0)
+    do {
+      let modelFolder = try await task.value
+      modelPaths[model.rawValue] = modelFolder
+      downloadedModels.insert(model.rawValue)
+      downloadProgress = 1.0
+    } catch is CancellationError {
+      throw CancellationError()
+    } catch {
+      throw error
+    }
+
+    isDownloading = false
+    downloadingModel = nil
   }
 
   func deleteModel(_ model: WhisperModel) {
@@ -131,10 +138,17 @@ final class WhisperModelManager {
   }
 
   func cancelDownload() {
+    let model = downloadingModel
     downloadTask?.cancel()
     downloadTask = nil
     isDownloading = false
     downloadingModel = nil
     downloadProgress = 0
+    if let model {
+      let partialDir = modelsDirectory.appendingPathComponent(model.rawValue)
+      if !downloadedModels.contains(model.rawValue) {
+        try? FileManager.default.removeItem(at: partialDir)
+      }
+    }
   }
 }
