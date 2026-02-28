@@ -68,24 +68,21 @@ extension VideoPreviewContainer {
       screenShadowLayer.opacity = 0
     } else if screenTransitionType != .none {
       let p = Float(screenTransitionProgress)
+      screenShadowLayer.opacity = 0
       switch screenTransitionType {
       case .none:
         screenContainerLayer.opacity = 1
         screenContainerLayer.transform = CATransform3DIdentity
-        screenShadowLayer.opacity = currentVideoShadow > 0 ? 0.6 : 0
       case .fade:
         screenContainerLayer.opacity = p
         screenContainerLayer.transform = CATransform3DIdentity
-        screenShadowLayer.opacity = currentVideoShadow > 0 ? p * 0.6 : 0
       case .scale:
         screenContainerLayer.opacity = 1
         screenContainerLayer.transform = CATransform3DMakeScale(CGFloat(p), CGFloat(p), 1)
-        screenShadowLayer.opacity = currentVideoShadow > 0 ? p * 0.6 : 0
       case .slide:
         screenContainerLayer.opacity = 1
         let offsetY = (1.0 - CGFloat(p)) * (screenRect.origin.y + screenRect.height)
         screenContainerLayer.transform = CATransform3DMakeTranslation(0, -offsetY, 0)
-        screenShadowLayer.opacity = currentVideoShadow > 0 ? p * 0.6 : 0
       }
     } else {
       screenContainerLayer.opacity = 1
@@ -206,6 +203,7 @@ extension VideoPreviewContainer {
       webcamWrapper.layer?.shadowOpacity = 0
       let fsTransitioning = hasActiveTransition
       screenContainerLayer.isHidden = !fsTransitioning
+      screenShadowLayer.isHidden = !fsTransitioning
       cursorOverlay.isHidden = !fsTransitioning
       webcamWrapper.frame = canvasRect
       webcamView.frame = webcamWrapper.bounds

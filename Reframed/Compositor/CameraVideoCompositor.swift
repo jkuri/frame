@@ -121,6 +121,20 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
       height: CGFloat(height) - 2 * instruction.paddingV
     )
 
+    let isCamFullscreen: Bool = {
+      let hidden = instruction.cameraHiddenRegions.contains { $0.timeRange.containsTime(compositionTime) }
+      let fs = instruction.cameraFullscreenRegions.contains { $0.timeRange.containsTime(compositionTime) }
+      return !hidden && fs
+    }()
+
+    let camFsTransitioning: Bool = {
+      guard isCamFullscreen else { return false }
+      guard let r = instruction.cameraFullscreenRegions.first(where: { $0.timeRange.containsTime(compositionTime) }) else {
+        return false
+      }
+      return resolveActiveTransitionType(compositionTime: compositionTime, region: r) != .none
+    }()
+
     let screenTransition: (type: RegionTransitionType, progress: CGFloat)? = {
       guard !instruction.videoRegions.isEmpty else { return nil }
       guard let region = instruction.videoRegions.first(where: { $0.timeRange.containsTime(compositionTime) }) else {
@@ -162,7 +176,8 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
         videoRect: videoRect,
         instruction: instruction,
         compositionTime: compositionTime,
-        outputHeight: height
+        outputHeight: height,
+        isTransitioning: screenTransition != nil || (isCamFullscreen && !camFsTransitioning)
       )
     }
 
@@ -199,7 +214,6 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
       let fsRegion = instruction.cameraFullscreenRegions.first {
         $0.timeRange.containsTime(compositionTime)
       }
-      let isCamFullscreen = hiddenRegion == nil && fsRegion != nil
 
       let regionTransition: (type: RegionTransitionType, progress: CGFloat)? = {
         if let ht = hiddenTransition, ht.type != .none { return ht }

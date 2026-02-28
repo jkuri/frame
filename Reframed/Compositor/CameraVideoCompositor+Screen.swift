@@ -8,9 +8,10 @@ extension CameraVideoCompositor {
     videoRect: CGRect,
     instruction: CompositionInstruction,
     compositionTime: CMTime,
-    outputHeight: Int
+    outputHeight: Int,
+    isTransitioning: Bool = false
   ) {
-    if instruction.videoShadow > 0 {
+    if instruction.videoShadow > 0 && !isTransitioning {
       let blur = min(videoRect.width, videoRect.height) * instruction.videoShadow / 2000.0
       context.saveGState()
       context.setShadow(
