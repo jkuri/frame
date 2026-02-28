@@ -22,7 +22,7 @@ extension EditorState {
     let state = self
     transcriptionTask = Task {
       do {
-        let segments = try await TranscriptionService.transcribe(
+        var segments = try await TranscriptionService.transcribe(
           audioURL: audioURL,
           model: model,
           modelPath: modelPath,
@@ -32,6 +32,28 @@ extension EditorState {
           }
         )
         try Task.checkCancellation()
+        let driftRatio: Double =
+          switch state.captionAudioSource {
+          case .microphone: state.playerController.micAudioDriftRatio
+          case .system: state.playerController.systemAudioDriftRatio
+          }
+        if driftRatio != 1.0 {
+          segments = segments.map { seg in
+            CaptionSegment(
+              id: seg.id,
+              startSeconds: seg.startSeconds / driftRatio,
+              endSeconds: seg.endSeconds / driftRatio,
+              text: seg.text,
+              words: seg.words?.map { w in
+                CaptionWord(
+                  word: w.word,
+                  startSeconds: w.startSeconds / driftRatio,
+                  endSeconds: w.endSeconds / driftRatio
+                )
+              }
+            )
+          }
+        }
         state.captionSegments = segments
         state.captionsEnabled = true
         state.isTranscribing = false

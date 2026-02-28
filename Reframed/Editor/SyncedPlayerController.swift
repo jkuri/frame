@@ -26,9 +26,9 @@ final class SyncedPlayerController {
   private var micAudioFile: AVAudioFile?
   private var micVolumeLevel: Float = 1.0
   private var micIsMutedByRegion: Bool = true
-  private var systemAudioDriftRatio: Double = 1.0
+  private(set) var systemAudioDriftRatio: Double = 1.0
   private var webcamDriftRatio: Double = 1.0
-  private var micAudioDriftRatio: Double = 1.0
+  private(set) var micAudioDriftRatio: Double = 1.0
 
   init(result: RecordingResult) {
     let screenAsset = AVURLAsset(url: result.screenVideoURL)
