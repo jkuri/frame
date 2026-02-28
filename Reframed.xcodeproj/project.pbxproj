@@ -121,6 +121,7 @@
 		A40000000000000000000001 /* SoundEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000001 /* SoundEffect.swift */; };
 		A40000000000000000000002 /* TimeFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000002 /* TimeFormatting.swift */; };
 		A40000000000000000000003 /* MediaFileInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000003 /* MediaFileInfo.swift */; };
+		CB00000000000000000000A3 /* MenuBarIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB00000000000000000000B3 /* MenuBarIcon.swift */; };
 		A40000000000000000000004 /* MathUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40000000000000000000004 /* MathUtilities.swift */; };
 		A50000000000000000000001 /* MouseClickMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50000000000000000000001 /* MouseClickMonitor.swift */; };
 		A50000000000000000000002 /* MouseClickWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50000000000000000000002 /* MouseClickWindow.swift */; };
@@ -304,6 +305,7 @@
 		B40000000000000000000001 /* SoundEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEffect.swift; sourceTree = "<group>"; };
 		B40000000000000000000002 /* TimeFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatting.swift; sourceTree = "<group>"; };
 		B40000000000000000000003 /* MediaFileInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFileInfo.swift; sourceTree = "<group>"; };
+		CB00000000000000000000B3 /* MenuBarIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIcon.swift; sourceTree = "<group>"; };
 		B40000000000000000000004 /* MathUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathUtilities.swift; sourceTree = "<group>"; };
 		B50000000000000000000001 /* MouseClickMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseClickMonitor.swift; sourceTree = "<group>"; };
 		B50000000000000000000002 /* MouseClickWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseClickWindow.swift; sourceTree = "<group>"; };
@@ -488,6 +490,7 @@
 				B40000000000000000000001 /* SoundEffect.swift */,
 				B40000000000000000000002 /* TimeFormatting.swift */,
 				B40000000000000000000003 /* MediaFileInfo.swift */,
+				CB00000000000000000000B3 /* MenuBarIcon.swift */,
 				B40000000000000000000004 /* MathUtilities.swift */,
 				B60000000000000000000001 /* CodableColor.swift */,
 				DA000000000000000000001D /* RNNoiseProcessor.swift */,
@@ -866,6 +869,7 @@
 				A3000000000000000000001C /* ProjectMetadata.swift in Sources */,
 				A40000000000000000000001 /* SoundEffect.swift in Sources */,
 				A40000000000000000000002 /* TimeFormatting.swift in Sources */,
+				CB00000000000000000000A3 /* MenuBarIcon.swift in Sources */,
 				A40000000000000000000003 /* MediaFileInfo.swift in Sources */,
 				A40000000000000000000004 /* MathUtilities.swift in Sources */,
 				A50000000000000000000001 /* MouseClickMonitor.swift in Sources */,

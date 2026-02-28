@@ -690,20 +690,17 @@ final class SessionState {
   }
 
   private func updateStatusIcon() {
-    let iconName: String =
+    let iconState: MenuBarIcon.State =
       switch state {
-      case .idle: "rectangle.dashed.badge.record"
-      case .selecting: "rectangle.dashed"
-      case .countdown: "timer"
-      case .recording: "record.circle.fill"
-      case .paused: "pause.circle.fill"
-      case .processing: "gear"
-      case .editing: "film"
+      case .idle: .idle
+      case .selecting: .selecting
+      case .countdown: .countdown
+      case .recording: .recording
+      case .paused: .paused
+      case .processing: .processing
+      case .editing: .editing
       }
-    statusItemButton?.image = NSImage(
-      systemSymbolName: iconName,
-      accessibilityDescription: "Reframed"
-    )
+    statusItemButton?.image = MenuBarIcon.makeImage(for: iconState)
   }
 
   private func showStartRecordingOverlay() {

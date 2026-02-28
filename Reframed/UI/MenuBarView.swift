@@ -38,6 +38,7 @@ struct MenuBarView: View {
     let _ = colorScheme
     VStack(alignment: .leading, spacing: 0) {
       SectionHeader(title: "Quick Actions")
+        .padding(.bottom, 2)
 
       HoverEffectScope {
         LazyVGrid(columns: gridColumns, spacing: 6) {
@@ -98,7 +99,7 @@ struct MenuBarView: View {
         .foregroundStyle(ReframedColors.secondaryText)
         .padding(.horizontal, 12)
         .padding(.top, 8)
-        .padding(.bottom, 4)
+        .padding(.bottom, 6)
 
       if recentProjects.isEmpty {
         Text("No recent projects")
@@ -122,7 +123,7 @@ struct MenuBarView: View {
             }
           }
         }
-        .frame(height: min(CGFloat(recentProjects.count) * 52, 52 * 6))
+        .frame(height: min(CGFloat(recentProjects.count) * 48, 48 * 8))
       }
 
       MenuBarDivider()
@@ -244,7 +245,7 @@ private struct ActionGridItem: View {
           .foregroundStyle(ReframedColors.secondaryText)
       }
       .frame(maxWidth: .infinity)
-      .frame(height: 52)
+      .frame(height: 48)
       .clipShape(RoundedRectangle(cornerRadius: Radius.md))
       .contentShape(Rectangle())
     }

@@ -19,7 +19,7 @@ struct ReframedApp: App {
       )
       .presentationBackground(ReframedColors.backgroundPopover)
     } label: {
-      Image(systemName: "rectangle.dashed.badge.record")
+      Image(nsImage: MenuBarIcon.image)
     }
     .menuBarExtraStyle(.window)
     .menuBarExtraAccess(isPresented: $isMenuPresented) { statusItem in
