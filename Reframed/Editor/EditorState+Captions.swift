@@ -32,6 +32,7 @@ extension EditorState {
           }
         )
         try Task.checkCancellation()
+        segments = Self.filterNonSpeechSegments(segments)
         let driftRatio: Double =
           switch state.captionAudioSource {
           case .microphone: state.playerController.micAudioDriftRatio
@@ -124,5 +125,16 @@ extension EditorState {
     let lineStart = windowIndex * linesPerWindow
     let visibleLines = lines[lineStart..<min(lineStart + linesPerWindow, totalLines)]
     return visibleLines.joined(separator: "\n")
+  }
+
+  private static let nonSpeechPattern: Regex = /^\s*[\[\(].*[\]\)]\s*$/
+
+  private static func filterNonSpeechSegments(_ segments: [CaptionSegment]) -> [CaptionSegment] {
+    segments.filter { seg in
+      let text = seg.text.trimmingCharacters(in: .whitespaces)
+      if text.isEmpty { return false }
+      if text.wholeMatch(of: nonSpeechPattern) != nil { return false }
+      return true
+    }
   }
 }
