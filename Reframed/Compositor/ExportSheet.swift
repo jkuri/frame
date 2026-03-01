@@ -1,17 +1,61 @@
+import AppKit
 import SwiftUI
 
+private enum ExportPhase {
+  case settings
+  case exporting
+  case completed
+  case failed
+}
+
 struct ExportSheet: View {
+  @Bindable var editorState: EditorState
   @Binding var isPresented: Bool
   @State private var settings = ExportSettings()
   @State private var selectedPreset: ExportPreset = .custom
-  let sourceFPS: Int
-  let hasAudio: Bool
-  let hasCaptions: Bool
-  let onExport: (ExportSettings) -> Void
+  @State private var phase: ExportPhase = .settings
+  @State private var errorMessage = ""
+  @State private var exportTask: Task<Void, Never>?
   @Environment(\.colorScheme) private var colorScheme
+
+  private var sourceFPS: Int { editorState.result.fps }
+
+  private var hasAudio: Bool {
+    (editorState.hasSystemAudio && !editorState.systemAudioMuted)
+      || (editorState.hasMicAudio && !editorState.micAudioMuted)
+  }
+
+  private var hasCaptions: Bool {
+    editorState.captionsEnabled && !editorState.captionSegments.isEmpty
+  }
 
   var body: some View {
     let _ = colorScheme
+    VStack(spacing: 0) {
+      switch phase {
+      case .settings:
+        settingsContent
+      case .exporting:
+        exportingContent
+      case .completed:
+        completedContent
+      case .failed:
+        failedContent
+      }
+    }
+    .frame(width: phase == .settings ? 720 : 520)
+    .background(ReframedColors.backgroundPopover)
+    .interactiveDismissDisabled(phase == .exporting)
+    .onDisappear {
+      if phase == .exporting {
+        editorState.cancelExport()
+      }
+      exportTask?.cancel()
+      exportTask = nil
+    }
+  }
+
+  private var settingsContent: some View {
     VStack(spacing: 0) {
       HStack {
         Text("Export Settings")
@@ -167,8 +211,7 @@ struct ExportSheet: View {
           .buttonStyle(OutlineButtonStyle(size: .small))
 
           Button("Export") {
-            isPresented = false
-            onExport(settings)
+            startExport()
           }
           .buttonStyle(PrimaryButtonStyle(size: .small))
         }
@@ -177,8 +220,158 @@ struct ExportSheet: View {
       .padding(.top, 20)
       .padding(.bottom, 24)
     }
-    .frame(width: 720)
-    .background(ReframedColors.backgroundPopover)
+  }
+
+  private var exportingContent: some View {
+    VStack(spacing: 0) {
+      if let statusMessage = editorState.exportStatusMessage {
+        Text(statusMessage)
+          .font(.system(size: 13, weight: .medium).monospacedDigit())
+          .foregroundStyle(ReframedColors.secondaryText)
+          .padding(.top, 32)
+          .padding(.bottom, 24)
+      } else {
+        Text("Exporting…")
+          .font(.system(size: 16, weight: .semibold))
+          .foregroundStyle(ReframedColors.primaryText)
+          .padding(.top, 32)
+          .padding(.bottom, 24)
+
+        VStack(spacing: 8) {
+          ProgressView(value: editorState.exportProgress)
+            .tint(ReframedColors.primaryText)
+            .frame(width: 320)
+
+          HStack(spacing: 12) {
+            Text("\(Int(editorState.exportProgress * 100))%")
+              .font(.system(size: 12).monospacedDigit())
+              .foregroundStyle(ReframedColors.secondaryText)
+
+            if let eta = editorState.exportETA, eta > 0 {
+              Text("ETA \(formatDuration(seconds: Int(ceil(eta))))")
+                .font(.system(size: 12).monospacedDigit())
+                .foregroundStyle(ReframedColors.secondaryText)
+            }
+          }
+        }
+        .padding(.bottom, 24)
+      }
+
+      Button("Cancel") {
+        editorState.cancelExport()
+        phase = .settings
+      }
+      .buttonStyle(OutlineButtonStyle(size: .small))
+      .padding(.bottom, 28)
+    }
+  }
+
+  private var completedContent: some View {
+    VStack(spacing: 0) {
+      Image(systemName: "checkmark.circle.fill")
+        .font(.system(size: 40))
+        .foregroundStyle(ReframedColors.primaryText)
+        .padding(.top, 28)
+        .padding(.bottom, 12)
+
+      Text("Export Successful")
+        .font(.system(size: 16, weight: .semibold))
+        .foregroundStyle(ReframedColors.primaryText)
+        .padding(.bottom, 16)
+
+      if let url = editorState.lastExportedURL {
+        VStack(spacing: 6) {
+          Text(url.lastPathComponent)
+            .font(.system(size: 13, weight: .medium))
+            .foregroundStyle(ReframedColors.primaryText)
+            .lineLimit(1)
+            .truncationMode(.middle)
+
+          Text(MediaFileInfo.formattedFileSize(url: url))
+            .font(.system(size: 12))
+            .foregroundStyle(ReframedColors.secondaryText)
+        }
+        .padding(.bottom, 24)
+      }
+
+      HStack(spacing: 12) {
+        Button("Copy to Clipboard") {
+          copyToClipboard()
+        }
+        .buttonStyle(OutlineButtonStyle(size: .small))
+
+        Button("Show in Finder") {
+          editorState.openExportedFile()
+          isPresented = false
+        }
+        .buttonStyle(OutlineButtonStyle(size: .small))
+
+        Button("Done") {
+          isPresented = false
+        }
+        .buttonStyle(PrimaryButtonStyle(size: .small))
+      }
+      .padding(.bottom, 28)
+    }
+  }
+
+  private var failedContent: some View {
+    VStack(spacing: 0) {
+      Image(systemName: "xmark.circle.fill")
+        .font(.system(size: 40))
+        .foregroundStyle(ReframedColors.primaryText)
+        .padding(.top, 28)
+        .padding(.bottom, 12)
+
+      Text("Export Failed")
+        .font(.system(size: 16, weight: .semibold))
+        .foregroundStyle(ReframedColors.primaryText)
+        .padding(.bottom, 12)
+
+      Text(errorMessage)
+        .font(.system(size: 13))
+        .foregroundStyle(ReframedColors.secondaryText)
+        .multilineTextAlignment(.center)
+        .padding(.horizontal, 28)
+        .padding(.bottom, 24)
+
+      HStack(spacing: 12) {
+        Button("Back") {
+          phase = .settings
+        }
+        .buttonStyle(OutlineButtonStyle(size: .small))
+
+        Button("Done") {
+          isPresented = false
+        }
+        .buttonStyle(PrimaryButtonStyle(size: .small))
+      }
+      .padding(.bottom, 28)
+    }
+  }
+
+  private func startExport() {
+    phase = .exporting
+    exportTask = Task {
+      do {
+        let url = try await editorState.export(settings: settings)
+        try Task.checkCancellation()
+        editorState.lastExportedURL = url
+        phase = .completed
+      } catch is CancellationError {
+      } catch {
+        errorMessage = error.localizedDescription
+        phase = .failed
+      }
+    }
+    editorState.exportTask = exportTask
+  }
+
+  private func copyToClipboard() {
+    guard let url = editorState.lastExportedURL else { return }
+    let pasteboard = NSPasteboard.general
+    pasteboard.clearContents()
+    pasteboard.writeObjects([url as NSURL])
   }
 
   private func manualBinding<T: Equatable>(_ keyPath: WritableKeyPath<ExportSettings, T>) -> Binding<T> {

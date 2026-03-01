@@ -42,9 +42,6 @@ final class EditorState {
   var projectName: String = ""
   var showExportSheet = false
   var showDeleteConfirmation = false
-  var showExportResult = false
-  var exportResultMessage = ""
-  var exportResultIsError = false
   var lastExportedURL: URL?
 
   var cursorMetadataProvider: CursorMetadataProvider?

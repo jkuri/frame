@@ -116,7 +116,6 @@
 		A20000000000000000000023 /* HistoryPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000023 /* HistoryPopover.swift */; };
 		A2000000000000000000002A /* EditorView+TransportBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002A /* EditorView+TransportBar.swift */; };
 		A2000000000000000000002B /* ResizePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002B /* ResizePopover.swift */; };
-		A2000000000000000000002C /* ExportResultSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002C /* ExportResultSheet.swift */; };
 		A2000000000000000000002D /* TimelineView+ScreenTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000002D /* TimelineView+ScreenTrack.swift */; };
 		A3000000000000000000001B /* ReframedProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3000000000000000000001B /* ReframedProject.swift */; };
 		A3000000000000000000001C /* ProjectMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3000000000000000000001C /* ProjectMetadata.swift */; };
@@ -312,7 +311,6 @@
 		B20000000000000000000023 /* HistoryPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryPopover.swift; sourceTree = "<group>"; };
 		B2000000000000000000002A /* EditorView+TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorView+TransportBar.swift"; sourceTree = "<group>"; };
 		B2000000000000000000002B /* ResizePopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizePopover.swift; sourceTree = "<group>"; };
-		B2000000000000000000002C /* ExportResultSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportResultSheet.swift; sourceTree = "<group>"; };
 		B2000000000000000000002D /* TimelineView+ScreenTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineView+ScreenTrack.swift"; sourceTree = "<group>"; };
 		B3000000000000000000001B /* ReframedProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReframedProject.swift; sourceTree = "<group>"; };
 		B3000000000000000000001C /* ProjectMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectMetadata.swift; sourceTree = "<group>"; };
@@ -682,8 +680,6 @@
 				B20000000000000000000021 /* PropertiesPanel+AudioTab.swift */,
 				FB20000000000000000000B1 /* PropertiesPanel+EffectsTab.swift */,
 				B2000000000000000000002A /* EditorView+TransportBar.swift */,
-				B2000000000000000000002C /* ExportResultSheet.swift */,
-			
 				CC049020CAD98EBD4A251B45 /* EditorTypes.swift */,
 				8BF80E50CD7B9915C3047A7C /* EditorState+Playback.swift */,
 				F53532FE545B3134E1F23E97 /* EditorState+Background.swift */,
@@ -969,8 +965,6 @@
 				A1000000000000000000004F /* LanguagePicker.swift in Sources */,
 				A2000000000000000000002A /* EditorView+TransportBar.swift in Sources */,
 				A2000000000000000000002B /* ResizePopover.swift in Sources */,
-				A2000000000000000000002C /* ExportResultSheet.swift in Sources */,
-			
 				2E77D4CACF876C6A0564A7CA /* EditorTypes.swift in Sources */,
 				0F7476BC63856BC9ADA387CB /* EditorState+Playback.swift in Sources */,
 				AF0DCBA95E23A6E551FCEF8C /* EditorState+Background.swift in Sources */,

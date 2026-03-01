@@ -159,14 +159,9 @@ struct EditorView: View {
     }
     .sheet(isPresented: $editorState.showExportSheet) {
       ExportSheet(
-        isPresented: $editorState.showExportSheet,
-        sourceFPS: editorState.result.fps,
-        hasAudio: (editorState.hasSystemAudio && !editorState.systemAudioMuted)
-          || (editorState.hasMicAudio && !editorState.micAudioMuted),
-        hasCaptions: editorState.captionsEnabled && !editorState.captionSegments.isEmpty
-      ) { settings in
-        handleExport(settings: settings)
-      }
+        editorState: editorState,
+        isPresented: $editorState.showExportSheet
+      )
     }
     .alert("Delete Recording?", isPresented: $editorState.showDeleteConfirmation) {
       Button("Cancel", role: .cancel) {}
@@ -176,12 +171,6 @@ struct EditorView: View {
       }
     } message: {
       Text("This will permanently delete the source recording files.")
-    }
-    .sheet(isPresented: $editorState.showExportResult) {
-      ExportResultSheet(
-        editorState: editorState,
-        isPresented: $editorState.showExportResult
-      )
     }
   }
 
@@ -462,20 +451,4 @@ struct EditorView: View {
     }
   }
 
-  private func handleExport(settings: ExportSettings) {
-    editorState.exportTask = Task {
-      do {
-        let url = try await editorState.export(settings: settings)
-        try Task.checkCancellation()
-        editorState.exportResultMessage = "Saved to \(url.lastPathComponent)"
-        editorState.exportResultIsError = false
-        editorState.showExportResult = true
-      } catch is CancellationError {
-      } catch {
-        editorState.exportResultMessage = error.localizedDescription
-        editorState.exportResultIsError = true
-        editorState.showExportResult = true
-      }
-    }
-  }
 }
