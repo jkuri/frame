@@ -46,13 +46,16 @@ brew install --cask jkuri/reframed/reframed
 
 - Multiple SVG-based cursor styles with adjustable primary and outline colors
 - Click highlights with configurable color and size
+- Click sounds with 30 built-in samples across five categories (click, drop, select, switch, toggle)
 - Cursor movement smoothing with spring physics-based interpolation and speed presets
+- Spotlight effect that dims everything outside a radius around the cursor, with configurable radius, dim opacity, and edge softness
+- Spotlight regions on the timeline to control when the spotlight is active, with per-region style overrides and fade in/out transitions
 
 ### Zoom & Pan
 
-- **Manual keyframes** — add zoom points on the timeline with configurable zoom level and center point using smooth Hermite easing
-- **Auto-detection** — generates zoom keyframes from cursor click clusters based on configurable dwell threshold
-- **Cursor-follow mode** — zoom viewport tracks cursor position in real time
+- Manual keyframes - add zoom points on the timeline with configurable zoom level and center point using smooth Hermite easing
+- Auto-detection generates zoom keyframes from cursor click clusters based on configurable dwell threshold
+- Cursor-follow mode zoom viewport tracks cursor position in real time
 
 ### Captions
 
