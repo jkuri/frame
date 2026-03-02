@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.12.1](https://github.com/jkuri/Reframed/compare/v0.12.0...v0.12.1) (2026-03-01)
+
+### Styling
+
+- **app:** define variables and colors and follow shadcn patterns ([5dfc51a](https://github.com/jkuri/Reframed/commit/5dfc51a218e8dc2a4ae1f6693f472ad8f98285df))
+- **export:** improve UX on export sheet and disable controls during the process ([c11ca52](https://github.com/jkuri/Reframed/commit/c11ca5209b0b446f079411d9a10dfeb2dd6efaf4))
+
 ## [v0.12.0](https://github.com/jkuri/Reframed/compare/v0.11.1...v0.12.0) (2026-03-01)
 
 ### Features
