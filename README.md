@@ -7,7 +7,7 @@
 macOS screen recorder with a built-in editor. Capture your screen, windows, regions, or iOS devices over USB with webcam overlay, then edit and export.
 
 <p align="center">
-  <img width="1900" alt="Reframed Editor and Menubar" src="https://github.com/user-attachments/assets/33263101-490a-4614-b063-3dd8612df355" />
+  <img width="2478" height="1130" alt="Reframed Editor and Menubar" src="https://github.com/user-attachments/assets/283293f8-efa6-44db-9026-63181fc81fc4" />
 </p>
 
 ## Download
