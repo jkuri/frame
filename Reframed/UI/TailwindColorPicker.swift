@@ -39,14 +39,17 @@ struct TailwindColorPicker: View {
           .overlay(Circle().stroke(ReframedColors.border, lineWidth: 1))
           .frame(width: 14, height: 14)
       )
-    ) {
+    ) { dismiss in
       ScrollView {
         VStack(alignment: .leading, spacing: 0) {
           ForEach(TailwindColors.all) { preset in
             ColorPickerRow(
               preset: preset,
               isSelected: isSelected(preset),
-              onSelect: { onSelect(preset) }
+              onSelect: {
+                onSelect(preset)
+                dismiss()
+              }
             )
           }
         }
