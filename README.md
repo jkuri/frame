@@ -4,82 +4,80 @@
 
 # <p align="center">Reframed</p>
 
-macOS screen recorder with a built-in editor. Capture your screen, windows, regions, or iOS devices over USB with webcam overlay, then edit and export.
-
 <p align="center">
-  <img width="2478" height="1130" alt="Reframed Editor and Menubar" src="https://github.com/user-attachments/assets/283293f8-efa6-44db-9026-63181fc81fc4" />
+  <a href="https://github.com/jkuri/Reframed/blob/main/LICENSE"><img src="https://img.shields.io/github/license/jkuri/Reframed?color=34c759&labelColor=black" alt="License" /></a>
+  <img src="https://img.shields.io/badge/platform-macOS_15%2B-cb30e0?labelColor=black " alt="Platform" />
+  <img src="https://img.shields.io/badge/swift-6-08f?labelColor=black" alt="Swift 6" />
+  <img src="https://img.shields.io/github/v/release/jkuri/Reframed?color=fc0&labelColor=black" alt="Latest Release" />
 </p>
 
-## Download
+> Open-source macOS screen recorder and capture editor. A free alternative to Screen Studio - capture your screen, windows, or iOS devices with a webcam overlay, then edit on a timeline with auto-captions and smooth cursor zooms.
 
-Grab the latest `.dmg` from the [Releases](https://github.com/jkuri/reframed/releases) page.
+<p align="center">
+  <img width="100%" alt="Reframed Editor" src="https://github.com/user-attachments/assets/a8c20c27-1251-4c7c-a5f3-8bf01f90e868" />
+</p>
 
-Or install via Homebrew (recommended):
+## Install
+
+Via `homebrew` (recommended):
 
 ```bash
 brew install --cask jkuri/reframed/reframed
 ```
 
+Or grab the `.dmg` from [Releases](https://github.com/jkuri/reframed/releases).
+
 ## Features
 
 ### Recording
 
-- Four capture modes: entire screen, single window, custom region or iOS device via USB
-- Multi-display support for screen recording
-- System audio and microphone capture with real-time level indicators
-- Webcam overlay (Picture-in-Picture) with option to hide preview while recording
-- Cursor position and click data captured at 120 Hz independently from video frame rate
-- Configurable FPS, countdown timer, and global keyboard shortcuts
-- `.frm` project bundles preserve all source recordings and editor state for re-editing
+- **Four capture modes:** entire screen, single window, custom region, or iOS device via USB. Multi-display support included.
+- **System audio and microphone** capture with real-time level indicators
+- **Webcam overlay** (Picture-in-Picture) that can be hidden while recording
+- **120 Hz cursor tracking** records position and click data independently from video frame rate
+- **`.frm` project bundles** preserve all source recordings and editor state for re-editing
 
-### Video Editor
+### Video editor
 
-- Timeline trimming with independent trim ranges for video, system audio, and microphone
-- Audio region editing with per-track volume and mute controls
-- Microphone noise reduction powered by [RNNoise](https://github.com/xiph/rnnoise) with adjustable intensity
-- Background styles: solid color, gradient presets, or custom image with fill modes
-- Canvas aspect ratios (original, 16:9, 1:1, 4:3, 9:16) with adjustable padding and corner radius
-- Webcam PiP with draggable positioning, corner presets, configurable size/radius/border/shadow/mirror
-- Webcam background replacement (blur, solid color, gradient, or custom image) via person segmentation
-- Camera regions — timeline-based webcam visibility control (fullscreen, hidden, or custom position) with entry/exit transitions (fade, scale, slide)
-- Video regions for cutting segments from the timeline
-- Undo/redo history with snapshot rollback
-- Fullscreen preview mode with seek and scrub
+- **Timeline trimming** with independent trim ranges for video, system audio, and microphone
+- **Audio region editing** with per-track volume and mute controls
+- **Noise reduction** powered by [RNNoise](https://github.com/xiph/rnnoise) at adjustable intensity
+- **Background styles:** solid color, gradient presets, or custom image (multiple fill modes)
+- **Canvas aspect ratios** (original, 16:9, 1:1, 4:3, 9:16) plus adjustable padding and corner radius
+- **Webcam PiP** with draggable positioning, corner presets, size/radius/border/shadow/mirror
+- **Webcam background replacement** via person segmentation (blur, solid color, gradient, or custom image)
+- **Camera regions** set webcam visibility per-segment on the timeline (fullscreen, hidden, or custom position) with entry/exit transitions
+- **Video regions** for cutting segments from the timeline
+- **Undo/redo history** and fullscreen preview with scrub
 
 ### Cursor
 
-- Multiple SVG-based cursor styles with adjustable primary and outline colors
-- Click highlights with configurable color and size
-- Click sounds with 30 built-in samples across five categories (click, drop, select, switch, toggle)
-- Cursor movement smoothing with spring physics-based interpolation and speed presets
-- Spotlight effect that dims everything outside a radius around the cursor, with configurable radius, dim opacity, and edge softness
-- Spotlight regions on the timeline to control when the spotlight is active, with per-region style overrides and fade in/out transitions
+- **Custom cursor styles** with SVG-based designs, adjustable primary and outline colors
+- **Click highlights** and **click sounds** (30 built-in samples across five categories)
+- **Movement smoothing** using spring physics-based interpolation and speed presets
+- **Spotlight effect** dims everything outside a radius around the cursor. Timeline regions control when it's active.
 
-### Zoom & Pan
+### Zoom & pan
 
-- Manual keyframes - add zoom points on the timeline with configurable zoom level and center point using smooth Hermite easing
-- Auto-detection generates zoom keyframes from cursor click clusters based on configurable dwell threshold
-- Cursor-follow mode zoom viewport tracks cursor position in real time
+- **Manual keyframes** on the timeline to set zoom level and center point, eased with Hermite interpolation
+- **Auto-zoom** detects cursor click clusters and generates keyframes from dwell time
+- **Cursor-follow mode** keeps the viewport locked to cursor position in real time
 
 ### Captions
 
-- On-device speech-to-text using [WhisperKit](https://github.com/argmaxinc/WhisperKit) (Apple Silicon)
-- Four model sizes: Base, Small, Medium, and Large (v3) — downloaded on first use
-- Word-level timestamps with automatic short-segment merging
-- Transcribe from microphone or system audio
-- Language selection with auto-detect option
-- Caption styling: font size, weight, position (top/center/bottom), text and background colors, background opacity, words per line
-- Burned-in captions on export, or SRT/VTT sidecar files
+- **On-device speech-to-text** using [WhisperKit](https://github.com/argmaxinc/WhisperKit) (Apple Silicon) with four model sizes downloaded on first use
+- **Word-level timestamps** with automatic short-segment merging from microphone or system audio
+- **Language selection** with auto-detect option
+- **Caption styling:** font size, weight, position, text/background colors, opacity, words per line
+- **Export as burned-in captions** or SRT/VTT sidecar files
 
 ### Export
 
-- Export to MP4, MOV or GIF
-- H.264, H.265 (HEVC), ProRes 422 and ProRes 4444 codecs
-- Platform presets for YouTube, Twitter/X, TikTok, Instagram, Discord, ProRes and GIF
-- GIF export powered by [gifski](https://gif.ski) with quality presets
-- Configurable FPS and resolution (Original, 4K, 1080p, 720p)
-- Parallel multi-core rendering for faster exports
-- Progress bar with ETA
+- **MP4, MOV, or GIF** with H.264, H.265, ProRes 422, and ProRes 4444 codecs
+- **Platform presets** for YouTube, Twitter/X, TikTok, Instagram, Discord, ProRes, and GIF
+- **GIF export** powered by [gifski](https://gif.ski) with quality presets
+- **Configurable FPS and resolution** (Original, 4K, 1080p, 720p)
+- **Parallel multi-core rendering** for faster exports with progress bar and ETA
 
 ## Requirements
 
