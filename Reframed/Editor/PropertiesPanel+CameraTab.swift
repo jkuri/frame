@@ -169,31 +169,16 @@ extension PropertiesPanel {
   }
 
   private var cameraImageSection: some View {
-    VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      if let image = editorState.cameraBackgroundImage {
-        Image(nsImage: image)
-          .resizable()
-          .aspectRatio(contentMode: .fit)
-          .frame(maxWidth: .infinity, maxHeight: 60)
-          .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
-      }
-      Button {
-        pickCameraBackgroundImage()
-      } label: {
-        HStack {
-          Image(systemName: "photo.on.rectangle")
-          Text(editorState.cameraBackgroundImage != nil ? "Change Image" : "Choose Image")
+    ImageDropSection(
+      image: editorState.cameraBackgroundImage,
+      onPick: { pickCameraBackgroundImage() },
+      onDrop: { url in
+        editorState.setCameraBackgroundImage(from: url)
+        if case .image(let f) = editorState.cameraBackgroundStyle {
+          cameraBackgroundImageFilename = f
         }
-        .font(.system(size: FontSize.xs))
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 6)
-        .background(ReframedColors.fieldBackground)
-        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
-        .overlay(RoundedRectangle(cornerRadius: Radius.md).strokeBorder(ReframedColors.border))
       }
-      .buttonStyle(.plain)
-      .foregroundStyle(ReframedColors.primaryText)
-    }
+    )
   }
 
   var cameraFullscreenSection: some View {

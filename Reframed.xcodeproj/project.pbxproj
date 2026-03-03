@@ -62,6 +62,7 @@
 		A10000000000000000000039 /* CaptureToolbarComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000039 /* CaptureToolbarComponents.swift */; };
 		A1000000000000000000003A /* SliderRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003A /* SliderRow.swift */; };
 		FA10000000000000000000D2 /* Dropdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000D2 /* Dropdown.swift */; };
+		FA10000000000000000000D3 /* ImageDropSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000D3 /* ImageDropSection.swift */; };
 		A1000000000000000000003B /* TailwindColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003B /* TailwindColorPicker.swift */; };
 		A1000000000000000000003D /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003D /* Constants.swift */; };
 		A1000000000000000000003E /* KeyboardShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000003E /* KeyboardShortcut.swift */; };
@@ -258,6 +259,7 @@
 		B10000000000000000000039 /* CaptureToolbarComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureToolbarComponents.swift; sourceTree = "<group>"; };
 		B1000000000000000000003A /* SliderRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderRow.swift; sourceTree = "<group>"; };
 		FB10000000000000000000D2 /* Dropdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dropdown.swift; sourceTree = "<group>"; };
+		FB10000000000000000000D3 /* ImageDropSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDropSection.swift; sourceTree = "<group>"; };
 		B1000000000000000000003B /* TailwindColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailwindColorPicker.swift; sourceTree = "<group>"; };
 		B1000000000000000000003D /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		B1000000000000000000003E /* KeyboardShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcut.swift; sourceTree = "<group>"; };
@@ -570,6 +572,7 @@
 				B10000000000000000000039 /* CaptureToolbarComponents.swift */,
 				B1000000000000000000003A /* SliderRow.swift */,
 				FB10000000000000000000D2 /* Dropdown.swift */,
+				FB10000000000000000000D3 /* ImageDropSection.swift */,
 				B1000000000000000000003B /* TailwindColorPicker.swift */,
 				FB10000000000000000000C4 /* TransitionControlsSection.swift */,
 				B10000000000000000000044 /* SegmentPicker.swift */,
@@ -942,6 +945,7 @@
 				A10000000000000000000039 /* CaptureToolbarComponents.swift in Sources */,
 				A1000000000000000000003A /* SliderRow.swift in Sources */,
 				FA10000000000000000000D2 /* Dropdown.swift in Sources */,
+				FA10000000000000000000D3 /* ImageDropSection.swift in Sources */,
 				A1000000000000000000003B /* TailwindColorPicker.swift in Sources */,
 				FA10000000000000000000C4 /* TransitionControlsSection.swift in Sources */,
 				A10000000000000000000044 /* SegmentPicker.swift in Sources */,

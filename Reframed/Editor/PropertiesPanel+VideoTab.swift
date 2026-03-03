@@ -45,29 +45,16 @@ extension PropertiesPanel {
 
   var imageBackgroundSection: some View {
     VStack(alignment: .leading, spacing: Layout.itemSpacing) {
-      if let image = editorState.backgroundImage {
-        Image(nsImage: image)
-          .resizable()
-          .aspectRatio(contentMode: .fit)
-          .frame(maxWidth: .infinity, maxHeight: 60)
-          .clipShape(RoundedRectangle(cornerRadius: Radius.lg))
-      }
-      Button {
-        pickBackgroundImage()
-      } label: {
-        HStack {
-          Image(systemName: "photo.on.rectangle")
-          Text(editorState.backgroundImage != nil ? "Change Image" : "Choose Image")
+      ImageDropSection(
+        image: editorState.backgroundImage,
+        onPick: { pickBackgroundImage() },
+        onDrop: { url in
+          editorState.setBackgroundImage(from: url)
+          if case .image(let f) = editorState.backgroundStyle {
+            backgroundImageFilename = f
+          }
         }
-        .font(.system(size: FontSize.xs))
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 6)
-        .background(ReframedColors.fieldBackground)
-        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
-        .overlay(RoundedRectangle(cornerRadius: Radius.md).strokeBorder(ReframedColors.border))
-      }
-      .buttonStyle(.plain)
-      .foregroundStyle(ReframedColors.primaryText)
+      )
       if editorState.backgroundImage != nil {
         VStack(alignment: .leading, spacing: Layout.itemSpacing) {
           SectionHeader(icon: "arrow.up.left.and.arrow.down.right", title: "Fill Mode")
