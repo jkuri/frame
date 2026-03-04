@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
 VERSION=$(grep MARKETING_VERSION "$ROOT_DIR/Config.xcconfig" | cut -d'=' -f2 | tr -d ' ')
+BUILD_NUMBER=$(grep CURRENT_PROJECT_VERSION "$ROOT_DIR/Config.xcconfig" | cut -d'=' -f2 | tr -d ' ')
 DMG_NAME="Reframed-${VERSION}.dmg"
 DMG_PATH="$DIST_DIR/$DMG_NAME"
 APPCAST_PATH="$DIST_DIR/appcast.xml"

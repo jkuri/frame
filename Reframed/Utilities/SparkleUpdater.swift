@@ -1,26 +1,19 @@
-import Combine
 import Sparkle
-import SwiftUI
 
 @MainActor
-@Observable
 final class SparkleUpdater {
+  static let shared = SparkleUpdater()
+
   private let controller: SPUStandardUpdaterController
-  private var cancellable: AnyCancellable?
 
-  @ObservationIgnored
-  private(set) var canCheckForUpdates = false
-
-  init() {
+  private init() {
     controller = SPUStandardUpdaterController(
       startingUpdater: true,
       updaterDelegate: nil,
       userDriverDelegate: nil
     )
-    cancellable = controller.updater.publisher(for: \.canCheckForUpdates)
-      .sink { [weak self] value in
-        self?.canCheckForUpdates = value
-      }
+    controller.updater.automaticallyChecksForUpdates = true
+    controller.updater.updateCheckInterval = 3600
   }
 
   func checkForUpdates() {

@@ -4,12 +4,12 @@ import SwiftUI
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
   let session = SessionState()
-  let sparkleUpdater = SparkleUpdater()
   private var permissionsWindow: NSWindow?
   private var shortcutManager: KeyboardShortcutManager?
   private var eventMonitor: Any?
 
   func applicationDidFinishLaunching(_ notification: Notification) {
+    _ = SparkleUpdater.shared
     ConfigService.shared.applyAppearance()
 
     let manager = KeyboardShortcutManager(session: session)

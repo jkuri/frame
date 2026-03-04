@@ -9,7 +9,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Jan Kuri &lt;jkuri88@gmail.com&gt;</string>
 	<key>LSUIElement</key>

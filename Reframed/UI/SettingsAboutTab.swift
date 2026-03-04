@@ -40,20 +40,10 @@ extension SettingsView {
   }
 
   private var updateSection: some View {
-    Button {
-      if let delegate = NSApp.delegate as? AppDelegate {
-        delegate.sparkleUpdater.checkForUpdates()
-      }
-    } label: {
-      Text("Check for Updates")
+    Button("Check for Updates") {
+      SparkleUpdater.shared.checkForUpdates()
     }
     .buttonStyle(OutlineButtonStyle(size: .small))
-    .disabled(
-      {
-        guard let delegate = NSApp.delegate as? AppDelegate else { return true }
-        return !delegate.sparkleUpdater.canCheckForUpdates
-      }()
-    )
   }
 
   private var changelogSection: some View {
