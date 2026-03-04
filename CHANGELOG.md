@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.13.1](https://github.com/jkuri/Reframed/compare/v0.13.0...v0.13.1) (2026-03-04)
+
+### Bug Fixes
+
+- **auto-update:** make Sparkle auto-updates work correctly ([5542024](https://github.com/jkuri/Reframed/commit/55420241dd4d7dbfb99c63de36d1e6fe1d052bbe))
+
 ## [v0.13.0](https://github.com/jkuri/Reframed/compare/v0.12.1...v0.13.0) (2026-03-04)
 
 ### Features
