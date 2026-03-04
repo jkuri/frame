@@ -19,21 +19,21 @@ struct PermissionsView: View {
 
       VStack(alignment: .leading, spacing: 32) {
         PermissionRow(
-          title: "Screen Recording Permission",
-          description: "Reframed needs to capture video of your screen. You might need to restart the app after granting it.",
+          title: "Screen Recording",
+          description: "Required to capture your screen. A restart may be needed after granting this.",
           granted: screenRecordingGranted,
-          grantedLabel: "Screen Recording enabled",
+          grantedLabel: "Screen recording allowed",
           requestLabel: "Allow Screen Recording"
         ) {
           Permissions.requestScreenRecordingPermission()
         }
 
         PermissionRow(
-          title: "Accessibility Permission",
-          description: "Reframed needs to capture mouse movements and shortcut keystrokes while you are recording your screen.",
+          title: "Accessibility",
+          description: "Used to track your cursor and listen for keyboard shortcuts during recording.",
           granted: accessibilityGranted,
-          grantedLabel: "Accessibility access enabled",
-          requestLabel: "Allow Accessibility Access"
+          grantedLabel: "Accessibility allowed",
+          requestLabel: "Allow Accessibility"
         ) {
           Permissions.requestAccessibilityPermission()
         }
