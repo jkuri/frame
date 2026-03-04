@@ -4,7 +4,7 @@ import Foundation
 extension EditorState {
   func isSpotlightActive(at time: Double) -> Bool {
     guard spotlightEnabled else { return false }
-    if spotlightRegions.isEmpty { return true }
+    if spotlightRegions.isEmpty { return false }
     return spotlightRegions.contains { time >= $0.startSeconds && time <= $0.endSeconds }
   }
 
