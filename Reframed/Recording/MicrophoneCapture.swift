@@ -30,11 +30,9 @@ final class MicrophoneCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDel
     }
     let desc = device.activeFormat.formatDescription
     let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(desc)?.pointee
-    let nativeRate = asbd?.mSampleRate ?? 48000
     let nativeChannels = Int(asbd?.mChannelsPerFrame ?? 1)
 
-    let targetRate: Double = nativeRate >= 44100 ? nativeRate : 48000
-    return MicrophoneFormat(sampleRate: targetRate, channelCount: nativeChannels)
+    return MicrophoneFormat(sampleRate: 48000, channelCount: nativeChannels)
   }
 
   func startAndVerify(deviceId: String) async throws {
@@ -67,7 +65,7 @@ final class MicrophoneCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDel
     let nativeChannels = Int(asbd?.mChannelsPerFrame ?? 1)
 
     let output = AVCaptureAudioDataOutput()
-    if nativeRate < 44100 {
+    if nativeRate != 48000 {
       output.audioSettings = [
         AVFormatIDKey: kAudioFormatLinearPCM,
         AVSampleRateKey: 48000,

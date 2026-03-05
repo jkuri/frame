@@ -34,10 +34,10 @@ final class AudioTrackWriter: @unchecked Sendable {
     self.logger = Logger(label: "eu.jankuri.reframed.audio-track-writer.\(label)")
     self.queue = DispatchQueue(label: "eu.jankuri.reframed.audio-track-writer.\(label).queue", qos: .userInteractive)
     self.outputSettings = [
-      AVFormatIDKey: kAudioFormatMPEG4AAC,
+      AVFormatIDKey: kAudioFormatAppleLossless,
       AVSampleRateKey: sampleRate,
       AVNumberOfChannelsKey: channelCount,
-      AVEncoderBitRateKey: 320_000,
+      AVEncoderBitDepthHintKey: 24,
     ]
 
     if FileManager.default.fileExists(atPath: outputURL.path) {
