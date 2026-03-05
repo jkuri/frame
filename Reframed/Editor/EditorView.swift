@@ -181,7 +181,7 @@ struct EditorView: View {
           ForEach(EditorTab.availableCases) { tab in
             let disabled =
               (tab == .camera && !editorState.hasWebcam)
-              || (tab == .audio && !editorState.hasSystemAudio && !editorState.hasMicAudio)
+              || (tab == .audio && !editorState.hasSystemAudio && !editorState.hasMicAudio && editorState.cursorMetadataProvider == nil)
               || (tab == .cursor && editorState.cursorMetadataProvider == nil)
               || (tab == .zoom && editorState.cursorMetadataProvider == nil)
               || (tab == .captions && !editorState.hasMicAudio && !editorState.hasSystemAudio)
