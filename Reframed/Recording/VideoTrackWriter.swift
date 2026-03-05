@@ -44,7 +44,7 @@ final class VideoTrackWriter: @unchecked Sendable {
     let fileType: AVFileType = captureQuality.isProRes && !isWebcam ? .mov : .mp4
     let writer = try AVAssetWriter(outputURL: outputURL, fileType: fileType)
 
-    let bitRateMultiplier = isWebcam ? 1 : 5
+    let bitRateMultiplier = isWebcam ? 2 : 5
     let videoSettings: [String: Any]
     switch captureQuality {
     case .standard:
