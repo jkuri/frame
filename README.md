@@ -8,7 +8,6 @@
   <a href="https://github.com/jkuri/Reframed/blob/main/LICENSE"><img src="https://img.shields.io/github/license/jkuri/Reframed?color=34c759&labelColor=black" alt="License" /></a>
   <img src="https://img.shields.io/badge/platform-macOS_15%2B-cb30e0?labelColor=black " alt="Platform" />
   <img src="https://img.shields.io/badge/swift-6-08f?labelColor=black" alt="Swift 6" />
-  <img src="https://img.shields.io/github/v/release/jkuri/Reframed?color=fc0&labelColor=black" alt="Latest Release" />
 </p>
 
 > Open-source macOS screen recorder and capture editor. A free alternative to Screen Studio - capture your screen, windows, or iOS devices with a webcam overlay, then edit on a timeline with auto-captions and smooth cursor zooms.
@@ -16,6 +15,18 @@
 <p align="center">
   <img width="100%" alt="Reframed Editor" src="https://github.com/user-attachments/assets/a8c20c27-1251-4c7c-a5f3-8bf01f90e868" />
 </p>
+
+## The idea
+
+Screen recorders give you a raw .mp4. Getting cursor-tracking zoom effects, auto-captions, or webcam overlays on top of that usually means paying for a proprietary app. Reframed is the open-source alternative - record, edit and export in one app.
+
+### Core features
+
+- **Capture and edit in one place.** Record your screen, window, or region, then go straight into the built-in editor. No round-tripping through other tools.
+- **Zoom and pan that follow your cursor.** Auto-zoom detects where you click and generates keyframes. You can also place them manually or lock the viewport to your cursor.
+- **Noise reduction built in.** Microphone audio runs through RNNoise, so you don't need a separate audio chain to clean up background noise.
+- **Webcam overlay and fullscreen sections.** Drop your camera feed in as a PiP or switch to fullscreen webcam for specific segments on the timeline.
+- **Export exactly what you need.** Pick your codec, resolution, and FPS. Platform presets handle the rest for YouTube, Twitter/X, TikTok, and others.
 
 ## Install
 
