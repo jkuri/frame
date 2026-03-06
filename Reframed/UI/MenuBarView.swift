@@ -135,20 +135,57 @@ struct MenuBarView: View {
       MenuBarDivider()
 
       HoverEffectScope {
-        Button {
-          onDismiss()
-          let path = (ConfigService.shared.projectFolder as NSString).expandingTildeInPath
-          NSWorkspace.shared.open(URL(fileURLWithPath: path))
-        } label: {
-          Text("Open Projects Folder")
-            .font(.system(size: FontSize.xxs, weight: .medium))
-            .foregroundStyle(ReframedColors.primaryText)
-            .frame(maxWidth: .infinity, alignment: .center)
+        HStack(spacing: 0) {
+          Button {
+            onDismiss()
+            let path = (ConfigService.shared.projectFolder as NSString).expandingTildeInPath
+            NSWorkspace.shared.open(URL(fileURLWithPath: path))
+          } label: {
+            Text("Projects")
+              .font(.system(size: FontSize.xxs, weight: .medium))
+              .foregroundStyle(ReframedColors.primaryText)
+              .frame(maxWidth: .infinity)
+              .frame(height: 42)
+              .contentShape(Rectangle())
+          }
+          .buttonStyle(.plain)
+          .hoverEffect(id: "openFolder")
+
+          Button {
+            onDismiss()
+            SparkleUpdater.shared.checkForUpdates()
+          } label: {
+            HStack(spacing: 4) {
+              Text("v\(UpdateChecker.currentVersion)")
+                .font(.system(size: FontSize.xxs, weight: .medium))
+                .foregroundStyle(ReframedColors.primaryText)
+            }
+            .frame(maxWidth: .infinity)
             .frame(height: 42)
             .contentShape(Rectangle())
+          }
+          .buttonStyle(.plain)
+          .hoverEffect(id: "checkUpdate")
+
+          Button {
+            onDismiss()
+            NSApp.terminate(nil)
+          } label: {
+            HStack(spacing: 4) {
+              Text("Quit")
+                .font(.system(size: FontSize.xxs, weight: .medium))
+                .foregroundStyle(ReframedColors.primaryText)
+              Text("\u{2318}Q")
+                .font(.system(size: FontSize.xxs - 1, weight: .medium))
+                .foregroundStyle(ReframedColors.secondaryText)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 42)
+            .contentShape(Rectangle())
+          }
+          .buttonStyle(.plain)
+          .hoverEffect(id: "quit")
         }
-        .buttonStyle(.plain)
-        .hoverEffect(id: "openFolder")
         .padding(.horizontal, 10)
       }
 
@@ -275,10 +312,11 @@ private struct PermissionsPrompt: View {
         .font(.system(size: FontSize.xl))
         .foregroundStyle(ReframedColors.secondaryText)
 
-      Text("Permissions required to start recording.")
+      Text("Reframed needs Screen Recording and Accessibility permissions to work.")
         .font(.system(size: FontSize.xxs))
         .foregroundStyle(ReframedColors.secondaryText)
         .multilineTextAlignment(.center)
+        .lineLimit(2)
 
       Button(action: action) {
         Text("Grant Permissions")
