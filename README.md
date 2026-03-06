@@ -98,25 +98,6 @@ Or grab the `.dmg` from [Releases](https://github.com/jkuri/reframed/releases).
 - Microphone permission (optional, for mic capture)
 - Camera permission (optional, for webcam overlay)
 
-## Build
-
-```bash
-# Debug build
-make build
-
-# Release build
-make release
-
-# Build and run
-make dev
-
-# Create DMG installer
-make dmg
-
-# Install to /Applications
-make install
-```
-
 ## License
 
 MIT
