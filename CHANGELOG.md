@@ -1,5 +1,40 @@
 # Changelog
 
+## [v0.13.2](https://github.com/jkuri/Reframed/compare/v0.13.1...v0.13.2) (2026-03-06)
+
+### Features
+
+- **ui:** improve UX for all capture selection modes ([73f7c39](https://github.com/jkuri/Reframed/commit/73f7c3947936a738bb3ab2ade1990934488dcc72))
+- **ui:** show inline device picker when camera/mic toggle has no device selected ([d162aec](https://github.com/jkuri/Reframed/commit/d162aec5ca9447206eb2f2b455dfc42b74dbeb2e))
+- **ui:** add dim outer area and hide camera preview options to popover ([ff1b11d](https://github.com/jkuri/Reframed/commit/ff1b11deb89070aff262ad32ebe7de68473523c0))
+- **project:** make recording project names more meaningful by default ([d41c020](https://github.com/jkuri/Reframed/commit/d41c020b455ac43f1dc447de1bda2160ece0c2bc))
+- **menu-bar:** move version to top-right corner and fix permissions text ([0952d39](https://github.com/jkuri/Reframed/commit/0952d39ec7bb4c79e4d7566df19c68e512a80b90))
+- **menu-bar:** add quit and check-for-updates buttons to footer ([f34c124](https://github.com/jkuri/Reframed/commit/f34c124ca325192ad2675eb7b096a17f9a7b52e9))
+- **recording:** lossless audio recording with standardized 48kHz capture ([0d39c96](https://github.com/jkuri/Reframed/commit/0d39c961f7a34ea90caf0c1ced78641ce1918144))
+- **editor:** zoom-aware and typing-aware cursor smoothing ([bf34905](https://github.com/jkuri/Reframed/commit/bf34905a3ef50d7d99a53b3b90f0f8e1544bba74))
+
+### Bug Fixes
+
+- **ui:** Enter key now triggers countdown timer in all capture modes ([3697f95](https://github.com/jkuri/Reframed/commit/3697f950d442ef5ad09636a09b8a0ad1ecb2f01b))
+- correct repository capitalization in the GitHub link within Credits.html ([5c6efb4](https://github.com/jkuri/Reframed/commit/5c6efb45fe157aedaff3f929fb474c211ca07770))
+- **recording:** auto-stop recording when captured window is closed ([c352ef7](https://github.com/jkuri/Reframed/commit/c352ef7db8d37d392a8f93478a03621b96156998))
+- **menu-bar:** hide quick actions until permissions are granted ([518c7b2](https://github.com/jkuri/Reframed/commit/518c7b24f72197a085ad3847a86a958ff01262b3))
+- **recording:** increase webcam bitrate multiplier for better quality ([f095e14](https://github.com/jkuri/Reframed/commit/f095e14ca454b1082423ea078b2c38d0a79eef9f))
+- **editor:** enable audio tab when cursor metadata is present ([d348d91](https://github.com/jkuri/Reframed/commit/d348d910e86f5b47241d4834ef1414ea5979598d))
+
+### Performance
+
+- **export:** improve performance of parallel export and reduce usage ([c2a93f9](https://github.com/jkuri/Reframed/commit/c2a93f940f9bf040cdd50d9d2114bb779ad9b5b7))
+
+### Refactoring
+
+- **compositor:** rename CameraVideoCompositor to FrameRenderer ([aaf47f8](https://github.com/jkuri/Reframed/commit/aaf47f88727c8126fe9592dc64ba532f9a4aea05))
+- extract shared video/audio encoding settings into EncodingSettings utility ([a7b66d4](https://github.com/jkuri/Reframed/commit/a7b66d460e974ef2097d82200456be7d0906ef93))
+
+### Chores
+
+- **changelog:** exclude all docs commits from changelog generation ([78231fa](https://github.com/jkuri/Reframed/commit/78231fa483fcfab6e59edb53373936ed9ec16af6))
+
 ## [v0.13.1](https://github.com/jkuri/Reframed/compare/v0.13.0...v0.13.1) (2026-03-04)
 
 ### Bug Fixes
@@ -188,10 +223,6 @@
 
 - **capture:** fix window mode capture to follow same new styles ([9da8c0f](https://github.com/jkuri/Reframed/commit/9da8c0f9972369b30752675021c66e25b773effa))
 
-### Documentation
-
-- add root-cause fix guideline to code style section ([f18ae7e](https://github.com/jkuri/Reframed/commit/f18ae7ef02faf794599a0f10bd5788471dbf02d5))
-
 ### Chores
 
 - create dmg signing script ([2d818bd](https://github.com/jkuri/Reframed/commit/2d818bdd170242049cef987edbdf2abe3327a2ba))
@@ -214,10 +245,6 @@
 ### Styling
 
 - **app:** restyle the whole app using shadcn monochrome colours ([be3e89b](https://github.com/jkuri/Reframed/commit/be3e89be1b1228513efaaf74bf3eefe3f24b8f7e))
-
-### Documentation
-
-- **claude:** update CLAUDE.md specs ([4bad85f](https://github.com/jkuri/Reframed/commit/4bad85f195ef3755bf90f5727d0b7cdcfb40ce64))
 
 ## [v0.9.3](https://github.com/jkuri/Reframed/compare/v0.9.2...v0.9.3) (2026-02-20)
 
@@ -299,10 +326,6 @@
 
 - **colors:** make editor colors apply on change and make history popover match styles of other popovers in the app ([dd8b3d5](https://github.com/jkuri/Reframed/commit/dd8b3d5ec665a3fbb95885e61a36a777b51b77a9))
 - **appearance:** make sure all colors are updated when switch appearance (light/dark) mode ([e654bbb](https://github.com/jkuri/Reframed/commit/e654bbb487b30feddc57400c68cb55df7b924f3a))
-
-### Documentation
-
-- **claude:** update CLAUDE.md specs ([d6cf4d9](https://github.com/jkuri/Reframed/commit/d6cf4d9187d5b6fed2120bc5b28ec48b270e88ca))
 
 ## [v0.9.0](https://github.com/jkuri/Reframed/compare/v0.8.2...v0.9.0) (2026-02-18)
 
