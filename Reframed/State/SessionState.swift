@@ -49,6 +49,7 @@ final class SessionState {
   private var cursorMetadataRecorder: CursorMetadataRecorder?
   private var devicePreviewWindow: DevicePreviewWindow?
   private var deviceCapture: DeviceCapture?
+  private var deviceName: String?
   private var audioLevelTask: Task<Void, Never>?
   private var windowPositionObserver: WindowPositionObserver?
   private var processingPulseTimer: Timer?
@@ -465,6 +466,8 @@ final class SessionState {
     transition(to: .processing)
     cleanupCoordinators()
 
+    let sourceName = projectSourceName()
+
     guard let result = try await recordingCoordinator?.stopRecordingRaw(keepWebcamAlive: false) else {
       recordingCoordinator = nil
       captureTarget = nil
@@ -484,14 +487,38 @@ final class SessionState {
     devicePreviewWindow = nil
     deviceCapture?.stop()
     deviceCapture = nil
+    deviceName = nil
 
     let saveDir = FileManager.default.projectSaveDirectory()
     do {
-      let project = try ReframedProject.create(from: result, fps: result.fps, captureMode: captureMode, in: saveDir)
+      let project = try ReframedProject.create(
+        from: result,
+        fps: result.fps,
+        captureMode: captureMode,
+        sourceName: sourceName,
+        in: saveDir
+      )
       openEditor(project: project)
     } catch {
       logger.error("Failed to create project bundle: \(error)")
       openEditor(project: nil, result: result)
+    }
+  }
+
+  private func projectSourceName() -> String? {
+    switch captureTarget {
+    case .window(let window):
+      return window.owningApplication?.applicationName
+    case .region(let selection):
+      if captureMode == .entireScreen {
+        return NSScreen.screen(for: selection.displayID)?.localizedName
+      }
+      return nil
+    case .none:
+      if captureMode == .device {
+        return deviceName
+      }
+      return nil
     }
   }
 
@@ -800,6 +827,7 @@ final class SessionState {
 
     let capture = DeviceCapture()
     deviceCapture = capture
+    deviceName = device.name
 
     Task {
       do {

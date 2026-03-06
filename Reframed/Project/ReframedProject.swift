@@ -64,12 +64,15 @@ struct ReframedProject: Sendable {
     from result: RecordingResult,
     fps: Int,
     captureMode: CaptureMode,
+    sourceName: String? = nil,
     in directory: URL
   ) throws
     -> ReframedProject
   {
     let fm = FileManager.default
-    let bundleName = "recording-\(timestamp()).frm"
+    let prefix = projectPrefix(captureMode: captureMode, sourceName: sourceName)
+    let ts = timestamp()
+    let bundleName = "\(prefix)-\(ts).frm"
     let bundleURL = directory.appendingPathComponent(bundleName)
     try fm.createDirectory(at: bundleURL, withIntermediateDirectories: true)
 
@@ -94,7 +97,10 @@ struct ReframedProject: Sendable {
 
     fm.cleanupTempDir()
 
+    let projectName = "\(prefix)-\(ts)"
+
     let metadata = ProjectMetadata(
+      name: projectName,
       createdAt: Date(),
       fps: fps,
       screenSize: CodableSize(result.screenSize),
@@ -179,6 +185,28 @@ struct ReframedProject: Sendable {
 
   func delete() throws {
     try FileManager.default.removeItem(at: bundleURL)
+  }
+
+  private static func projectPrefix(captureMode: CaptureMode, sourceName: String?) -> String {
+    if let sourceName {
+      let sanitized =
+        sourceName
+        .components(separatedBy: CharacterSet.alphanumerics.union(CharacterSet(charactersIn: " -_")).inverted)
+        .joined()
+        .trimmingCharacters(in: .whitespaces)
+        .replacingOccurrences(of: " ", with: "-")
+      if !sanitized.isEmpty {
+        return sanitized
+      }
+    }
+
+    switch captureMode {
+    case .entireScreen: return "Screen"
+    case .selectedWindow: return "Window"
+    case .selectedArea: return "Area"
+    case .device: return "Device"
+    case .none: return "Recording"
+    }
   }
 
   private static func timestamp() -> String {
