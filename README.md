@@ -4,12 +4,6 @@
 
 # <p align="center">Reframed</p>
 
-<p align="center">
-  <a href="https://github.com/jkuri/Reframed/blob/main/LICENSE"><img src="https://img.shields.io/github/license/jkuri/Reframed?color=34c759&labelColor=black" alt="License" /></a>
-  <img src="https://img.shields.io/badge/platform-macOS_15%2B-cb30e0?labelColor=black " alt="Platform" />
-  <img src="https://img.shields.io/badge/swift-6-08f?labelColor=black" alt="Swift 6" />
-</p>
-
 > Open-source macOS screen recorder and capture editor. A free alternative to Screen Studio - capture your screen, windows, or iOS devices with a webcam overlay, then edit on a timeline with auto-captions and smooth cursor zooms.
 
 <p align="center">
