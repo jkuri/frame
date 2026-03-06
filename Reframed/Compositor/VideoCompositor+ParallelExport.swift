@@ -2,16 +2,19 @@ import AVFoundation
 import CoreMedia
 import Foundation
 import Logging
+import os.lock
 
 extension VideoCompositor {
   private final class CancelToken: @unchecked Sendable {
     private let lock = NSLock()
     private var _isCancelled = false
+
     var isCancelled: Bool {
       lock.lock()
       defer { lock.unlock() }
       return _isCancelled
     }
+
     func cancel() {
       lock.lock()
       _isCancelled = true
@@ -59,7 +62,7 @@ extension VideoCompositor {
     func signal() {
       condition.lock()
       isDone = true
-      condition.signal()
+      condition.broadcast()
       condition.unlock()
     }
   }
@@ -87,6 +90,175 @@ extension VideoCompositor {
       condition.signal()
       condition.unlock()
     }
+
+    func signal(times: Int) {
+      guard times > 0 else { return }
+      condition.lock()
+      count += times
+      for _ in 0..<times {
+        condition.signal()
+      }
+      condition.unlock()
+    }
+  }
+
+  private struct FrameJob: @unchecked Sendable {
+    let index: Int
+    let time: CMTime
+    let screenBuffer: CVPixelBuffer
+    let webcamBuffer: CVPixelBuffer?
+    let outputBuffer: CVPixelBuffer
+    let style: CameraBackgroundStyle
+    let backgroundImage: CGImage?
+  }
+
+  private final class FrameJobQueue: @unchecked Sendable {
+    private let condition = NSCondition()
+    private var storage: [FrameJob?] = []
+    private var head = 0
+    private var tail = 0
+    private var count = 0
+    private var isClosed = false
+
+    init(initialCapacity: Int = 256) {
+      let cap = max(16, initialCapacity.nextPowerOfTwo)
+      storage = Array(repeating: nil, count: cap)
+    }
+
+    func push(_ job: FrameJob) {
+      condition.lock()
+      if count == storage.count {
+        resize()
+      }
+      storage[tail] = job
+      tail = (tail + 1) & (storage.count - 1)
+      count += 1
+      condition.signal()
+      condition.unlock()
+    }
+
+    func pop() -> FrameJob? {
+      condition.lock()
+      defer { condition.unlock() }
+
+      while count == 0 && !isClosed {
+        condition.wait()
+      }
+
+      guard count > 0 else { return nil }
+
+      let job = storage[head]
+      storage[head] = nil
+      head = (head + 1) & (storage.count - 1)
+      count -= 1
+      return job
+    }
+
+    func close() {
+      condition.lock()
+      isClosed = true
+      condition.broadcast()
+      condition.unlock()
+    }
+
+    private func resize() {
+      let newCapacity = storage.count * 2
+      var newStorage = [FrameJob?](repeating: nil, count: newCapacity)
+      for i in 0..<count {
+        newStorage[i] = storage[(head + i) & (storage.count - 1)]
+      }
+      storage = newStorage
+      head = 0
+      tail = count
+    }
+  }
+
+  private final class Metrics: @unchecked Sendable {
+    private let lock = NSLock()
+
+    private var sampleMatchSeconds: Double = 0
+    private var segmentSeconds: Double = 0
+    private var renderSeconds: Double = 0
+    private var appendSeconds: Double = 0
+
+    private var queuedFrames = 0
+    private var renderedFrames = 0
+    private var appendedFrames = 0
+    private var droppedPoolFrames = 0
+
+    func addSampleMatch(_ seconds: Double) {
+      lock.lock()
+      sampleMatchSeconds += seconds
+      lock.unlock()
+    }
+
+    func addSegment(_ seconds: Double) {
+      lock.lock()
+      segmentSeconds += seconds
+      lock.unlock()
+    }
+
+    func addRender(_ seconds: Double) {
+      lock.lock()
+      renderSeconds += seconds
+      lock.unlock()
+    }
+
+    func addAppend(_ seconds: Double) {
+      lock.lock()
+      appendSeconds += seconds
+      lock.unlock()
+    }
+
+    func incQueued() {
+      lock.lock()
+      queuedFrames += 1
+      lock.unlock()
+    }
+
+    func incRendered() {
+      lock.lock()
+      renderedFrames += 1
+      lock.unlock()
+    }
+
+    func incAppended() {
+      lock.lock()
+      appendedFrames += 1
+      lock.unlock()
+    }
+
+    func incDroppedPool() {
+      lock.lock()
+      droppedPoolFrames += 1
+      lock.unlock()
+    }
+
+    func snapshot() -> Snapshot {
+      lock.lock()
+      defer { lock.unlock() }
+      return Snapshot(
+        sampleMatchSeconds: sampleMatchSeconds,
+        segmentSeconds: segmentSeconds,
+        renderSeconds: renderSeconds,
+        appendSeconds: appendSeconds,
+        queuedFrames: queuedFrames,
+        renderedFrames: renderedFrames,
+        appendedFrames: appendedFrames,
+        droppedPoolFrames: droppedPoolFrames
+      )
+    }
+
+    struct Snapshot {
+      let sampleMatchSeconds: Double
+      let segmentSeconds: Double
+      let renderSeconds: Double
+      let appendSeconds: Double
+      let queuedFrames: Int
+      let renderedFrames: Int
+      let appendedFrames: Int
+      let droppedPoolFrames: Int
+    }
   }
 
   private final class OrderedFrameWriter: @unchecked Sendable {
@@ -105,13 +277,15 @@ extension VideoCompositor {
     private let progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)?
     private let startTime: CFAbsoluteTime
     private let backpressure: CountingCondition
+    private let metrics: Metrics
 
     init(
       adaptor: AVAssetWriterInputPixelBufferAdaptor,
       input: AVAssetWriterInput,
       totalFrames: Int,
       progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)?,
-      backpressure: CountingCondition
+      backpressure: CountingCondition,
+      metrics: Metrics
     ) {
       self.adaptor = adaptor
       self.input = input
@@ -119,11 +293,12 @@ extension VideoCompositor {
       self.progressHandler = progressHandler
       self.startTime = CFAbsoluteTimeGetCurrent()
       self.backpressure = backpressure
+      self.metrics = metrics
     }
 
     func start() {
       input.requestMediaDataWhenReady(
-        on: DispatchQueue(label: "eu.jankuri.reframed.video-writer", qos: .userInteractive)
+        on: DispatchQueue(label: "eu.jankuri.reframed.video-writer", qos: .userInitiated)
       ) { [weak self] in
         self?.drain()
       }
@@ -159,9 +334,7 @@ extension VideoCompositor {
       draining = false
       lock.unlock()
 
-      for _ in 0..<pendingCount {
-        backpressure.signal()
-      }
+      backpressure.signal(times: pendingCount)
 
       if shouldSignalDone {
         doneSignal.signal()
@@ -187,14 +360,22 @@ extension VideoCompositor {
         let writtenCount = nextIndex
         lock.unlock()
 
-        adaptor.append(buf, withPresentationTime: time)
+        let appendStart = CFAbsoluteTimeGetCurrent()
+        let appended = adaptor.append(buf, withPresentationTime: time)
+        let appendEnd = CFAbsoluteTimeGetCurrent()
+
+        metrics.addAppend(appendEnd - appendStart)
+        if appended {
+          metrics.incAppended()
+        }
+
         backpressure.signal()
 
         if writtenCount % 30 == 0 || writtenCount == totalFrames {
           let progress = (Double(writtenCount) / Double(max(totalFrames, 1))) * 0.99
           let elapsed = CFAbsoluteTimeGetCurrent() - startTime
           let remaining = Double(totalFrames - writtenCount)
-          let secsPerFrame = elapsed / Double(writtenCount)
+          let secsPerFrame = elapsed / Double(max(writtenCount, 1))
           let eta = remaining * secsPerFrame
           if let handler = progressHandler {
             Task { @MainActor in handler(progress, eta) }
@@ -228,6 +409,8 @@ extension VideoCompositor {
     audioBitrate: Int = 320_000,
     progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)?
   ) async throws {
+    let logger = Logger(label: "eu.jankuri.reframed.video-compositor")
+
     let reader = try AVAssetReader(asset: composition)
     reader.timeRange = CMTimeRange(start: .zero, duration: trimDuration)
 
@@ -238,9 +421,11 @@ extension VideoCompositor {
       throw CaptureError.recordingFailed("No screen track found")
     }
 
+    let pixelFormat = kCVPixelFormatType_64RGBAHalf
+
     let screenOutput = AVAssetReaderTrackOutput(
       track: screenTrack,
-      outputSettings: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_64RGBAHalf]
+      outputSettings: [kCVPixelBufferPixelFormatTypeKey as String: pixelFormat]
     )
     screenOutput.alwaysCopiesSampleData = false
     reader.add(screenOutput)
@@ -252,7 +437,7 @@ extension VideoCompositor {
     {
       let output = AVAssetReaderTrackOutput(
         track: webcamTrack,
-        outputSettings: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_64RGBAHalf]
+        outputSettings: [kCVPixelBufferPixelFormatTypeKey as String: pixelFormat]
       )
       output.alwaysCopiesSampleData = false
       reader.add(output)
@@ -284,21 +469,23 @@ extension VideoCompositor {
       height: Int(renderSize.height),
       fps: fps
     )
+
     let videoInput = AVAssetWriterInput(
       mediaType: .video,
       outputSettings: videoOutputSettings
     )
     videoInput.expectsMediaDataInRealTime = false
+    assetWriter.add(videoInput)
 
     let adaptor = AVAssetWriterInputPixelBufferAdaptor(
       assetWriterInput: videoInput,
       sourcePixelBufferAttributes: [
-        kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_64RGBAHalf,
+        kCVPixelBufferPixelFormatTypeKey as String: pixelFormat,
         kCVPixelBufferWidthKey as String: Int(renderSize.width),
         kCVPixelBufferHeightKey as String: Int(renderSize.height),
+        kCVPixelBufferIOSurfacePropertiesKey as String: [:] as NSDictionary,
       ]
     )
-    assetWriter.add(videoInput)
 
     var audioWriterInput: AVAssetWriterInput?
     if !audioTracks.isEmpty {
@@ -311,20 +498,32 @@ extension VideoCompositor {
       audioWriterInput = aInput
     }
 
-    reader.startReading()
-    audioReader?.startReading()
-    assetWriter.startWriting()
+    guard reader.startReading() else {
+      throw reader.error ?? CaptureError.recordingFailed("Failed to start video reader")
+    }
+
+    if let audioReader {
+      guard audioReader.startReading() else {
+        throw audioReader.error ?? CaptureError.recordingFailed("Failed to start audio reader")
+      }
+    }
+
+    guard assetWriter.startWriting() else {
+      throw assetWriter.error ?? CaptureError.recordingFailed("Failed to start writing")
+    }
     assetWriter.startSession(atSourceTime: .zero)
 
-    let coreCount = ProcessInfo.processInfo.activeProcessorCount
-    let maxInFlight = min(coreCount * 4, 40)
+    let coreCount = max(1, ProcessInfo.processInfo.activeProcessorCount)
+    let workerCount = coreCount
+    let maxInFlight = min(max(workerCount * 2, 8), 20)
 
     var poolRef: CVPixelBufferPool?
     let poolAttrs: NSDictionary = [kCVPixelBufferPoolMinimumBufferCountKey: maxInFlight + 4]
     let pbAttrs: NSDictionary = [
-      kCVPixelBufferPixelFormatTypeKey: kCVPixelFormatType_64RGBAHalf,
+      kCVPixelBufferPixelFormatTypeKey: pixelFormat,
       kCVPixelBufferWidthKey: Int(renderSize.width),
       kCVPixelBufferHeightKey: Int(renderSize.height),
+      kCVPixelBufferIOSurfacePropertiesKey: [:] as NSDictionary,
     ]
     CVPixelBufferPoolCreate(nil, poolAttrs, pbAttrs, &poolRef)
     guard let outputPool = poolRef else {
@@ -333,6 +532,8 @@ extension VideoCompositor {
 
     let totalFrames = Int(ceil(CMTimeGetSeconds(trimDuration) * Double(fps)))
     let timescale = CMTimeScale(fps)
+    let metrics = Metrics()
+    let exportStart = CFAbsoluteTimeGetCurrent()
 
     nonisolated(unsafe) let pipelineReader = reader
     nonisolated(unsafe) let pipelineScreenOutput = screenOutput
@@ -359,6 +560,7 @@ extension VideoCompositor {
             var finished = false
             let lock = NSLock()
           }
+
           let audioState = AudioState()
 
           if let aOut = pipelineAudioOutput, let aIn = pipelineAudioWriterInput,
@@ -371,22 +573,32 @@ extension VideoCompositor {
             safeAudioInput.requestMediaDataWhenReady(on: audioQueue) {
               while safeAudioInput.isReadyForMoreMediaData {
                 audioState.lock.lock()
-                if audioState.finished { audioState.lock.unlock(); break }
+                if audioState.finished {
+                  audioState.lock.unlock()
+                  break
+                }
                 audioState.lock.unlock()
 
                 if cancelToken.isCancelled {
                   safeAudioInput.markAsFinished()
                   audioState.lock.lock()
-                  if !audioState.finished { audioState.finished = true; audioGroup.leave() }
+                  if !audioState.finished {
+                    audioState.finished = true
+                    audioGroup.leave()
+                  }
                   audioState.lock.unlock()
                   break
                 }
+
                 if let sample = safeAudioOutput.copyNextSampleBuffer() {
-                  safeAudioInput.append(sample)
+                  _ = safeAudioInput.append(sample)
                 } else {
                   safeAudioInput.markAsFinished()
                   audioState.lock.lock()
-                  if !audioState.finished { audioState.finished = true; audioGroup.leave() }
+                  if !audioState.finished {
+                    audioState.finished = true
+                    audioGroup.leave()
+                  }
                   audioState.lock.unlock()
                   break
                 }
@@ -401,20 +613,68 @@ extension VideoCompositor {
             input: pipelineVideoInput,
             totalFrames: totalFrames,
             progressHandler: progressHandler,
-            backpressure: sem
+            backpressure: sem,
+            metrics: metrics
           )
           frameWriter.start()
 
-          let hasCameraBg = instruction.cameraBackgroundStyle != .none
-          let segPool = hasCameraBg ? SegmentationProcessorPool(maxCount: coreCount, quality: .balanced) : nil
-
+          let jobs = FrameJobQueue(initialCapacity: max(256, maxInFlight * 4))
+          let renderGroup = DispatchGroup()
           let renderQueue = DispatchQueue(
-            label: "eu.jankuri.reframed.render",
+            label: "eu.jankuri.reframed.render-workers",
             qos: .userInitiated,
             attributes: .concurrent
           )
 
-          let renderGroup = DispatchGroup()
+          let hasCameraBg = instruction.cameraBackgroundStyle != .none
+          let segPool = hasCameraBg ? SegmentationProcessorPool(maxCount: workerCount, quality: .balanced) : nil
+
+          for _ in 0..<workerCount {
+            renderGroup.enter()
+            renderQueue.async {
+              defer { renderGroup.leave() }
+
+              while !cancelToken.isCancelled {
+                guard let job = jobs.pop() else { break }
+
+                autoreleasepool {
+                  var processedWebcam: CGImage?
+
+                  if let wb = job.webcamBuffer, let segPool, !cancelToken.isCancelled {
+                    let segStart = CFAbsoluteTimeGetCurrent()
+                    processedWebcam = segPool.process(
+                      webcamBuffer: wb,
+                      style: job.style,
+                      backgroundCGImage: job.backgroundImage
+                    )
+                    let segEnd = CFAbsoluteTimeGetCurrent()
+                    metrics.addSegment(segEnd - segStart)
+                  }
+
+                  if cancelToken.isCancelled {
+                    frameWriter.submit(index: job.index, buffer: job.outputBuffer, time: job.time)
+                    return
+                  }
+
+                  let renderStart = CFAbsoluteTimeGetCurrent()
+                  CameraVideoCompositor.renderFrame(
+                    screenBuffer: job.screenBuffer,
+                    webcamBuffer: job.webcamBuffer,
+                    outputBuffer: job.outputBuffer,
+                    compositionTime: job.time,
+                    instruction: instruction,
+                    processedWebcamImage: processedWebcam
+                  )
+                  let renderEnd = CFAbsoluteTimeGetCurrent()
+
+                  metrics.addRender(renderEnd - renderStart)
+                  metrics.incRendered()
+
+                  frameWriter.submit(index: job.index, buffer: job.outputBuffer, time: job.time)
+                }
+              }
+            }
+          }
 
           var latestScreenSample: CMSampleBuffer?
           var nextScreenSample: CMSampleBuffer? = pipelineScreenOutput.copyNextSampleBuffer()
@@ -424,13 +684,13 @@ extension VideoCompositor {
           for frameIndex in 0..<totalFrames {
             if cancelToken.isCancelled { break }
 
+            let matchStart = CFAbsoluteTimeGetCurrent()
+
             let outputTime = CMTime(value: CMTimeValue(frameIndex), timescale: timescale)
             let outputSeconds = CMTimeGetSeconds(outputTime)
 
             while let next = nextScreenSample {
-              if CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(next))
-                <= outputSeconds + 0.001
-              {
+              if CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(next)) <= outputSeconds + 0.001 {
                 latestScreenSample = next
                 nextScreenSample = pipelineScreenOutput.copyNextSampleBuffer()
               } else {
@@ -440,66 +700,50 @@ extension VideoCompositor {
 
             if pipelineWebcamOutput != nil {
               while let next = nextWebcamSample {
-                if CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(next))
-                  <= outputSeconds + 0.001
-                {
+                if CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(next)) <= outputSeconds + 0.001 {
                   latestWebcamSample = next
-                  nextWebcamSample = pipelineWebcamOutput!.copyNextSampleBuffer()
+                  nextWebcamSample = pipelineWebcamOutput?.copyNextSampleBuffer()
                 } else {
                   break
                 }
               }
             }
 
-            guard let screenBuffer = latestScreenSample.flatMap({ CMSampleBufferGetImageBuffer($0) })
-            else { continue }
+            let matchEnd = CFAbsoluteTimeGetCurrent()
+            metrics.addSampleMatch(matchEnd - matchStart)
+
+            guard let screenBuffer = latestScreenSample.flatMap({ CMSampleBufferGetImageBuffer($0) }) else {
+              continue
+            }
+
             let webcamBuffer = latestWebcamSample.flatMap { CMSampleBufferGetImageBuffer($0) }
 
             sem.wait()
-            if cancelToken.isCancelled { sem.signal(); break }
+            if cancelToken.isCancelled {
+              sem.signal()
+              break
+            }
 
             var outBuf: CVPixelBuffer?
-            CVPixelBufferPoolCreatePixelBuffer(nil, pipelineOutputPool, &outBuf)
-            guard let outputBuffer = outBuf else {
+            let poolStatus = CVPixelBufferPoolCreatePixelBuffer(nil, pipelineOutputPool, &outBuf)
+            guard poolStatus == kCVReturnSuccess, let outputBuffer = outBuf else {
+              metrics.incDroppedPool()
               sem.signal()
               continue
             }
 
-            nonisolated(unsafe) let capturedScreen = screenBuffer
-            nonisolated(unsafe) let capturedWebcam = webcamBuffer
-            nonisolated(unsafe) let capturedOutput = outputBuffer
-            let capturedStyle = instruction.cameraBackgroundStyle
-            let capturedBgImage = instruction.cameraBackgroundImage
+            let job = FrameJob(
+              index: frameIndex,
+              time: outputTime,
+              screenBuffer: screenBuffer,
+              webcamBuffer: webcamBuffer,
+              outputBuffer: outputBuffer,
+              style: instruction.cameraBackgroundStyle,
+              backgroundImage: instruction.cameraBackgroundImage
+            )
 
-            renderGroup.enter()
-            renderQueue.async {
-              defer { renderGroup.leave() }
-              autoreleasepool {
-                var processedWebcam: CGImage?
-                if let wb = capturedWebcam, let pool = segPool, !cancelToken.isCancelled {
-                  processedWebcam = pool.process(
-                    webcamBuffer: wb,
-                    style: capturedStyle,
-                    backgroundCGImage: capturedBgImage
-                  )
-                }
-
-                if cancelToken.isCancelled {
-                  frameWriter.submit(index: frameIndex, buffer: capturedOutput, time: outputTime)
-                  return
-                }
-
-                CameraVideoCompositor.renderFrame(
-                  screenBuffer: capturedScreen,
-                  webcamBuffer: capturedWebcam,
-                  outputBuffer: capturedOutput,
-                  compositionTime: outputTime,
-                  instruction: instruction,
-                  processedWebcamImage: processedWebcam
-                )
-                frameWriter.submit(index: frameIndex, buffer: capturedOutput, time: outputTime)
-              }
-            }
+            metrics.incQueued()
+            jobs.push(job)
           }
 
           latestScreenSample = nil
@@ -507,6 +751,7 @@ extension VideoCompositor {
           latestWebcamSample = nil
           nextWebcamSample = nil
 
+          jobs.close()
           renderGroup.wait()
 
           if cancelToken.isCancelled {
@@ -514,7 +759,7 @@ extension VideoCompositor {
             pipelineAudioReader?.cancelReading()
             pipelineReader.cancelReading()
             pipelineWriter.cancelWriting()
-            CVPixelBufferPoolFlush(pipelineOutputPool, CVPixelBufferPoolFlushFlags(rawValue: 1))
+            CVPixelBufferPoolFlush(pipelineOutputPool, .excessBuffers)
             try? FileManager.default.removeItem(at: outputURL)
             safeCont.resume(throwing: CancellationError())
             return
@@ -530,21 +775,49 @@ extension VideoCompositor {
 
           if cancelToken.isCancelled {
             pipelineWriter.cancelWriting()
-            CVPixelBufferPoolFlush(pipelineOutputPool, CVPixelBufferPoolFlushFlags(rawValue: 1))
+            CVPixelBufferPoolFlush(pipelineOutputPool, .excessBuffers)
             try? FileManager.default.removeItem(at: outputURL)
             safeCont.resume(throwing: CancellationError())
             return
           }
 
           pipelineWriter.finishWriting {
-            CVPixelBufferPoolFlush(pipelineOutputPool, CVPixelBufferPoolFlushFlags(rawValue: 1))
+            CVPixelBufferPoolFlush(pipelineOutputPool, .excessBuffers)
+
+            let exportEnd = CFAbsoluteTimeGetCurrent()
+            let totalSeconds = exportEnd - exportStart
+            let m = metrics.snapshot()
+
+            let queued = max(m.queuedFrames, 1)
+            let rendered = max(m.renderedFrames, 1)
+            let appended = max(m.appendedFrames, 1)
+
+            logger.info("Parallel render export completed (\(workerCount) workers, \(coreCount) cores)")
+            logger.info("Export total: \(String(format: "%.3f", totalSeconds))s")
+            logger.info(
+              "Frames queued: \(m.queuedFrames), rendered: \(m.renderedFrames), appended: \(m.appendedFrames), poolDrops: \(m.droppedPoolFrames)"
+            )
+            logger.info(
+              "Sample match total: \(String(format: "%.3f", m.sampleMatchSeconds))s avg/frame: \(String(format: "%.3f", (m.sampleMatchSeconds / Double(queued)) * 1000))ms"
+            )
+            logger.info(
+              "Segmentation total: \(String(format: "%.3f", m.segmentSeconds))s avg/rendered: \(String(format: "%.3f", (m.segmentSeconds / Double(rendered)) * 1000))ms"
+            )
+            logger.info(
+              "Render total: \(String(format: "%.3f", m.renderSeconds))s avg/rendered: \(String(format: "%.3f", (m.renderSeconds / Double(rendered)) * 1000))ms"
+            )
+            logger.info(
+              "Append total: \(String(format: "%.3f", m.appendSeconds))s avg/appended: \(String(format: "%.3f", (m.appendSeconds / Double(appended)) * 1000))ms"
+            )
+            logger.info(
+              "Throughput queued: \(String(format: "%.2f", Double(m.queuedFrames) / max(totalSeconds, 0.0001))) fps, appended: \(String(format: "%.2f", Double(m.appendedFrames) / max(totalSeconds, 0.0001))) fps"
+            )
+
             if pipelineWriter.status == .failed {
               safeCont.resume(
-                throwing: pipelineWriter.error
-                  ?? CaptureError.recordingFailed("Export writing failed")
+                throwing: pipelineWriter.error ?? CaptureError.recordingFailed("Export writing failed")
               )
             } else {
-              logger.info("Parallel render export completed (\(coreCount) cores)")
               if let handler = progressHandler {
                 Task { @MainActor in handler(1.0, nil) }
               }
@@ -555,7 +828,23 @@ extension VideoCompositor {
       }
     } onCancel: {
       cancelToken.cancel()
-      sem.signal()
+      sem.signal(times: maxInFlight + workerCount + 8)
     }
+  }
+}
+
+private extension Int {
+  var nextPowerOfTwo: Int {
+    if self <= 1 { return 1 }
+    var x = self - 1
+    x |= x >> 1
+    x |= x >> 2
+    x |= x >> 4
+    x |= x >> 8
+    x |= x >> 16
+    #if arch(x86_64) || arch(arm64)
+    x |= x >> 32
+    #endif
+    return x + 1
   }
 }

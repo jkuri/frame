@@ -1,8 +1,21 @@
 import AVFoundation
 import CoreVideo
+import VideoToolbox
 
 final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendable {
   private let segmentationProcessor = PersonSegmentationProcessor(quality: .balanced)
+
+  private static let sRGBColorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+  private static let deviceRGBColorSpace = CGColorSpaceCreateDeviceRGB()
+
+  private static let halfFloatBitmapInfo: UInt32 =
+    CGBitmapInfo.floatComponents.rawValue
+    | CGBitmapInfo.byteOrder16Little.rawValue
+    | CGImageAlphaInfo.premultipliedLast.rawValue
+
+  private static let bgraBitmapInfo: UInt32 =
+    CGBitmapInfo.byteOrder32Little.rawValue
+    | CGImageAlphaInfo.premultipliedFirst.rawValue
 
   var sourcePixelBufferAttributes: [String: any Sendable]? {
     [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_64RGBAHalf]
@@ -46,7 +59,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
       CVPixelBufferUnlockBaseAddress(wb, .readOnly)
     }
 
-    CameraVideoCompositor.renderFrame(
+    Self.renderFrame(
       screenBuffer: screenBuffer,
       webcamBuffer: webcamBuffer,
       outputBuffer: outputBuffer,
@@ -68,40 +81,32 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
   ) {
     let width = CVPixelBufferGetWidth(outputBuffer)
     let height = CVPixelBufferGetHeight(outputBuffer)
+    let canvasRect = CGRect(x: 0, y: 0, width: width, height: height)
+
+    let is16bit = CVPixelBufferGetPixelFormatType(outputBuffer) == kCVPixelFormatType_64RGBAHalf
+    let colorSpace = is16bit ? Self.sRGBColorSpace : Self.deviceRGBColorSpace
+    let bitsPerComponent = is16bit ? 16 : 8
+    let bitmapInfo = is16bit ? Self.halfFloatBitmapInfo : Self.bgraBitmapInfo
 
     CVPixelBufferLockBaseAddress(screenBuffer, .readOnly)
     CVPixelBufferLockBaseAddress(outputBuffer, [])
-    if let wb = webcamBuffer { CVPixelBufferLockBaseAddress(wb, .readOnly) }
+    if let wb = webcamBuffer {
+      CVPixelBufferLockBaseAddress(wb, .readOnly)
+    }
+
     defer {
       CVPixelBufferUnlockBaseAddress(screenBuffer, .readOnly)
       CVPixelBufferUnlockBaseAddress(outputBuffer, [])
-      if let wb = webcamBuffer { CVPixelBufferUnlockBaseAddress(wb, .readOnly) }
+      if let wb = webcamBuffer {
+        CVPixelBufferUnlockBaseAddress(wb, .readOnly)
+      }
     }
 
-    let is16bit = CVPixelBufferGetPixelFormatType(outputBuffer) == kCVPixelFormatType_64RGBAHalf
-    let colorSpace: CGColorSpace
-    let bitsPerComponent: Int
-    let bitmapInfo: UInt32
-    if is16bit {
-      colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
-      bitsPerComponent = 16
-      bitmapInfo =
-        CGBitmapInfo.floatComponents.rawValue | CGBitmapInfo.byteOrder16Little.rawValue
-        | CGImageAlphaInfo.premultipliedLast.rawValue
-    } else {
-      colorSpace = CGColorSpaceCreateDeviceRGB()
-      bitsPerComponent = 8
-      bitmapInfo =
-        CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
-    }
     guard
-      let context = CGContext(
-        data: CVPixelBufferGetBaseAddress(outputBuffer),
-        width: width,
-        height: height,
+      let context = makeBitmapContext(
+        for: outputBuffer,
+        colorSpace: colorSpace,
         bitsPerComponent: bitsPerComponent,
-        bytesPerRow: CVPixelBufferGetBytesPerRow(outputBuffer),
-        space: colorSpace,
         bitmapInfo: bitmapInfo
       )
     else {
@@ -109,8 +114,6 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
     }
 
     context.interpolationQuality = .high
-
-    let canvasRect = CGRect(x: 0, y: 0, width: width, height: height)
 
     drawBackground(in: context, rect: canvasRect, instruction: instruction, colorSpace: colorSpace)
 
@@ -165,7 +168,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
       }
     }
 
-    let screenImage = createImage(from: screenBuffer, colorSpace: colorSpace)
+    let screenImage = createImage(from: screenBuffer)
     if let img = screenImage {
       let screenAspect = CGSize(width: img.width, height: img.height)
       let videoRect = AVMakeRect(aspectRatio: screenAspect, insideRect: paddedArea)
@@ -237,7 +240,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
         return nil
       }()
 
-      let webcamImage = processedWebcamImage ?? createImage(from: webcamBuffer, colorSpace: colorSpace)
+      let webcamImage = processedWebcamImage ?? createImage(from: webcamBuffer)
 
       if let webcamImage {
         drawWebcam(
@@ -254,8 +257,8 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
       }
     }
 
-    if let img = screenImage {
-      let screenAspect = CGSize(width: img.width, height: img.height)
+    if let screenImage {
+      let screenAspect = CGSize(width: screenImage.width, height: screenImage.height)
       let vRect = AVMakeRect(aspectRatio: screenAspect, insideRect: paddedArea)
       drawCaptions(
         in: context,
@@ -325,14 +328,21 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
     if let region = instruction.cameraCustomRegions.first(where: { $0.timeRange.containsTime(compositionTime) }),
       let ws = instruction.webcamSize
     {
-      let pixelRect = region.layout.pixelRect(screenSize: canvasSize, webcamSize: ws, cameraAspect: region.cameraAspect)
+      let pixelRect = region.layout.pixelRect(
+        screenSize: canvasSize,
+        webcamSize: ws,
+        cameraAspect: region.cameraAspect
+      )
+
       let scaledRect = CGRect(
         x: pixelRect.origin.x * scaleX,
         y: pixelRect.origin.y * scaleY,
         width: pixelRect.width * scaleX,
         height: pixelRect.height * scaleY
       )
+
       let minDim = min(scaledRect.width, scaledRect.height)
+
       return ResolvedCamera(
         rect: scaledRect,
         cornerRadius: minDim * (region.cornerRadius / 100.0),
@@ -344,6 +354,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
     }
 
     guard let rect = instruction.cameraRect else { return nil }
+
     return ResolvedCamera(
       rect: rect,
       cornerRadius: instruction.cameraCornerRadius,
@@ -357,6 +368,7 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
   static func aspectFillRect(imageSize: CGSize, in rect: CGRect) -> CGRect {
     let imageAspect = imageSize.width / max(imageSize.height, 1)
     let rectAspect = rect.width / max(rect.height, 1)
+
     if imageAspect > rectAspect {
       let w = rect.height * imageAspect
       return CGRect(x: rect.midX - w / 2, y: rect.origin.y, width: w, height: rect.height)
@@ -366,41 +378,29 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
     }
   }
 
-  static func createImage(from pixelBuffer: CVPixelBuffer, colorSpace: CGColorSpace) -> CGImage? {
-    let width = CVPixelBufferGetWidth(pixelBuffer)
-    let height = CVPixelBufferGetHeight(pixelBuffer)
-    let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+  static func makeBitmapContext(
+    for pixelBuffer: CVPixelBuffer,
+    colorSpace: CGColorSpace,
+    bitsPerComponent: Int,
+    bitmapInfo: UInt32
+  ) -> CGContext? {
     guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else { return nil }
 
-    let is16bit = CVPixelBufferGetPixelFormatType(pixelBuffer) == kCVPixelFormatType_64RGBAHalf
-    let bitsPerComponent: Int
-    let bitmapInfo: UInt32
-    let imageColorSpace: CGColorSpace
-    if is16bit {
-      bitsPerComponent = 16
-      bitmapInfo =
-        CGBitmapInfo.floatComponents.rawValue | CGBitmapInfo.byteOrder16Little.rawValue
-        | CGImageAlphaInfo.premultipliedLast.rawValue
-      imageColorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
-    } else {
-      bitsPerComponent = 8
-      bitmapInfo =
-        CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
-      imageColorSpace = colorSpace
-    }
+    return CGContext(
+      data: baseAddress,
+      width: CVPixelBufferGetWidth(pixelBuffer),
+      height: CVPixelBufferGetHeight(pixelBuffer),
+      bitsPerComponent: bitsPerComponent,
+      bytesPerRow: CVPixelBufferGetBytesPerRow(pixelBuffer),
+      space: colorSpace,
+      bitmapInfo: bitmapInfo
+    )
+  }
 
-    guard
-      let ctx = CGContext(
-        data: baseAddress,
-        width: width,
-        height: height,
-        bitsPerComponent: bitsPerComponent,
-        bytesPerRow: bytesPerRow,
-        space: imageColorSpace,
-        bitmapInfo: bitmapInfo
-      )
-    else { return nil }
-
-    return ctx.makeImage()
+  static func createImage(from pixelBuffer: CVPixelBuffer) -> CGImage? {
+    var imageOut: CGImage?
+    let status = VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &imageOut)
+    guard status == noErr else { return nil }
+    return imageOut
   }
 }
