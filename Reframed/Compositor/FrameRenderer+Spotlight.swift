@@ -1,7 +1,7 @@
 import AVFoundation
 import CoreGraphics
 
-extension CameraVideoCompositor {
+extension FrameRenderer {
   static func drawSpotlightOverlay(
     in context: CGContext,
     videoRect: CGRect,

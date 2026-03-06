@@ -88,7 +88,7 @@ extension EditorState {
   }
 
   func captionAtTime(_ time: Double) -> CaptionSegment? {
-    CameraVideoCompositor.captionSegmentAt(time: time, in: captionSegments)
+    FrameRenderer.captionSegmentAt(time: time, in: captionSegments)
   }
 
   func visibleCaptionText(at time: Double) -> String? {

@@ -669,7 +669,7 @@ enum VideoCompositor {
       }
 
       let videoComposition = AVMutableVideoComposition()
-      videoComposition.customVideoCompositorClass = CameraVideoCompositor.self
+      videoComposition.customVideoCompositorClass = FrameRenderer.self
       videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(exportFPS))
       videoComposition.renderSize = renderSize
       videoComposition.instructions = [instruction]

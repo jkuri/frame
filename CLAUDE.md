@@ -29,7 +29,7 @@ Reframed is a macOS screen recording app with a menu bar interface, floating cap
 Reframed/
 ├── App/              AppDelegate, Permissions, WindowController
 ├── CaptureModes/     Area/Screen/Window/Device selection + Common overlay components
-├── Compositor/       Video composition & export (VideoCompositor, CameraVideoCompositor, ExportSettings, BackgroundStyle, CameraLayout, GradientPresets)
+├── Compositor/       Video composition & export (VideoCompositor, FrameRenderer, ExportSettings, BackgroundStyle, CameraLayout, GradientPresets)
 ├── Editor/           Video editor (timeline, properties panels, preview, cursor, zoom, camera regions, history)
 ├── Libraries/        Native C/C++ dependencies (gifski static library for GIF encoding)
 ├── Logging/          LogBootstrap, RotatingFileLogHandler
@@ -54,7 +54,7 @@ Everything is actor-isolated. The core pattern:
 - **`WindowSelectionCoordinator`** (@MainActor) — manages window highlight overlay for window selection
 - **`EditorState`** (@MainActor, @Observable) — editor state including trim ranges, background, camera layout/regions, cursor, zoom, animations, audio
 - **`VideoCompositor`** (enum with static methods) — export-time compositing pipeline (manual + parallel export modes)
-- **`CameraVideoCompositor`** (NSObject, AVVideoCompositing) — custom compositor for rendering background + screen + webcam with camera region transitions
+- **`FrameRenderer`** (NSObject, AVVideoCompositing) — custom compositor for rendering background + screen + webcam with camera region transitions
 
 ### State machine
 
@@ -100,7 +100,7 @@ The `Compositor/` module handles all video composition and export:
 - `VideoCompositor+ParallelExport` — multi-core parallel rendering for faster exports
 - `VideoCompositor+ManualExport` — traditional single-threaded export pipeline
 - `VideoCompositor+GIFExport` — GIF export using libgifski C library
-- `CameraVideoCompositor` — custom AVVideoCompositing for per-frame rendering with camera region transitions
+- `FrameRenderer` — custom AVVideoCompositing for per-frame rendering with camera region transitions
 - `CompositionInstruction` — AVVideoCompositionInstructionProtocol implementation
 - `ExportSettings` — export options (format, FPS, resolution, codec, audio bitrate, GIF quality)
 - `BackgroundStyle` — solid color, gradient, and image backgrounds with fill modes

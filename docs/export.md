@@ -10,7 +10,7 @@ Export turns a .frm project into a final video file. The whole process runs thro
 
 Not every export needs per-frame rendering. If the recording has no visual effects (no background, no webcam, no cursor overlay, no zoom, no captions, no padding, no corner radius, and the codec matches), the export can skip the compositor and just do audio mixing with a trim. This is faster.
 
-Otherwise, the compositor renders every frame through `CameraVideoCompositor`.
+Otherwise, the compositor renders every frame through `FrameRenderer`.
 
 ## Composition setup
 
@@ -36,7 +36,7 @@ Before rendering starts, two optional steps happen:
 
 ## Per-frame rendering
 
-`CameraVideoCompositor` implements the AVVideoCompositing protocol. For each frame, it gets a `CompositionInstruction` containing all rendering parameters and runs this pipeline:
+`FrameRenderer` implements the AVVideoCompositing protocol. For each frame, it gets a `CompositionInstruction` containing all rendering parameters and runs this pipeline:
 
 1. **Background** -- fill the canvas with solid color, gradient, or image (respecting fill mode).
 2. **Screen video** -- draw the recording into the padded area with aspect fitting. Apply corner radius clipping and shadow. Handle screen transition effects if video regions define them.

@@ -2,7 +2,7 @@ import AVFoundation
 import AppKit
 import CoreText
 
-extension CameraVideoCompositor {
+extension FrameRenderer {
   static func drawCaptions(
     in context: CGContext,
     videoRect: CGRect,

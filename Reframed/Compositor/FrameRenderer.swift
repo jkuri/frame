@@ -2,7 +2,7 @@ import AVFoundation
 import CoreVideo
 import VideoToolbox
 
-final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendable {
+final class FrameRenderer: NSObject, AVVideoCompositing, @unchecked Sendable {
   private let segmentationProcessor = PersonSegmentationProcessor(quality: .balanced)
 
   private static let sRGBColorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
@@ -29,17 +29,17 @@ final class CameraVideoCompositor: NSObject, AVVideoCompositing, @unchecked Send
 
   func startRequest(_ request: AVAsynchronousVideoCompositionRequest) {
     guard let instruction = request.videoCompositionInstruction as? CompositionInstruction else {
-      request.finish(with: NSError(domain: "CameraVideoCompositor", code: -1))
+      request.finish(with: NSError(domain: "FrameRenderer", code: -1))
       return
     }
 
     guard let screenBuffer = request.sourceFrame(byTrackID: instruction.screenTrackID) else {
-      request.finish(with: NSError(domain: "CameraVideoCompositor", code: -2))
+      request.finish(with: NSError(domain: "FrameRenderer", code: -2))
       return
     }
 
     guard let outputBuffer = request.renderContext.newPixelBuffer() else {
-      request.finish(with: NSError(domain: "CameraVideoCompositor", code: -3))
+      request.finish(with: NSError(domain: "FrameRenderer", code: -3))
       return
     }
 

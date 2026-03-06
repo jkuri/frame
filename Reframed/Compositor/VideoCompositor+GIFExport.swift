@@ -170,7 +170,7 @@ extension VideoCompositor {
             CVPixelBufferPoolCreatePixelBuffer(nil, pool, &outBuf)
             guard let outputBuffer = outBuf else { continue }
 
-            CameraVideoCompositor.renderFrame(
+            FrameRenderer.renderFrame(
               screenBuffer: screenBuffer,
               webcamBuffer: webcamBuffer,
               outputBuffer: outputBuffer,

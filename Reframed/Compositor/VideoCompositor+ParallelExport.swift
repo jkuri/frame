@@ -657,7 +657,7 @@ extension VideoCompositor {
                   }
 
                   let renderStart = CFAbsoluteTimeGetCurrent()
-                  CameraVideoCompositor.renderFrame(
+                  FrameRenderer.renderFrame(
                     screenBuffer: job.screenBuffer,
                     webcamBuffer: job.webcamBuffer,
                     outputBuffer: job.outputBuffer,

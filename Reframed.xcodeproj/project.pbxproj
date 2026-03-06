@@ -98,7 +98,7 @@
 		A2000000000000000000000B /* AudioWaveformGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000B /* AudioWaveformGenerator.swift */; };
 		A2000000000000000000000C /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000C /* EditorView.swift */; };
 		A2000000000000000000000D /* EditorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000D /* EditorWindow.swift */; };
-		A2000000000000000000000F /* CameraVideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000F /* CameraVideoCompositor.swift */; };
+		A2000000000000000000000F /* FrameRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000F /* FrameRenderer.swift */; };
 		A20000000000000000000010 /* VideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000010 /* VideoCompositor.swift */; };
 		A20000000000000000000011 /* SendableBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000011 /* SendableBox.swift */; };
 		A20000000000000000000013 /* BackgroundStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000013 /* BackgroundStyle.swift */; };
@@ -178,10 +178,10 @@
 		922F814E886E4D2B242E4541 /* VideoPreviewContainer+Cursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B17A303B9C60827322EAE0A9 /* VideoPreviewContainer+Cursor.swift */; };
 		7C1A78C769C856DC34BD3318 /* VideoPreviewContainer+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3469C70747A78B7BDD2B5C /* VideoPreviewContainer+Interaction.swift */; };
 		86BD45F487E80051EC653B68 /* CursorRenderer+Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC84C35E4DD49FCEA9DE6CBB /* CursorRenderer+Shapes.swift */; };
-		478BDD1EF7481A01B5699D29 /* CameraVideoCompositor+Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DC7CD0FB5405AC0D7BCC7A /* CameraVideoCompositor+Background.swift */; };
-		BBEB3400455A8A36A0585D21 /* CameraVideoCompositor+Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 767CF82B028939CF65B9E175 /* CameraVideoCompositor+Screen.swift */; };
-		75B47EC4C5927DD72294D738 /* CameraVideoCompositor+Webcam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496D11968908B4B678987F2F /* CameraVideoCompositor+Webcam.swift */; };
-		CD88FB9E14F75D2DA0513D3C /* CameraVideoCompositor+Cursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDF80A89DF90D50CD417CEE5 /* CameraVideoCompositor+Cursor.swift */; };
+		478BDD1EF7481A01B5699D29 /* FrameRenderer+Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DC7CD0FB5405AC0D7BCC7A /* FrameRenderer+Background.swift */; };
+		BBEB3400455A8A36A0585D21 /* FrameRenderer+Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 767CF82B028939CF65B9E175 /* FrameRenderer+Screen.swift */; };
+		75B47EC4C5927DD72294D738 /* FrameRenderer+Webcam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496D11968908B4B678987F2F /* FrameRenderer+Webcam.swift */; };
+		CD88FB9E14F75D2DA0513D3C /* FrameRenderer+Cursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDF80A89DF90D50CD417CEE5 /* FrameRenderer+Cursor.swift */; };
 		CAB001000000000000000001 /* CameraBackgroundStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB002000000000000000001 /* CameraBackgroundStyle.swift */; };
 		CAB001000000000000000002 /* PersonSegmentationProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB002000000000000000002 /* PersonSegmentationProcessor.swift */; };
 		CA10000000000000000000A1 /* WhisperModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A1 /* WhisperModelManager.swift */; };
@@ -191,13 +191,13 @@
 		CA10000000000000000000A5 /* PropertiesPanel+CaptionsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A5 /* PropertiesPanel+CaptionsTab.swift */; };
 		CA10000000000000000000A6 /* CaptionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A6 /* CaptionOverlayView.swift */; };
 		CA10000000000000000000A7 /* CaptionSegmentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A7 /* CaptionSegmentRow.swift */; };
-		CA10000000000000000000A8 /* CameraVideoCompositor+Captions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A8 /* CameraVideoCompositor+Captions.swift */; };
+		CA10000000000000000000A8 /* FrameRenderer+Captions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A8 /* FrameRenderer+Captions.swift */; };
 		FA10000000000000000000A1 /* SpotlightOverlayLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A1 /* SpotlightOverlayLayer.swift */; };
 		FA10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift */; };
 		FA10000000000000000000A7 /* ClickSoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A7 /* ClickSoundPlayer.swift */; };
 		FA10000000000000000000A8 /* ClickSoundGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A8 /* ClickSoundGenerator.swift */; };
 		FA10000000000000000000D1 /* ClickSoundData.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000D1 /* ClickSoundData.swift */; };
-		FA10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift */; };
+		FA10000000000000000000A9 /* FrameRenderer+Spotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A9 /* FrameRenderer+Spotlight.swift */; };
 		FA10000000000000000000B2 /* LenientCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000B2 /* LenientCodable.swift */; };
 		FA10000000000000000000C1 /* EditorState+SpotlightRegions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000C1 /* EditorState+SpotlightRegions.swift */; };
 		FA10000000000000000000C2 /* TimelineView+SpotlightTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000C2 /* TimelineView+SpotlightTrack.swift */; };
@@ -297,7 +297,7 @@
 		B2000000000000000000000B /* AudioWaveformGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformGenerator.swift; sourceTree = "<group>"; };
 		B2000000000000000000000C /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
 		B2000000000000000000000D /* EditorWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorWindow.swift; sourceTree = "<group>"; };
-		B2000000000000000000000F /* CameraVideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraVideoCompositor.swift; sourceTree = "<group>"; };
+		B2000000000000000000000F /* FrameRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameRenderer.swift; sourceTree = "<group>"; };
 		B20000000000000000000010 /* VideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCompositor.swift; sourceTree = "<group>"; };
 		B20000000000000000000011 /* SendableBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendableBox.swift; sourceTree = "<group>"; };
 		B20000000000000000000013 /* BackgroundStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundStyle.swift; sourceTree = "<group>"; };
@@ -376,10 +376,10 @@
 		B17A303B9C60827322EAE0A9 /* VideoPreviewContainer+Cursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoPreviewContainer+Cursor.swift"; sourceTree = "<group>"; };
 		5F3469C70747A78B7BDD2B5C /* VideoPreviewContainer+Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoPreviewContainer+Interaction.swift"; sourceTree = "<group>"; };
 		BC84C35E4DD49FCEA9DE6CBB /* CursorRenderer+Shapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CursorRenderer+Shapes.swift"; sourceTree = "<group>"; };
-		D4DC7CD0FB5405AC0D7BCC7A /* CameraVideoCompositor+Background.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraVideoCompositor+Background.swift"; sourceTree = "<group>"; };
-		767CF82B028939CF65B9E175 /* CameraVideoCompositor+Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraVideoCompositor+Screen.swift"; sourceTree = "<group>"; };
-		496D11968908B4B678987F2F /* CameraVideoCompositor+Webcam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraVideoCompositor+Webcam.swift"; sourceTree = "<group>"; };
-		BDF80A89DF90D50CD417CEE5 /* CameraVideoCompositor+Cursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraVideoCompositor+Cursor.swift"; sourceTree = "<group>"; };
+		D4DC7CD0FB5405AC0D7BCC7A /* FrameRenderer+Background.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FrameRenderer+Background.swift"; sourceTree = "<group>"; };
+		767CF82B028939CF65B9E175 /* FrameRenderer+Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FrameRenderer+Screen.swift"; sourceTree = "<group>"; };
+		496D11968908B4B678987F2F /* FrameRenderer+Webcam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FrameRenderer+Webcam.swift"; sourceTree = "<group>"; };
+		BDF80A89DF90D50CD417CEE5 /* FrameRenderer+Cursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FrameRenderer+Cursor.swift"; sourceTree = "<group>"; };
 		CAB002000000000000000001 /* CameraBackgroundStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraBackgroundStyle.swift; sourceTree = "<group>"; };
 		CAB002000000000000000002 /* PersonSegmentationProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonSegmentationProcessor.swift; sourceTree = "<group>"; };
 		CA20000000000000000000A1 /* WhisperModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperModelManager.swift; sourceTree = "<group>"; };
@@ -389,13 +389,13 @@
 		CA20000000000000000000A5 /* PropertiesPanel+CaptionsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertiesPanel+CaptionsTab.swift"; sourceTree = "<group>"; };
 		CA20000000000000000000A6 /* CaptionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionOverlayView.swift; sourceTree = "<group>"; };
 		CA20000000000000000000A7 /* CaptionSegmentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionSegmentRow.swift; sourceTree = "<group>"; };
-		CA20000000000000000000A8 /* CameraVideoCompositor+Captions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraVideoCompositor+Captions.swift"; sourceTree = "<group>"; };
+		CA20000000000000000000A8 /* FrameRenderer+Captions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FrameRenderer+Captions.swift"; sourceTree = "<group>"; };
 		FB10000000000000000000A1 /* SpotlightOverlayLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightOverlayLayer.swift; sourceTree = "<group>"; };
 		FB10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoPreviewContainer+Spotlight.swift"; sourceTree = "<group>"; };
 		FB10000000000000000000A7 /* ClickSoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickSoundPlayer.swift; sourceTree = "<group>"; };
 		FB10000000000000000000A8 /* ClickSoundGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickSoundGenerator.swift; sourceTree = "<group>"; };
 		FB10000000000000000000D1 /* ClickSoundData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickSoundData.swift; sourceTree = "<group>"; };
-		FB10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraVideoCompositor+Spotlight.swift"; sourceTree = "<group>"; };
+		FB10000000000000000000A9 /* FrameRenderer+Spotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FrameRenderer+Spotlight.swift"; sourceTree = "<group>"; };
 		FB10000000000000000000B2 /* LenientCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LenientCodable.swift; sourceTree = "<group>"; };
 		FB10000000000000000000C1 /* EditorState+SpotlightRegions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorState+SpotlightRegions.swift"; sourceTree = "<group>"; };
 		FB10000000000000000000C2 /* TimelineView+SpotlightTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineView+SpotlightTrack.swift"; sourceTree = "<group>"; };
@@ -737,7 +737,7 @@
 			children = (
 				B20000000000000000000013 /* BackgroundStyle.swift */,
 				B20000000000000000000004 /* CameraLayout.swift */,
-				B2000000000000000000000F /* CameraVideoCompositor.swift */,
+				B2000000000000000000000F /* FrameRenderer.swift */,
 				B2000000000000000000001A /* CompositionInstruction.swift */,
 				B20000000000000000000015 /* ExportSettings.swift */,
 				B20000000000000000000017 /* ExportSheet.swift */,
@@ -748,14 +748,14 @@
 				E20000000000000000000003 /* VideoCompositor+GIFExport.swift */,
 				E20000000000000000000004 /* VideoCompositor+Audio.swift */,
 			
-				D4DC7CD0FB5405AC0D7BCC7A /* CameraVideoCompositor+Background.swift */,
-				767CF82B028939CF65B9E175 /* CameraVideoCompositor+Screen.swift */,
-				496D11968908B4B678987F2F /* CameraVideoCompositor+Webcam.swift */,
-				BDF80A89DF90D50CD417CEE5 /* CameraVideoCompositor+Cursor.swift */,
+				D4DC7CD0FB5405AC0D7BCC7A /* FrameRenderer+Background.swift */,
+				767CF82B028939CF65B9E175 /* FrameRenderer+Screen.swift */,
+				496D11968908B4B678987F2F /* FrameRenderer+Webcam.swift */,
+				BDF80A89DF90D50CD417CEE5 /* FrameRenderer+Cursor.swift */,
 				CAB002000000000000000001 /* CameraBackgroundStyle.swift */,
 				CAB002000000000000000002 /* PersonSegmentationProcessor.swift */,
-			CA20000000000000000000A8 /* CameraVideoCompositor+Captions.swift */,
-			FB10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift */,
+			CA20000000000000000000A8 /* FrameRenderer+Captions.swift */,
+			FB10000000000000000000A9 /* FrameRenderer+Spotlight.swift */,
 			);
 			path = Compositor;
 			sourceTree = "<group>";
@@ -907,7 +907,7 @@
 				A2000000000000000000001A /* CompositionInstruction.swift in Sources */,
 				A2000000000000000000000C /* EditorView.swift in Sources */,
 				A2000000000000000000000D /* EditorWindow.swift in Sources */,
-				A2000000000000000000000F /* CameraVideoCompositor.swift in Sources */,
+				A2000000000000000000000F /* FrameRenderer.swift in Sources */,
 				A20000000000000000000010 /* VideoCompositor.swift in Sources */,
 				E30000000000000000000001 /* VideoCompositor+ManualExport.swift in Sources */,
 				E30000000000000000000002 /* VideoCompositor+ParallelExport.swift in Sources */,
@@ -1002,10 +1002,10 @@
 				922F814E886E4D2B242E4541 /* VideoPreviewContainer+Cursor.swift in Sources */,
 				7C1A78C769C856DC34BD3318 /* VideoPreviewContainer+Interaction.swift in Sources */,
 				86BD45F487E80051EC653B68 /* CursorRenderer+Shapes.swift in Sources */,
-				478BDD1EF7481A01B5699D29 /* CameraVideoCompositor+Background.swift in Sources */,
-				BBEB3400455A8A36A0585D21 /* CameraVideoCompositor+Screen.swift in Sources */,
-				75B47EC4C5927DD72294D738 /* CameraVideoCompositor+Webcam.swift in Sources */,
-				CD88FB9E14F75D2DA0513D3C /* CameraVideoCompositor+Cursor.swift in Sources */,
+				478BDD1EF7481A01B5699D29 /* FrameRenderer+Background.swift in Sources */,
+				BBEB3400455A8A36A0585D21 /* FrameRenderer+Screen.swift in Sources */,
+				75B47EC4C5927DD72294D738 /* FrameRenderer+Webcam.swift in Sources */,
+				CD88FB9E14F75D2DA0513D3C /* FrameRenderer+Cursor.swift in Sources */,
 				CAB001000000000000000001 /* CameraBackgroundStyle.swift in Sources */,
 				CAB001000000000000000002 /* PersonSegmentationProcessor.swift in Sources */,
 				CA10000000000000000000A1 /* WhisperModelManager.swift in Sources */,
@@ -1015,13 +1015,13 @@
 				CA10000000000000000000A5 /* PropertiesPanel+CaptionsTab.swift in Sources */,
 				CA10000000000000000000A6 /* CaptionOverlayView.swift in Sources */,
 				CA10000000000000000000A7 /* CaptionSegmentRow.swift in Sources */,
-				CA10000000000000000000A8 /* CameraVideoCompositor+Captions.swift in Sources */,
+				CA10000000000000000000A8 /* FrameRenderer+Captions.swift in Sources */,
 				FA10000000000000000000A1 /* SpotlightOverlayLayer.swift in Sources */,
 				FA10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift in Sources */,
 				FA10000000000000000000A7 /* ClickSoundPlayer.swift in Sources */,
 				FA10000000000000000000A8 /* ClickSoundGenerator.swift in Sources */,
 				FA10000000000000000000D1 /* ClickSoundData.swift in Sources */,
-				FA10000000000000000000A9 /* CameraVideoCompositor+Spotlight.swift in Sources */,
+				FA10000000000000000000A9 /* FrameRenderer+Spotlight.swift in Sources */,
 				FA10000000000000000000B2 /* LenientCodable.swift in Sources */,
 				FA10000000000000000000C1 /* EditorState+SpotlightRegions.swift in Sources */,
 				FA10000000000000000000C2 /* TimelineView+SpotlightTrack.swift in Sources */,

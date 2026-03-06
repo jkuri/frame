@@ -1,7 +1,7 @@
 import AVFoundation
 import CoreVideo
 
-extension CameraVideoCompositor {
+extension FrameRenderer {
   static func drawCursorOverlay(
     in context: CGContext,
     screenImage: CGImage,
