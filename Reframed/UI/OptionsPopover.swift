@@ -87,9 +87,23 @@ struct OptionsPopover: View {
       ) {
         options.rememberLastSelection.toggle()
       }
+
+      CheckmarkRow(
+        title: "Dim Outer Area While Recording",
+        isSelected: options.dimOuterArea
+      ) {
+        options.dimOuterArea.toggle()
+      }
+
+      CheckmarkRow(
+        title: "Hide Camera Preview While Recording",
+        isSelected: options.hideCameraPreviewWhileRecording
+      ) {
+        options.hideCameraPreviewWhileRecording.toggle()
+      }
     }
     .padding(.vertical, 8)
-    .frame(width: 220)
+    .frame(width: 280)
     .popoverContainerStyle()
   }
 }
