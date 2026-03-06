@@ -41,7 +41,7 @@ type_label() {
     perf)     echo "Performance" ;;
     refactor) echo "Refactoring" ;;
     style)    echo "Styling" ;;
-    docs)     echo "Documentation" ;;
+    docs)     echo "" ;;
     chore)    echo "Chores" ;;
     build)    echo "Build" ;;
     ci)       echo "CI" ;;
@@ -90,8 +90,8 @@ format_section() {
     local type="" scope="" message=""
     local release_re='^chore\(release\)'
     [[ "$subject" =~ $release_re ]] && continue
-    local readme_re='^docs\(readme\)'
-    [[ "$subject" =~ $readme_re ]] && continue
+    local docs_re='^docs(\(|!?:)'
+    [[ "$subject" =~ $docs_re ]] && continue
     local scoped_re='^([a-z]+)\(([^)]+)\)!?:[[:space:]](.+)$'
     local plain_re='^([a-z]+)!?:[[:space:]](.+)$'
     if [[ "$subject" =~ $scoped_re ]]; then
