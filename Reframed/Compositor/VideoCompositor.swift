@@ -417,7 +417,7 @@ enum VideoCompositor {
                 cameraAspect: region.cameraAspect,
                 cornerRadius: region.cornerRadius,
                 shadow: region.shadow,
-                borderWidth: region.borderWidth,
+                borderWidth: region.borderWidth * scaleX,
                 borderColor: region.borderColor,
                 mirrored: region.mirrored,
                 entryTransition: region.entryTransition,
