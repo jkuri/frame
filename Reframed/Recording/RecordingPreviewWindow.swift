@@ -43,7 +43,7 @@ final class RecordingPreviewWindow {
     videoView.wantsLayer = true
     videoView.layer?.cornerRadius = videoCornerRadius
     videoView.layer?.masksToBounds = true
-    videoView.layer?.backgroundColor = NSColor.black.cgColor
+    videoView.layer?.backgroundColor = ReframedColors.backgroundNS.cgColor
     videoView.autoresizingMask = [.width, .height]
 
     let layer = CALayer()
@@ -160,21 +160,27 @@ final class RecordingPreviewWindow {
       let panelRect = NSRect(origin: saved, size: NSSize(width: width, height: height))
       for screen in NSScreen.screens {
         if screen.visibleFrame.intersects(panelRect) {
-          return saved
+          return clampToScreen(origin: saved, width: width, height: height, screen: screen)
         }
       }
     }
-    return defaultOrigin()
+    return defaultOrigin(width: width, height: height)
   }
 
-  private func defaultOrigin() -> CGPoint {
+  private func clampToScreen(origin: CGPoint, width: CGFloat, height: CGFloat, screen: NSScreen) -> CGPoint {
+    let sf = screen.visibleFrame
+    let margin: CGFloat = 10
+    let x = max(sf.minX + margin, min(origin.x, sf.maxX - width - margin))
+    let y = max(sf.minY + margin, min(origin.y, sf.maxY - height - margin))
+    return CGPoint(x: x, y: y)
+  }
+
+  private func defaultOrigin(width: CGFloat, height: CGFloat) -> CGPoint {
     guard let screen = NSScreen.main else { return .zero }
     let screenFrame = screen.visibleFrame
-    let totalW = defaultVideoWidth + padding * 2
-    let totalH = defaultVideoHeight + padding * 2
     return CGPoint(
-      x: screenFrame.maxX - totalW - 20,
-      y: screenFrame.maxY - totalH - 60
+      x: screenFrame.maxX - width - 60,
+      y: screenFrame.maxY - height - 60
     )
   }
 
@@ -233,7 +239,7 @@ private final class PreviewContentView: NSView {
     let cr = videoCornerRadius + padding
     let outerPath = CGPath(roundedRect: bounds, cornerWidth: cr, cornerHeight: cr, transform: nil)
     ctx.addPath(outerPath)
-    ctx.setFillColor(ReframedColors.backgroundNS.withAlphaComponent(0.7).cgColor)
+    ctx.setFillColor(ReframedColors.backgroundNS.cgColor)
     ctx.fillPath()
 
     let borderPath = CGPath(
