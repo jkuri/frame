@@ -669,12 +669,6 @@ enum VideoCompositor {
         return destination
       }
 
-      let videoComposition = AVMutableVideoComposition()
-      videoComposition.customVideoCompositorClass = FrameRenderer.self
-      videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(exportFPS))
-      videoComposition.renderSize = renderSize
-      videoComposition.instructions = [instruction]
-
       let audioSegInfo: [VideoSegmentInfo]? =
         hasVideoRegions
         ? videoSegments.map { VideoSegmentInfo(sourceRange: $0.sourceRange, compositionStart: $0.compositionStart) }
@@ -707,14 +701,14 @@ enum VideoCompositor {
         )
       } else {
         try await runManualExport(
-          asset: composition,
-          videoComposition: videoComposition,
-          timeRange: CMTimeRange(start: .zero, duration: compositionDuration),
+          composition: composition,
+          instruction: instruction,
           renderSize: renderSize,
-          codec: exportSettings.codec.videoCodecType,
-          exportFPS: Double(exportFPS),
-          to: outputURL,
+          fps: exportFPS,
+          trimDuration: compositionDuration,
+          outputURL: outputURL,
           fileType: exportSettings.format.fileType,
+          codec: exportSettings.codec,
           audioMix: audioMix,
           audioBitrate: exportSettings.audioBitrate.value,
           isHDR: result.isHDR,
