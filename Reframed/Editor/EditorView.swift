@@ -348,7 +348,8 @@ struct EditorView: View {
             at: CMTimeGetSeconds(editorState.currentTime)
           ).edgeSoftness,
           cameraBackgroundStyle: editorState.webcamEnabled ? editorState.cameraBackgroundStyle : .none,
-          cameraBackgroundImage: editorState.cameraBackgroundImage
+          cameraBackgroundImage: editorState.cameraBackgroundImage,
+          isHDR: editorState.result.isHDR
         )
 
         if let captionText = editorState.visibleCaptionText(

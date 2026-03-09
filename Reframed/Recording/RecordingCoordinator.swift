@@ -28,6 +28,7 @@ actor RecordingCoordinator {
   private var webcamPixelH: Int = 0
   private var recordingFPS: Int = 60
   private var captureQualityUsed: CaptureQuality = .standard
+  private var hdrCaptureUsed: Bool = false
 
   func startRecording(
     target: CaptureTarget,
@@ -39,7 +40,8 @@ actor RecordingCoordinator {
     existingWebcam: (WebcamCapture, VerifiedCamera)? = nil,
     cursorMetadataRecorder: CursorMetadataRecorder? = nil,
     captureQuality: CaptureQuality = .standard,
-    retinaCapture: Bool = false
+    retinaCapture: Bool = false,
+    hdrCapture: Bool = false
   ) async throws -> Date {
     var verifiedCam: (capture: WebcamCapture, info: VerifiedCamera)?
     var verifiedMic: MicrophoneCapture?
@@ -105,6 +107,7 @@ actor RecordingCoordinator {
     }
     recordingFPS = fps
     captureQualityUsed = captureQuality
+    hdrCaptureUsed = hdrCapture
 
     var streamCount = 1
     if verifiedMic != nil { streamCount += 1 }
@@ -120,7 +123,8 @@ actor RecordingCoordinator {
       height: pixelH,
       fps: fps,
       clock: clock,
-      captureQuality: captureQuality
+      captureQuality: captureQuality,
+      isHDR: hdrCapture
     )
     self.videoWriter = vidWriter
 
@@ -142,11 +146,12 @@ actor RecordingCoordinator {
       self.cursorMetadataRecorder = cursorMetadataRecorder
     }
 
-    let session = ScreenCaptureSession(videoWriter: vidWriter, captureQuality: captureQuality)
+    let session = ScreenCaptureSession(videoWriter: vidWriter, captureQuality: captureQuality, hdrCapture: hdrCapture)
     session.onStreamError = { [weak self] error in
       guard let self else { return }
       Task { await self.handleStreamError(error) }
     }
+    let selfApp = content.applications.first { $0.bundleIdentifier == Bundle.main.bundleIdentifier }
     do {
       try await session.start(
         target: target,
@@ -154,7 +159,8 @@ actor RecordingCoordinator {
         displayScale: displayScale,
         fps: fps,
         hideCursor: cursorMetadataRecorder != nil,
-        retinaCapture: retinaCapture
+        retinaCapture: retinaCapture,
+        excludedApps: [selfApp].compactMap { $0 }
       )
     } catch {
       verifiedCam?.capture.stop()
@@ -235,7 +241,8 @@ actor RecordingCoordinator {
     cameraResolution: String = "1080p",
     existingWebcam: (WebcamCapture, VerifiedCamera)? = nil,
     captureQuality: CaptureQuality = .standard,
-    retinaCapture: Bool = false
+    retinaCapture: Bool = false,
+    hdrCapture: Bool = false
   ) async throws -> Date {
     var verifiedCam: (capture: WebcamCapture, info: VerifiedCamera)?
     var verifiedMic: MicrophoneCapture?
@@ -298,6 +305,7 @@ actor RecordingCoordinator {
     pixelH = pH
     recordingFPS = fps
     captureQualityUsed = captureQuality
+    hdrCaptureUsed = hdrCapture
 
     var streamCount = 1
     if verifiedMic != nil { streamCount += 1 }
@@ -314,7 +322,8 @@ actor RecordingCoordinator {
       height: pH,
       fps: fps,
       clock: clock,
-      captureQuality: captureQuality
+      captureQuality: captureQuality,
+      isHDR: hdrCapture
     )
     self.videoWriter = vidWriter
     deviceCapture.attachVideoWriter(vidWriter)
@@ -503,7 +512,8 @@ actor RecordingCoordinator {
       screenSize: CGSize(width: screenW, height: screenH),
       webcamSize: webcamURL != nil ? CGSize(width: camW, height: camH) : nil,
       fps: fps,
-      captureQuality: captureQualityUsed
+      captureQuality: captureQualityUsed,
+      isHDR: hdrCaptureUsed
     )
   }
 

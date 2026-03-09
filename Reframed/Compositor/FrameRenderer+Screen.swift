@@ -12,37 +12,11 @@ extension FrameRenderer {
     isTransitioning: Bool = false
   ) {
     if instruction.videoShadow > 0 && !isTransitioning {
-      let blur = min(videoRect.width, videoRect.height) * instruction.videoShadow / 2000.0
-      context.saveGState()
-      context.setShadow(
-        offset: .zero,
-        blur: blur,
-        color: CGColor(red: 0, green: 0, blue: 0, alpha: 0.6)
-      )
-      if instruction.videoCornerRadius > 0 {
-        let shadowPath = CGPath(
-          roundedRect: videoRect,
-          cornerWidth: instruction.videoCornerRadius,
-          cornerHeight: instruction.videoCornerRadius,
-          transform: nil
-        )
-        context.addPath(shadowPath)
-      } else {
-        context.addRect(videoRect)
-      }
-      context.setFillColor(CGColor(red: 0, green: 0, blue: 0, alpha: 1))
-      context.fillPath()
-      context.restoreGState()
+      drawRoundedShadow(in: context, rect: videoRect, cornerRadius: instruction.videoCornerRadius, shadow: instruction.videoShadow)
     }
 
     let metadataTime = CMTimeGetSeconds(compositionTime) + instruction.trimStartSeconds
-    var zoomRect = instruction.zoomTimeline?.zoomRect(at: metadataTime)
-    if instruction.zoomFollowCursor, let zr = zoomRect, zr.width < 1.0 || zr.height < 1.0,
-      let snapshot = instruction.cursorSnapshot
-    {
-      let cursorPos = snapshot.sample(at: metadataTime)
-      zoomRect = ZoomTimeline.followCursor(zr, cursorPosition: cursorPos)
-    }
+    let zoomRect = resolveZoomRect(compositionTime: compositionTime, instruction: instruction)
     context.saveGState()
     if instruction.videoCornerRadius > 0 {
       let path = CGPath(

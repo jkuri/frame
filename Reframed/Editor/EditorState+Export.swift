@@ -124,7 +124,8 @@ extension EditorState {
         screenSize: result.screenSize,
         webcamSize: nil,
         fps: result.fps,
-        captureQuality: result.captureQuality
+        captureQuality: result.captureQuality,
+        isHDR: result.isHDR
       )
     }
 

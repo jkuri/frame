@@ -47,6 +47,7 @@ extension VideoCompositor {
     fileType: AVFileType,
     audioMix: AVAudioMix? = nil,
     audioBitrate: Int = 320_000,
+    isHDR: Bool = false,
     progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)?
   ) async throws {
     nonisolated(unsafe) let reader = try AVAssetReader(asset: asset)
@@ -77,7 +78,8 @@ extension VideoCompositor {
       codec: codec,
       width: Int(renderSize.width),
       height: Int(renderSize.height),
-      fps: Int(exportFPS)
+      fps: Int(exportFPS),
+      isHDR: isHDR
     )
     nonisolated(unsafe) let videoInput = AVAssetWriterInput(
       mediaType: .video,

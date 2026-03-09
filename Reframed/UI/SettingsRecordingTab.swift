@@ -34,6 +34,21 @@ extension SettingsView {
       .foregroundStyle(ReframedColors.secondaryText)
       .padding(.top, -10)
 
+      settingsToggle(
+        "HDR Capture",
+        isOn: Binding(
+          get: { options?.hdrCapture ?? false },
+          set: { options?.hdrCapture = $0 }
+        )
+      )
+
+      Text(
+        "Records in HDR with wider color range and higher brightness. Requires Apple Silicon. Exported videos preserve HDR when played on compatible displays."
+      )
+      .font(.system(size: FontSize.xs))
+      .foregroundStyle(ReframedColors.secondaryText)
+      .padding(.top, -10)
+
       settingsRow(label: "Frame Rate") {
         SegmentPicker(
           items: fpsOptions,

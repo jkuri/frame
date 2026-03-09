@@ -164,57 +164,15 @@ extension FrameRenderer {
     let interpRadius = pipCam.cornerRadius * (1.0 - p)
     let interpBorder = pipCam.borderWidth * (1.0 - p)
 
-    if interpBorder > 0 {
-      let borderPath = CGPath(
-        roundedRect: interpRect,
-        cornerWidth: interpRadius,
-        cornerHeight: interpRadius,
-        transform: nil
-      )
-      context.saveGState()
-      context.addPath(borderPath)
-      context.setFillColor(pipCam.borderColor)
-      context.fillPath()
-      context.restoreGState()
-
-      let insetRect = interpRect.insetBy(dx: interpBorder, dy: interpBorder)
-      let innerRadius = max(0, interpRadius - interpBorder)
-      let innerPath = CGPath(
-        roundedRect: insetRect,
-        cornerWidth: innerRadius,
-        cornerHeight: innerRadius,
-        transform: nil
-      )
-      context.saveGState()
-      context.addPath(innerPath)
-      context.clip()
-      if instruction.cameraMirrored {
-        context.translateBy(x: insetRect.midX, y: 0)
-        context.scaleBy(x: -1, y: 1)
-        context.translateBy(x: -insetRect.midX, y: 0)
-      }
-      let innerFill = aspectFillRect(imageSize: CGSize(width: webcamImage.width, height: webcamImage.height), in: insetRect)
-      context.draw(webcamImage, in: innerFill)
-      context.restoreGState()
-    } else {
-      let path = CGPath(
-        roundedRect: interpRect,
-        cornerWidth: interpRadius,
-        cornerHeight: interpRadius,
-        transform: nil
-      )
-      context.saveGState()
-      context.addPath(path)
-      context.clip()
-      if instruction.cameraMirrored {
-        context.translateBy(x: interpRect.midX, y: 0)
-        context.scaleBy(x: -1, y: 1)
-        context.translateBy(x: -interpRect.midX, y: 0)
-      }
-      let fillRect = aspectFillRect(imageSize: CGSize(width: webcamImage.width, height: webcamImage.height), in: interpRect)
-      context.draw(webcamImage, in: fillRect)
-      context.restoreGState()
-    }
+    drawClippedWebcam(
+      in: context,
+      image: webcamImage,
+      rect: interpRect,
+      cornerRadius: interpRadius,
+      borderWidth: interpBorder,
+      borderColor: pipCam.borderColor,
+      mirrored: instruction.cameraMirrored
+    )
   }
 
   private static func drawPipInterpolationTransition(
@@ -252,83 +210,19 @@ extension FrameRenderer {
     let mirrored = p < 0.5 ? fromCam.mirrored : toCam.mirrored
 
     if interpShadow > 0 {
-      let blur = min(interpRect.width, interpRect.height) * interpShadow / 2000.0
-      context.saveGState()
-      context.setShadow(
-        offset: .zero,
-        blur: blur,
-        color: CGColor(red: 0, green: 0, blue: 0, alpha: 0.6)
-      )
-      let shadowPath = CGPath(
-        roundedRect: interpRect,
-        cornerWidth: interpRadius,
-        cornerHeight: interpRadius,
-        transform: nil
-      )
-      context.addPath(shadowPath)
-      context.setFillColor(CGColor(red: 0, green: 0, blue: 0, alpha: 1))
-      context.fillPath()
-      context.restoreGState()
+      drawRoundedShadow(in: context, rect: interpRect, cornerRadius: interpRadius, shadow: interpShadow)
     }
 
-    if interpBorder > 0 {
-      let borderColor = p < 0.5 ? fromCam.borderColor : toCam.borderColor
-      let borderPath = CGPath(
-        roundedRect: interpRect,
-        cornerWidth: interpRadius,
-        cornerHeight: interpRadius,
-        transform: nil
-      )
-      context.saveGState()
-      context.addPath(borderPath)
-      context.setFillColor(borderColor)
-      context.fillPath()
-      context.restoreGState()
-
-      let insetRect = interpRect.insetBy(dx: interpBorder, dy: interpBorder)
-      let innerRadius = max(0, interpRadius - interpBorder)
-      let innerPath = CGPath(
-        roundedRect: insetRect,
-        cornerWidth: innerRadius,
-        cornerHeight: innerRadius,
-        transform: nil
-      )
-      context.saveGState()
-      context.addPath(innerPath)
-      context.clip()
-      if mirrored {
-        context.translateBy(x: insetRect.midX, y: 0)
-        context.scaleBy(x: -1, y: 1)
-        context.translateBy(x: -insetRect.midX, y: 0)
-      }
-      let innerFill = aspectFillRect(
-        imageSize: CGSize(width: webcamImage.width, height: webcamImage.height),
-        in: insetRect
-      )
-      context.draw(webcamImage, in: innerFill)
-      context.restoreGState()
-    } else {
-      let path = CGPath(
-        roundedRect: interpRect,
-        cornerWidth: interpRadius,
-        cornerHeight: interpRadius,
-        transform: nil
-      )
-      context.saveGState()
-      context.addPath(path)
-      context.clip()
-      if mirrored {
-        context.translateBy(x: interpRect.midX, y: 0)
-        context.scaleBy(x: -1, y: 1)
-        context.translateBy(x: -interpRect.midX, y: 0)
-      }
-      let fillRect = aspectFillRect(
-        imageSize: CGSize(width: webcamImage.width, height: webcamImage.height),
-        in: interpRect
-      )
-      context.draw(webcamImage, in: fillRect)
-      context.restoreGState()
-    }
+    let borderColor = p < 0.5 ? fromCam.borderColor : toCam.borderColor
+    drawClippedWebcam(
+      in: context,
+      image: webcamImage,
+      rect: interpRect,
+      cornerRadius: interpRadius,
+      borderWidth: interpBorder,
+      borderColor: borderColor,
+      mirrored: mirrored
+    )
   }
 
   private static func applyWebcamTransition(
@@ -413,9 +307,7 @@ extension FrameRenderer {
     }
     context.clip(to: fullRect)
     if instruction.cameraMirrored {
-      context.translateBy(x: drawRect.midX, y: 0)
-      context.scaleBy(x: -1, y: 1)
-      context.translateBy(x: -drawRect.midX, y: 0)
+      applyMirror(in: context, centerX: drawRect.midX)
     }
     let webcamSize = CGSize(width: webcamImage.width, height: webcamImage.height)
     if instruction.cameraFullscreenAspect == .original {
@@ -449,75 +341,17 @@ extension FrameRenderer {
     )
 
     if cam.shadow > 0 {
-      let blur = min(drawRect.width, drawRect.height) * cam.shadow / 2000.0
-      context.saveGState()
-      context.setShadow(
-        offset: .zero,
-        blur: blur,
-        color: CGColor(red: 0, green: 0, blue: 0, alpha: 0.6)
-      )
-      let shadowPath = CGPath(
-        roundedRect: drawRect,
-        cornerWidth: cam.cornerRadius,
-        cornerHeight: cam.cornerRadius,
-        transform: nil
-      )
-      context.addPath(shadowPath)
-      context.setFillColor(CGColor(red: 0, green: 0, blue: 0, alpha: 1))
-      context.fillPath()
-      context.restoreGState()
+      drawRoundedShadow(in: context, rect: drawRect, cornerRadius: cam.cornerRadius, shadow: cam.shadow)
     }
 
-    if cam.borderWidth > 0 {
-      let borderPath = CGPath(
-        roundedRect: drawRect,
-        cornerWidth: cam.cornerRadius,
-        cornerHeight: cam.cornerRadius,
-        transform: nil
-      )
-      context.saveGState()
-      context.addPath(borderPath)
-      context.setFillColor(cam.borderColor)
-      context.fillPath()
-      context.restoreGState()
-
-      let insetRect = drawRect.insetBy(dx: cam.borderWidth, dy: cam.borderWidth)
-      let innerRadius = max(0, cam.cornerRadius - cam.borderWidth)
-      let innerPath = CGPath(
-        roundedRect: insetRect,
-        cornerWidth: innerRadius,
-        cornerHeight: innerRadius,
-        transform: nil
-      )
-      context.saveGState()
-      context.addPath(innerPath)
-      context.clip()
-      if cam.mirrored {
-        context.translateBy(x: insetRect.midX, y: 0)
-        context.scaleBy(x: -1, y: 1)
-        context.translateBy(x: -insetRect.midX, y: 0)
-      }
-      let innerFill = aspectFillRect(imageSize: CGSize(width: webcamImage.width, height: webcamImage.height), in: insetRect)
-      context.draw(webcamImage, in: innerFill)
-      context.restoreGState()
-    } else {
-      let path = CGPath(
-        roundedRect: drawRect,
-        cornerWidth: cam.cornerRadius,
-        cornerHeight: cam.cornerRadius,
-        transform: nil
-      )
-      context.saveGState()
-      context.addPath(path)
-      context.clip()
-      if cam.mirrored {
-        context.translateBy(x: drawRect.midX, y: 0)
-        context.scaleBy(x: -1, y: 1)
-        context.translateBy(x: -drawRect.midX, y: 0)
-      }
-      let fillRect = aspectFillRect(imageSize: CGSize(width: webcamImage.width, height: webcamImage.height), in: drawRect)
-      context.draw(webcamImage, in: fillRect)
-      context.restoreGState()
-    }
+    drawClippedWebcam(
+      in: context,
+      image: webcamImage,
+      rect: drawRect,
+      cornerRadius: cam.cornerRadius,
+      borderWidth: cam.borderWidth,
+      borderColor: cam.borderColor,
+      mirrored: cam.mirrored
+    )
   }
 }

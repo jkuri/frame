@@ -407,6 +407,7 @@ extension VideoCompositor {
     codec: ExportCodec,
     audioMix: AVAudioMix? = nil,
     audioBitrate: Int = 320_000,
+    isHDR: Bool = false,
     progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)?
   ) async throws {
     let logger = Logger(label: "eu.jankuri.reframed.video-compositor")
@@ -467,7 +468,8 @@ extension VideoCompositor {
       codec: codec.videoCodecType,
       width: Int(renderSize.width),
       height: Int(renderSize.height),
-      fps: fps
+      fps: fps,
+      isHDR: isHDR
     )
 
     let videoInput = AVAssetWriterInput(

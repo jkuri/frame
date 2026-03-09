@@ -14,6 +14,7 @@ struct ProjectMetadata: Codable, Sendable {
   var hasWebcam: Bool = false
   var captureMode: CaptureMode?
   var captureQuality: String? = nil
+  var isHDR: Bool = false
   var editorState: EditorStateData?
 }
 
@@ -410,6 +411,7 @@ extension ProjectMetadata {
     hasWebcam = try c.decodeOrDefault(.hasWebcam, false)
     captureMode = try c.decodeIfPresent(CaptureMode.self, forKey: .captureMode)
     captureQuality = try c.decodeIfPresent(String.self, forKey: .captureQuality)
+    isHDR = try c.decodeOrDefault(.isHDR, false)
     editorState = try c.decodeIfPresent(EditorStateData.self, forKey: .editorState)
   }
 }

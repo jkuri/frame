@@ -195,6 +195,8 @@
 		CA10000000000000000000A6 /* CaptionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A6 /* CaptionOverlayView.swift */; };
 		CA10000000000000000000A7 /* CaptionSegmentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A7 /* CaptionSegmentRow.swift */; };
 		CA10000000000000000000A8 /* FrameRenderer+Captions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000A8 /* FrameRenderer+Captions.swift */; };
+		CA10000000000000000000B0 /* FrameRenderer+HDR.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000B0 /* FrameRenderer+HDR.swift */; };
+		CA10000000000000000000B1 /* FrameRenderer+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA20000000000000000000B1 /* FrameRenderer+Helpers.swift */; };
 		FA10000000000000000000A1 /* SpotlightOverlayLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A1 /* SpotlightOverlayLayer.swift */; };
 		FA10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift */; };
 		FA10000000000000000000A7 /* ClickSoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10000000000000000000A7 /* ClickSoundPlayer.swift */; };
@@ -396,6 +398,8 @@
 		CA20000000000000000000A6 /* CaptionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionOverlayView.swift; sourceTree = "<group>"; };
 		CA20000000000000000000A7 /* CaptionSegmentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionSegmentRow.swift; sourceTree = "<group>"; };
 		CA20000000000000000000A8 /* FrameRenderer+Captions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FrameRenderer+Captions.swift"; sourceTree = "<group>"; };
+		CA20000000000000000000B0 /* FrameRenderer+HDR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FrameRenderer+HDR.swift"; sourceTree = "<group>"; };
+		CA20000000000000000000B1 /* FrameRenderer+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FrameRenderer+Helpers.swift"; sourceTree = "<group>"; };
 		FB10000000000000000000A1 /* SpotlightOverlayLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightOverlayLayer.swift; sourceTree = "<group>"; };
 		FB10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoPreviewContainer+Spotlight.swift"; sourceTree = "<group>"; };
 		FB10000000000000000000A7 /* ClickSoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickSoundPlayer.swift; sourceTree = "<group>"; };
@@ -765,6 +769,8 @@
 				CAB002000000000000000002 /* PersonSegmentationProcessor.swift */,
 			CA20000000000000000000A8 /* FrameRenderer+Captions.swift */,
 			FB10000000000000000000A9 /* FrameRenderer+Spotlight.swift */,
+			CA20000000000000000000B0 /* FrameRenderer+HDR.swift */,
+			CA20000000000000000000B1 /* FrameRenderer+Helpers.swift */,
 			);
 			path = Compositor;
 			sourceTree = "<group>";
@@ -1028,6 +1034,8 @@
 				CA10000000000000000000A6 /* CaptionOverlayView.swift in Sources */,
 				CA10000000000000000000A7 /* CaptionSegmentRow.swift in Sources */,
 				CA10000000000000000000A8 /* FrameRenderer+Captions.swift in Sources */,
+				CA10000000000000000000B0 /* FrameRenderer+HDR.swift in Sources */,
+				CA10000000000000000000B1 /* FrameRenderer+Helpers.swift in Sources */,
 				FA10000000000000000000A1 /* SpotlightOverlayLayer.swift in Sources */,
 				FA10000000000000000000A2 /* VideoPreviewContainer+Spotlight.swift in Sources */,
 				FA10000000000000000000A7 /* ClickSoundPlayer.swift in Sources */,

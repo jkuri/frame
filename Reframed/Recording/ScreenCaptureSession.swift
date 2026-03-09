@@ -15,12 +15,14 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
   private var isPaused = false
   private var lastPixelBuffer: CVPixelBuffer?
   private let captureQuality: CaptureQuality
+  private let hdrCapture: Bool
   var onStreamError: (@Sendable (any Error) -> Void)?
   var onPreviewFrame: (@Sendable (CMSampleBuffer) -> Void)?
 
-  init(videoWriter: VideoTrackWriter, captureQuality: CaptureQuality = .standard) {
+  init(videoWriter: VideoTrackWriter, captureQuality: CaptureQuality = .standard, hdrCapture: Bool = false) {
     self.videoWriter = videoWriter
     self.captureQuality = captureQuality
+    self.hdrCapture = hdrCapture
     super.init()
   }
 
@@ -30,14 +32,15 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
     displayScale: CGFloat,
     fps: Int = 60,
     hideCursor: Bool = false,
-    retinaCapture: Bool = false
+    retinaCapture: Bool = false,
+    excludedApps: [SCRunningApplication] = []
   ) async throws {
     let filter: SCContentFilter
     let sourceRect: CGRect
 
     switch target {
     case .region(let selection):
-      filter = SCContentFilter(display: display, excludingApplications: [], exceptingWindows: [])
+      filter = SCContentFilter(display: display, excludingApplications: excludedApps, exceptingWindows: [])
       sourceRect = selection.screenCaptureKitRect
 
     case .window(let window):
@@ -64,12 +67,18 @@ final class ScreenCaptureSession: NSObject, SCStreamDelegate, SCStreamOutput, @u
     config.width = pixelW
     config.height = pixelH
     config.minimumFrameInterval = CMTime(value: 1, timescale: CMTimeScale(captureFps))
-    config.pixelFormat = captureQuality.isProRes ? kCVPixelFormatType_32BGRA : kCVPixelFormatType_420YpCbCr10BiPlanarFullRange
+    if hdrCapture {
+      config.colorSpaceName = CGColorSpace.displayP3 as CFString
+      config.pixelFormat = kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
+      config.captureDynamicRange = .hdrLocalDisplay
+    } else {
+      config.colorSpaceName = CGColorSpace.sRGB as CFString
+      config.pixelFormat = captureQuality.isProRes ? kCVPixelFormatType_32BGRA : kCVPixelFormatType_420YpCbCr10BiPlanarFullRange
+    }
     config.showsCursor = !hideCursor
     config.capturesAudio = false
     config.queueDepth = 8
     config.scalesToFit = retinaCapture
-    config.colorSpaceName = CGColorSpace.sRGB as CFString
 
     lastPixelBuffer = nil
 

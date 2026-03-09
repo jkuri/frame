@@ -12,15 +12,19 @@ enum EncodingSettings {
     codec: AVVideoCodecType,
     width: Int,
     height: Int,
-    fps: Int
+    fps: Int,
+    isHDR: Bool = false
   ) -> [String: Any] {
     if codec == .proRes4444 || codec == .proRes422 {
-      return [
+      var settings: [String: Any] = [
         AVVideoCodecKey: codec,
         AVVideoWidthKey: width,
         AVVideoHeightKey: height,
-        AVVideoColorPropertiesKey: bt709ColorProperties,
       ]
+      if !isHDR {
+        settings[AVVideoColorPropertiesKey] = bt709ColorProperties
+      }
+      return settings
     }
     let pixels = Double(width * height)
     var compressionProperties: [String: Any] = [
@@ -28,19 +32,22 @@ enum EncodingSettings {
       AVVideoExpectedSourceFrameRateKey: fps,
     ]
     if codec == .hevc {
-      compressionProperties[AVVideoAverageBitRateKey] = pixels * 5
+      compressionProperties[AVVideoAverageBitRateKey] = pixels * (isHDR ? 7 : 5)
       compressionProperties[AVVideoProfileLevelKey] = kVTProfileLevel_HEVC_Main10_AutoLevel
     } else {
       compressionProperties[AVVideoAverageBitRateKey] = pixels * 7
       compressionProperties[AVVideoProfileLevelKey] = AVVideoProfileLevelH264HighAutoLevel
     }
-    return [
+    var settings: [String: Any] = [
       AVVideoCodecKey: codec,
       AVVideoWidthKey: width,
       AVVideoHeightKey: height,
-      AVVideoColorPropertiesKey: bt709ColorProperties,
       AVVideoCompressionPropertiesKey: compressionProperties,
     ]
+    if !isHDR {
+      settings[AVVideoColorPropertiesKey] = bt709ColorProperties
+    }
+    return settings
   }
 
   static func captureVideoSettings(
@@ -48,16 +55,16 @@ enum EncodingSettings {
     width: Int,
     height: Int,
     fps: Int,
-    isWebcam: Bool
+    isWebcam: Bool,
+    isHDR: Bool = false
   ) -> [String: Any] {
     switch quality {
     case .standard:
-      let bitRateMultiplier = isWebcam ? 2 : 5
-      return [
+      let bitRateMultiplier = isWebcam ? 2 : (isHDR ? 7 : 5)
+      var settings: [String: Any] = [
         AVVideoCodecKey: AVVideoCodecType.hevc,
         AVVideoWidthKey: width,
         AVVideoHeightKey: height,
-        AVVideoColorPropertiesKey: bt709ColorProperties,
         AVVideoCompressionPropertiesKey: [
           AVVideoAverageBitRateKey: width * height * bitRateMultiplier,
           AVVideoProfileLevelKey: kVTProfileLevel_HEVC_Main10_AutoLevel,
@@ -65,20 +72,30 @@ enum EncodingSettings {
           AVVideoAllowFrameReorderingKey: false,
         ] as [String: Any],
       ]
+      if !isHDR {
+        settings[AVVideoColorPropertiesKey] = bt709ColorProperties
+      }
+      return settings
     case .high:
-      return [
+      var settings: [String: Any] = [
         AVVideoCodecKey: AVVideoCodecType.proRes422,
         AVVideoWidthKey: width,
         AVVideoHeightKey: height,
-        AVVideoColorPropertiesKey: bt709ColorProperties,
       ]
+      if !isHDR {
+        settings[AVVideoColorPropertiesKey] = bt709ColorProperties
+      }
+      return settings
     case .veryHigh:
-      return [
+      var settings: [String: Any] = [
         AVVideoCodecKey: AVVideoCodecType.proRes4444,
         AVVideoWidthKey: width,
         AVVideoHeightKey: height,
-        AVVideoColorPropertiesKey: bt709ColorProperties,
       ]
+      if !isHDR {
+        settings[AVVideoColorPropertiesKey] = bt709ColorProperties
+      }
+      return settings
     }
   }
 

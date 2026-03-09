@@ -90,6 +90,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
   let spotlightRadius: CGFloat
   let spotlightDimOpacity: CGFloat
   let spotlightEdgeSoftness: CGFloat
+  let isHDR: Bool
 
   init(
     timeRange: CMTimeRange,
@@ -147,7 +148,8 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     spotlightRegions: [SpotlightRegionData] = [],
     spotlightRadius: CGFloat = 200,
     spotlightDimOpacity: CGFloat = 0.6,
-    spotlightEdgeSoftness: CGFloat = 50
+    spotlightEdgeSoftness: CGFloat = 50,
+    isHDR: Bool = false
   ) {
     self.timeRange = timeRange
     self.screenTrackID = screenTrackID
@@ -205,6 +207,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     self.spotlightRadius = spotlightRadius
     self.spotlightDimOpacity = spotlightDimOpacity
     self.spotlightEdgeSoftness = spotlightEdgeSoftness
+    self.isHDR = isHDR
     var trackIDs: [NSValue] = [NSNumber(value: screenTrackID)]
     if let wid = webcamTrackID {
       trackIDs.append(NSNumber(value: wid))

@@ -390,6 +390,8 @@ final class SessionState {
         existingWebcam = (webcam, info)
       }
 
+      SoundEffect.startRecording.play()
+
       let startedAt = try await coordinator.startDeviceRecording(
         deviceCapture: capture,
         fps: options.fps,
@@ -398,7 +400,8 @@ final class SessionState {
         cameraResolution: ConfigService.shared.cameraMaximumResolution,
         existingWebcam: existingWebcam,
         captureQuality: options.captureQuality,
-        retinaCapture: options.retinaCapture
+        retinaCapture: options.retinaCapture,
+        hdrCapture: options.hdrCapture
       )
 
       if existingWebcam == nil, useCam {
@@ -414,8 +417,6 @@ final class SessionState {
       }
 
       await startRecordingPreview(coordinator: coordinator)
-
-      SoundEffect.startRecording.play()
       transition(to: .recording(startedAt: startedAt))
       return
     }
@@ -443,6 +444,8 @@ final class SessionState {
     let metadataRecorder = CursorMetadataRecorder()
     self.cursorMetadataRecorder = metadataRecorder
 
+    SoundEffect.startRecording.play()
+
     let startedAt = try await coordinator.startRecording(
       target: target,
       fps: options.fps,
@@ -453,7 +456,8 @@ final class SessionState {
       existingWebcam: existingWebcam,
       cursorMetadataRecorder: metadataRecorder,
       captureQuality: options.captureQuality,
-      retinaCapture: options.retinaCapture
+      retinaCapture: options.retinaCapture,
+      hdrCapture: options.hdrCapture
     )
 
     metadataRecorder.start()
@@ -475,8 +479,6 @@ final class SessionState {
     mouseClickMonitor = monitor
 
     await startRecordingPreview(coordinator: coordinator)
-
-    SoundEffect.startRecording.play()
     transition(to: .recording(startedAt: startedAt))
   }
 
@@ -494,7 +496,6 @@ final class SessionState {
     recordingPreviewWindow?.close()
     recordingPreviewWindow = nil
 
-    SoundEffect.stopRecording.play()
     transition(to: .processing)
     cleanupCoordinators()
 
@@ -506,11 +507,13 @@ final class SessionState {
       captureMode = .none
       stopCameraPreview()
       isCameraOn = false
+      SoundEffect.stopRecording.play()
       transition(to: .idle)
       showToolbar()
       return
     }
 
+    SoundEffect.stopRecording.play()
     recordingCoordinator = nil
     captureTarget = nil
     stopCameraPreview()
@@ -634,9 +637,9 @@ final class SessionState {
     guard case .recording(let startedAt) = state else { return }
     let elapsed = Date().timeIntervalSince(startedAt)
     mouseClickMonitor?.stop()
-    SoundEffect.pauseRecording.play()
     Task {
       await recordingCoordinator?.pause()
+      SoundEffect.pauseRecording.play()
     }
     transition(to: .paused(elapsed: elapsed))
   }
@@ -645,8 +648,8 @@ final class SessionState {
     guard case .paused(let elapsed) = state else { return }
     let resumedAt = Date().addingTimeInterval(-elapsed)
     mouseClickMonitor?.start()
-    SoundEffect.resumeRecording.play()
     Task {
+      SoundEffect.resumeRecording.play()
       await recordingCoordinator?.resume()
     }
     transition(to: .recording(startedAt: resumedAt))

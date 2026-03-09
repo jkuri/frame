@@ -643,7 +643,8 @@ enum VideoCompositor {
         spotlightRegions: spotlightRegions.flatMap { remapSpotlightRegion($0) },
         spotlightRadius: spotlightRadius,
         spotlightDimOpacity: spotlightDimOpacity,
-        spotlightEdgeSoftness: spotlightEdgeSoftness
+        spotlightEdgeSoftness: spotlightEdgeSoftness,
+        isHDR: result.isHDR
       )
 
       if exportSettings.format.isGIF {
@@ -701,6 +702,7 @@ enum VideoCompositor {
           codec: exportSettings.codec,
           audioMix: audioMix,
           audioBitrate: exportSettings.audioBitrate.value,
+          isHDR: result.isHDR,
           progressHandler: progressHandler
         )
       } else {
@@ -715,6 +717,7 @@ enum VideoCompositor {
           fileType: exportSettings.format.fileType,
           audioMix: audioMix,
           audioBitrate: exportSettings.audioBitrate.value,
+          isHDR: result.isHDR,
           progressHandler: progressHandler
         )
       }

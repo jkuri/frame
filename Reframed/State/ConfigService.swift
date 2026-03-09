@@ -80,6 +80,11 @@ final class ConfigService {
     set { data.showRecordingPreview = newValue; save() }
   }
 
+  var hdrCapture: Bool {
+    get { data.hdrCapture }
+    set { data.hdrCapture = newValue; save() }
+  }
+
   var isMicrophoneOn: Bool {
     get { data.isMicrophoneOn }
     set { data.isMicrophoneOn = newValue; save() }
@@ -174,6 +179,7 @@ private struct ConfigData: Codable {
   var dimOuterArea: Bool = true
   var hideCameraPreviewWhileRecording: Bool = false
   var showRecordingPreview: Bool = false
+  var hdrCapture: Bool = false
   var isMicrophoneOn: Bool = false
   var appearance: String = "system"
   var shortcuts: [String: KeyboardShortcut] = [:]

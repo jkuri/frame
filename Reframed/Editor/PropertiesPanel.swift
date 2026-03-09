@@ -204,6 +204,7 @@ struct PropertiesPanel: View {
         infoRow("Resolution", value: "\(Int(editorState.result.screenSize.width))x\(Int(editorState.result.screenSize.height))")
         infoRow("FPS", value: "\(editorState.result.fps)")
         infoRow("Codec", value: codecLabel(editorState.result.captureQuality))
+        infoRow("HDR", value: editorState.result.isHDR ? "Yes" : "No")
         if let info = screenInfo {
           infoRow("Size", value: info.fileSize)
           if let bitrate = info.bitrate {

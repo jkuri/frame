@@ -56,7 +56,8 @@ struct ReframedProject: Sendable {
       screenSize: metadata.screenSize.cgSize,
       webcamSize: metadata.webcamSize?.cgSize,
       fps: metadata.fps,
-      captureQuality: CaptureQuality(rawValue: metadata.captureQuality ?? "standard") ?? .standard
+      captureQuality: CaptureQuality(rawValue: metadata.captureQuality ?? "standard") ?? .standard,
+      isHDR: metadata.isHDR
     )
   }
 
@@ -110,7 +111,8 @@ struct ReframedProject: Sendable {
       hasCursorMetadata: result.cursorMetadataURL != nil,
       hasWebcam: result.webcamVideoURL != nil,
       captureMode: captureMode,
-      captureQuality: result.captureQuality.rawValue
+      captureQuality: result.captureQuality.rawValue,
+      isHDR: result.isHDR
     )
 
     let encoder = JSONEncoder()

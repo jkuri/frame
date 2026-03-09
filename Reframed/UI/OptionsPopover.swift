@@ -108,6 +108,20 @@ struct OptionsPopover: View {
       ) {
         options.showRecordingPreview.toggle()
       }
+
+      CheckmarkRow(
+        title: "Retina Capture (Supersample)",
+        isSelected: options.retinaCapture
+      ) {
+        options.retinaCapture.toggle()
+      }
+
+      CheckmarkRow(
+        title: "HDR Capture",
+        isSelected: options.hdrCapture
+      ) {
+        options.hdrCapture.toggle()
+      }
     }
     .padding(.vertical, 8)
     .frame(minWidth: 280)

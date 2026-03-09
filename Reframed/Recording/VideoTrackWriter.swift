@@ -18,6 +18,8 @@ final class VideoTrackWriter: @unchecked Sendable {
   private var isPaused = false
   private var pauseOffset = CMTime.zero
   private var hasRegistered = false
+  private let isHDR: Bool
+  private var pendingVideoSettings: [String: Any]?
 
   func resetStats() {
     writtenFrames = 0
@@ -31,10 +33,12 @@ final class VideoTrackWriter: @unchecked Sendable {
     fps: Int = 60,
     clock: SharedRecordingClock,
     captureQuality: CaptureQuality = .standard,
-    isWebcam: Bool = false
+    isWebcam: Bool = false,
+    isHDR: Bool = false
   ) throws {
     self.outputURL = outputURL
     self.clock = clock
+    self.isHDR = isHDR
 
     if FileManager.default.fileExists(atPath: outputURL.path) {
       try FileManager.default.removeItem(at: outputURL)
@@ -48,14 +52,20 @@ final class VideoTrackWriter: @unchecked Sendable {
       width: width,
       height: height,
       fps: fps,
-      isWebcam: isWebcam
+      isWebcam: isWebcam,
+      isHDR: isHDR
     )
 
-    let input = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
-    input.expectsMediaDataInRealTime = true
-    writer.add(input)
-    self.videoInput = input
-    self.assetWriter = writer
+    if isHDR {
+      self.pendingVideoSettings = videoSettings
+      self.assetWriter = writer
+    } else {
+      let input = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
+      input.expectsMediaDataInRealTime = true
+      writer.add(input)
+      self.videoInput = input
+      self.assetWriter = writer
+    }
   }
 
   func pause() {
@@ -74,7 +84,21 @@ final class VideoTrackWriter: @unchecked Sendable {
   func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
     dispatchPrecondition(condition: .onQueue(queue))
 
-    guard let assetWriter, let videoInput else { return }
+    guard let assetWriter else { return }
+
+    if videoInput == nil, let settings = pendingVideoSettings {
+      let input = AVAssetWriterInput(
+        mediaType: .video,
+        outputSettings: settings,
+        sourceFormatHint: sampleBuffer.formatDescription
+      )
+      input.expectsMediaDataInRealTime = true
+      assetWriter.add(input)
+      self.videoInput = input
+      self.pendingVideoSettings = nil
+    }
+
+    guard let videoInput else { return }
 
     if isPaused { return }
 

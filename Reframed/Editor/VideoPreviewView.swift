@@ -75,10 +75,16 @@ struct VideoPreviewView: NSViewRepresentable {
   var spotlightEdgeSoftness: CGFloat = 50
   var cameraBackgroundStyle: CameraBackgroundStyle = .none
   var cameraBackgroundImage: NSImage?
+  var isHDR: Bool = false
 
   func makeNSView(context: Context) -> VideoPreviewContainer {
     let container = VideoPreviewContainer()
     container.screenPlayerLayer.player = screenPlayer
+    if isHDR {
+      container.layer?.wantsExtendedDynamicRangeContent = true
+      container.screenContainerLayer.wantsExtendedDynamicRangeContent = true
+      container.screenPlayerLayer.wantsExtendedDynamicRangeContent = true
+    }
     if let webcam = webcamPlayer {
       container.webcamPlayerLayer.player = webcam
       container.webcamPlayerLayer.isHidden = false
