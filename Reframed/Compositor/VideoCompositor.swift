@@ -630,6 +630,7 @@ enum VideoCompositor {
         cameraFullscreenAspect: cameraFullscreenAspect,
         cameraBackgroundStyle: cameraBackgroundStyle,
         cameraBackgroundImage: camBgImage,
+        captionScreenWidth: screenNaturalSize.width,
         captionSegments: remappedCaptionSegments,
         captionsEnabled: captionsEnabled,
         captionFontSize: captionFontSize,

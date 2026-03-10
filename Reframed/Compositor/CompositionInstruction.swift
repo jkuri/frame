@@ -75,6 +75,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
   let cameraBackgroundStyle: CameraBackgroundStyle
   let cameraBackgroundImage: CGImage?
 
+  let captionScreenWidth: CGFloat
   let captionSegments: [CaptionSegment]
   let captionsEnabled: Bool
   let captionFontSize: CGFloat
@@ -135,6 +136,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     cameraFullscreenAspect: CameraFullscreenAspect = .original,
     cameraBackgroundStyle: CameraBackgroundStyle = .none,
     cameraBackgroundImage: CGImage? = nil,
+    captionScreenWidth: CGFloat = 1920,
     captionSegments: [CaptionSegment] = [],
     captionsEnabled: Bool = false,
     captionFontSize: CGFloat = 48,
@@ -193,6 +195,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     self.cameraFullscreenAspect = cameraFullscreenAspect
     self.cameraBackgroundStyle = cameraBackgroundStyle
     self.cameraBackgroundImage = cameraBackgroundImage
+    self.captionScreenWidth = captionScreenWidth
     self.captionSegments = captionSegments
     self.captionsEnabled = captionsEnabled
     self.captionFontSize = captionFontSize

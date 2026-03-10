@@ -363,7 +363,8 @@ struct EditorView: View {
             textColor: editorState.captionTextColor,
             backgroundColor: editorState.captionBackgroundColor,
             backgroundOpacity: editorState.captionBackgroundOpacity,
-            showBackground: editorState.captionShowBackground
+            showBackground: editorState.captionShowBackground,
+            screenWidth: editorState.result.screenSize.width
           )
         }
       }

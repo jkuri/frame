@@ -27,8 +27,9 @@ extension FrameRenderer {
     )
     guard !displayText.isEmpty else { return }
 
-    let fontSize = instruction.captionFontSize * (videoRect.width / 1920.0)
-    let clampedFontSize = max(12, min(fontSize, videoRect.height * 0.08))
+    let refWidth = max(instruction.captionScreenWidth, 1)
+    let fontSize = instruction.captionFontSize * (canvasRect.width / refWidth)
+    let clampedFontSize = max(12, min(fontSize, canvasRect.height * 0.08))
 
     let nsWeight: NSFont.Weight = {
       switch instruction.captionFontWeight {
@@ -69,7 +70,7 @@ extension FrameRenderer {
 
     let attrString = NSAttributedString(string: displayText, attributes: attributes)
 
-    let maxTextWidth = videoRect.width * 0.9
+    let maxTextWidth = canvasRect.width * 0.9
     let frameSetter = CTFramesetterCreateWithAttributedString(attrString)
     let suggestedSize = CTFramesetterSuggestFrameSizeWithConstraints(
       frameSetter,

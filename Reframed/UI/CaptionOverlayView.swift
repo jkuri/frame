@@ -10,6 +10,7 @@ struct CaptionOverlayView: View {
   let backgroundColor: CodableColor
   let backgroundOpacity: CGFloat
   let showBackground: Bool
+  let screenWidth: CGFloat
 
   private var swiftUIFontWeight: Font.Weight {
     switch fontWeight {
@@ -22,7 +23,8 @@ struct CaptionOverlayView: View {
 
   var body: some View {
     GeometryReader { geo in
-      let scaledFontSize = fontSize * (geo.size.width / 1920.0)
+      let rawFontSize = fontSize * (geo.size.width / max(screenWidth, 1))
+      let scaledFontSize = max(12, min(rawFontSize, geo.size.height * 0.08))
 
       VStack {
         if position == .bottom || position == .center {
@@ -33,7 +35,6 @@ struct CaptionOverlayView: View {
           .font(.system(size: scaledFontSize, weight: swiftUIFontWeight))
           .foregroundStyle(Color(cgColor: textColor.cgColor))
           .multilineTextAlignment(.center)
-          .lineLimit(2)
           .padding(.horizontal, scaledFontSize * 0.4)
           .padding(.vertical, scaledFontSize * 0.2)
           .background {
