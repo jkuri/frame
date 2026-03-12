@@ -38,7 +38,7 @@ extension PropertiesPanel {
               .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
               .overlay(RoundedRectangle(cornerRadius: Radius.sm).strokeBorder(ReframedColors.border))
           }
-          .buttonStyle(SecondaryButtonStyle())
+          .buttonStyle(.plain)
           .foregroundStyle(ReframedColors.primaryText)
         }
       }
