@@ -61,7 +61,7 @@ private struct AreaPresetRow: View {
       .padding(.vertical, 5)
       .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
     .background(
       RoundedRectangle(cornerRadius: Radius.sm)
         .fill(isHovered ? Color.black.opacity(0.06) : Color.clear)

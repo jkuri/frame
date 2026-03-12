@@ -145,7 +145,7 @@ struct CameraRegionEditPopover: View {
               .clipShape(RoundedRectangle(cornerRadius: Radius.sm))
               .overlay(RoundedRectangle(cornerRadius: Radius.sm).strokeBorder(ReframedColors.border))
           }
-          .buttonStyle(.plain)
+          .buttonStyle(PlainCustomButtonStyle())
           .foregroundStyle(ReframedColors.primaryText)
         }
       }

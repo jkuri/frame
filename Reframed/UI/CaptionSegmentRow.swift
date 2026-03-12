@@ -20,7 +20,7 @@ struct CaptionSegmentRow: View {
             .font(.system(size: FontSize.xs, design: .monospaced))
             .foregroundStyle(ReframedColors.secondaryText)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PlainCustomButtonStyle())
         Spacer()
         IconButton(systemName: "trash", color: ReframedColors.secondaryText) {
           onDelete()

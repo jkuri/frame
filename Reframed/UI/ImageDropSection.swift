@@ -37,7 +37,7 @@ struct ImageDropSection: View {
             )
         )
       }
-      .buttonStyle(.plain)
+      .buttonStyle(PlainCustomButtonStyle())
       .foregroundStyle(ReframedColors.primaryText)
     }
     .onDrop(of: [.image], isTargeted: $isDropTargeted) { providers in

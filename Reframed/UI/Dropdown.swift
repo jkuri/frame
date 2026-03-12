@@ -30,6 +30,6 @@ struct Dropdown<Item: Identifiable & Equatable, MenuContent: View>: View {
           .strokeBorder(ReframedColors.border, lineWidth: 1)
       )
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
   }
 }

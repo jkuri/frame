@@ -97,7 +97,7 @@ private struct PermissionRow: View {
         )
         .foregroundStyle(granted ? .green : ReframedColors.permissionText)
       }
-      .buttonStyle(.plain)
+      .buttonStyle(PlainCustomButtonStyle())
     }
     .padding(.horizontal)
   }

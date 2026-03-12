@@ -36,6 +36,6 @@ struct CustomToggle: View {
         }
         .animation(.easeInOut(duration: 0.15), value: isOn)
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
   }
 }

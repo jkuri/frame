@@ -23,6 +23,6 @@ struct ModeButton: View {
       .clipShape(RoundedRectangle(cornerRadius: Radius.md))
       .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
   }
 }

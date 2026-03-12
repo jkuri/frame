@@ -39,7 +39,7 @@ struct ToolbarActionButton: View {
         .clipShape(RoundedRectangle(cornerRadius: Radius.md))
         .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
     .onHover { isHovered = $0 }
     .help(tooltip)
   }
@@ -69,7 +69,7 @@ struct ToolbarToggleButton: View {
       .clipShape(RoundedRectangle(cornerRadius: Radius.md))
       .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
     .disabled(!isAvailable)
     .help(tooltip)
   }

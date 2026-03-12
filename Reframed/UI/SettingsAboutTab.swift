@@ -78,7 +78,7 @@ extension SettingsView {
       }
       .foregroundStyle(ReframedColors.secondaryText)
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
     .onHover { hovering in
       if hovering {
         NSCursor.pointingHand.push()

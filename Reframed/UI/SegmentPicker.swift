@@ -49,7 +49,7 @@ private struct ToggleGroupItem: View {
         )
         .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
     .onHover { isHovered = $0 }
   }
 }

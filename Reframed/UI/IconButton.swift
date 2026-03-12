@@ -14,7 +14,7 @@ struct IconButton: View {
         .font(.system(size: FontSize.xs))
         .frame(width: 28, height: 28)
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
     .foregroundStyle(color)
   }
 }

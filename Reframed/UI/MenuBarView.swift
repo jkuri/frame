@@ -1,27 +1,14 @@
 import AVFoundation
 import SwiftUI
 
-struct RecentProject: Identifiable {
-  let id = UUID()
-  let url: URL
-  let name: String
-  let createdAt: Date
-  let captureMode: CaptureMode?
-  let hasWebcam: Bool
-  let hasSystemAudio: Bool
-  let hasMicrophoneAudio: Bool
-  let duration: Int?
-  let fileSize: Int64?
-}
-
 struct MenuBarView: View {
   let session: SessionState
   let onDismiss: () -> Void
   let onShowPermissions: () -> Void
 
-  @State private var recentProjects: [RecentProject] = []
-  @State private var totalProjectCount: Int = 0
-  @State private var permissionsGranted = Permissions.allPermissionsGranted
+  @State var recentProjects: [RecentProject] = []
+  @State var totalProjectCount: Int = 0
+  @State var permissionsGranted = Permissions.allPermissionsGranted
   @Environment(\.colorScheme) private var colorScheme
 
   private let permissionTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -159,7 +146,7 @@ struct MenuBarView: View {
               .frame(height: 42)
               .contentShape(Rectangle())
           }
-          .buttonStyle(.plain)
+          .buttonStyle(PlainCustomButtonStyle())
           .hoverEffect(id: "openFolder")
 
           Button {
@@ -178,7 +165,7 @@ struct MenuBarView: View {
             .frame(height: 42)
             .contentShape(Rectangle())
           }
-          .buttonStyle(.plain)
+          .buttonStyle(PlainCustomButtonStyle())
           .hoverEffect(id: "quit")
         }
         .padding(.horizontal, 10)
@@ -194,228 +181,5 @@ struct MenuBarView: View {
     .onReceive(permissionTimer) { _ in
       permissionsGranted = Permissions.allPermissionsGranted
     }
-  }
-
-  private func loadRecentProjects() async {
-    let path = (ConfigService.shared.projectFolder as NSString).expandingTildeInPath
-    let folderURL = URL(fileURLWithPath: path)
-    let fm = FileManager.default
-
-    guard
-      let contents = try? fm.contentsOfDirectory(
-        at: folderURL,
-        includingPropertiesForKeys: [.contentModificationDateKey],
-        options: [.skipsHiddenFiles]
-      )
-    else {
-      recentProjects = []
-      return
-    }
-
-    let decoder = JSONDecoder()
-    decoder.dateDecodingStrategy = .iso8601
-
-    var projects: [RecentProject] = []
-    for url in contents where url.pathExtension == "frm" {
-      let metadataURL = url.appendingPathComponent("project.json")
-      guard let data = try? Data(contentsOf: metadataURL),
-        let metadata = try? decoder.decode(ProjectMetadata.self, from: data)
-      else { continue }
-
-      let name = metadata.name ?? url.deletingPathExtension().lastPathComponent
-      let screenURL = url.appendingPathComponent("screen.mp4")
-      let asset = AVURLAsset(url: screenURL)
-      let duration = try? await asset.load(.duration)
-      let durationSeconds = duration.map { Int(CMTimeGetSeconds($0)) }
-
-      let bundleSize = Self.directorySize(url: url, fm: fm)
-
-      projects.append(
-        RecentProject(
-          url: url,
-          name: name,
-          createdAt: metadata.createdAt,
-          captureMode: metadata.captureMode,
-          hasWebcam: metadata.hasWebcam || metadata.webcamSize != nil,
-          hasSystemAudio: metadata.hasSystemAudio,
-          hasMicrophoneAudio: metadata.hasMicrophoneAudio,
-          duration: durationSeconds.flatMap { $0 > 0 ? $0 : nil },
-          fileSize: bundleSize
-        )
-      )
-    }
-
-    let sorted = projects.sorted { $0.createdAt > $1.createdAt }
-    totalProjectCount = sorted.count
-    recentProjects = sorted
-  }
-
-  private static nonisolated func directorySize(url: URL, fm: FileManager) -> Int64? {
-    guard let enumerator = fm.enumerator(at: url, includingPropertiesForKeys: [.fileSizeKey]) else {
-      return nil
-    }
-    var total: Int64 = 0
-    for case let fileURL as URL in enumerator {
-      if let size = try? fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize {
-        total += Int64(size)
-      }
-    }
-    return total
-  }
-}
-
-private struct ActionGridItem: View {
-  let icon: String
-  let title: String
-  let hoverId: String
-  let action: () -> Void
-
-  @Environment(\.colorScheme) private var colorScheme
-
-  var body: some View {
-    let _ = colorScheme
-    Button(action: action) {
-      VStack(spacing: 3) {
-        Image(systemName: icon)
-          .font(.system(size: FontSize.lg))
-          .foregroundStyle(ReframedColors.primaryText)
-          .frame(height: 22)
-
-        Text(title)
-          .font(.system(size: FontSize.xxs, weight: .semibold))
-          .foregroundStyle(ReframedColors.primaryText)
-      }
-      .frame(maxWidth: .infinity)
-      .frame(height: 52)
-      .clipShape(RoundedRectangle(cornerRadius: Radius.md))
-      .contentShape(Rectangle())
-    }
-    .buttonStyle(.plain)
-    .hoverEffect(id: hoverId)
-  }
-}
-
-private struct PermissionsPrompt: View {
-  let action: () -> Void
-
-  @Environment(\.colorScheme) private var colorScheme
-
-  var body: some View {
-    let _ = colorScheme
-    VStack(spacing: 8) {
-      Image(systemName: "lock.shield")
-        .font(.system(size: FontSize.xl))
-        .foregroundStyle(ReframedColors.secondaryText)
-
-      Text("Reframed needs Screen Recording and Accessibility permissions to work.")
-        .font(.system(size: FontSize.xxs))
-        .foregroundStyle(ReframedColors.secondaryText)
-        .multilineTextAlignment(.center)
-        .fixedSize(horizontal: false, vertical: true)
-
-      Button(action: action) {
-        Text("Grant Permissions")
-          .font(.system(size: FontSize.xxs, weight: .medium))
-      }
-      .buttonStyle(OutlineButtonStyle())
-    }
-    .frame(maxWidth: .infinity)
-    .padding(.horizontal, 10)
-    .padding(.vertical, 10)
-  }
-}
-
-private struct ProjectRow: View {
-  let project: RecentProject
-  let action: () -> Void
-
-  @Environment(\.colorScheme) private var colorScheme
-
-  var body: some View {
-    let _ = colorScheme
-    Button(action: action) {
-      HStack(spacing: 10) {
-        Image(systemName: project.captureMode == .device ? "iphone" : "macbook")
-          .font(.system(size: FontSize.lg))
-          .foregroundStyle(ReframedColors.primaryText)
-          .frame(width: 28)
-
-        VStack(alignment: .leading, spacing: 2) {
-          Text(project.name)
-            .font(.system(size: FontSize.xs, weight: .semibold))
-            .foregroundStyle(ReframedColors.primaryText)
-            .lineLimit(1)
-
-          HStack(spacing: 4) {
-            Text(formatRelativeTime(project.createdAt))
-              .font(.system(size: FontSize.xxs, weight: .medium))
-              .foregroundStyle(ReframedColors.secondaryText)
-
-            if let duration = project.duration {
-              Text("·")
-                .font(.system(size: FontSize.xxs, weight: .medium))
-                .foregroundStyle(ReframedColors.secondaryText)
-
-              Text(formatDuration(seconds: duration))
-                .font(.system(size: FontSize.xxs, weight: .medium))
-                .foregroundStyle(ReframedColors.secondaryText)
-            }
-
-            if let fileSize = project.fileSize {
-              Text("·")
-                .font(.system(size: FontSize.xxs, weight: .medium))
-                .foregroundStyle(ReframedColors.secondaryText)
-
-              Text(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file))
-                .font(.system(size: FontSize.xxs, weight: .medium))
-                .foregroundStyle(ReframedColors.secondaryText)
-            }
-
-            if project.hasWebcam || project.hasSystemAudio || project.hasMicrophoneAudio {
-              Text("·")
-                .font(.system(size: FontSize.xxs, weight: .medium))
-                .foregroundStyle(ReframedColors.secondaryText)
-            }
-
-            if project.hasWebcam {
-              Image(systemName: "web.camera")
-                .font(.system(size: FontSize.xxs, weight: .medium))
-                .foregroundStyle(ReframedColors.secondaryText)
-            }
-
-            if project.hasSystemAudio {
-              Image(systemName: "speaker.wave.2")
-                .font(.system(size: FontSize.xxs, weight: .medium))
-                .foregroundStyle(ReframedColors.secondaryText)
-            }
-
-            if project.hasMicrophoneAudio {
-              Image(systemName: "mic")
-                .font(.system(size: FontSize.xxs, weight: .medium))
-                .foregroundStyle(ReframedColors.secondaryText)
-            }
-          }
-        }
-
-        Spacer()
-      }
-      .padding(.horizontal, 10)
-      .padding(.vertical, 8)
-      .contentShape(Rectangle())
-    }
-    .buttonStyle(.plain)
-  }
-}
-
-private struct MenuBarDivider: View {
-  @Environment(\.colorScheme) private var colorScheme
-
-  var body: some View {
-    let _ = colorScheme
-    Rectangle()
-      .fill(ReframedColors.divider)
-      .frame(height: 1)
-      .padding(.horizontal, 10)
-      .padding(.vertical, 6)
   }
 }

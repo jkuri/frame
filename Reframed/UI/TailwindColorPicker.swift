@@ -88,7 +88,7 @@ private struct ColorPickerRow: View {
       .padding(.vertical, 5)
       .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
     .background(
       RoundedRectangle(cornerRadius: Radius.sm)
         .fill(isHovered ? ReframedColors.hoverBackground : Color.clear)

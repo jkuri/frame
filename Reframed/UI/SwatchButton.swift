@@ -22,6 +22,6 @@ struct SwatchButton<S: ShapeStyle>: View {
             .padding(1)
         )
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
   }
 }

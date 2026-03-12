@@ -41,7 +41,7 @@ struct ShortcutRow: View {
           .font(.system(size: FontSize.xs))
           .foregroundStyle(isDefault ? ReframedColors.disabledText : ReframedColors.secondaryText)
       }
-      .buttonStyle(.plain)
+      .buttonStyle(PlainCustomButtonStyle())
       .disabled(isDefault)
     }
     .padding(.horizontal, 10)

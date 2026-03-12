@@ -53,7 +53,7 @@ struct LanguagePicker: View {
                 .padding(.vertical, 6)
                 .contentShape(Rectangle())
               }
-              .buttonStyle(.plain)
+              .buttonStyle(PlainCustomButtonStyle())
               .id(lang)
             }
           }

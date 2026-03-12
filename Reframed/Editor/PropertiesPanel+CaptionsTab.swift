@@ -292,7 +292,7 @@ extension PropertiesPanel {
         }
         .contentShape(Rectangle())
       }
-      .buttonStyle(.plain)
+      .buttonStyle(PlainCustomButtonStyle())
 
       if captionSegmentsExpanded {
         ScrollView {

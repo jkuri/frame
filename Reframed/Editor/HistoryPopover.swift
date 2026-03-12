@@ -108,7 +108,7 @@ struct HistoryPopover: View {
       )
       .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
     .opacity(isFuture ? 0.6 : 1)
   }
 

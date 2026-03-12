@@ -64,7 +64,7 @@ struct SelectButton<MenuContent: View>: View {
       )
       .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
     .onHover { isHovered = $0 }
     .popover(isPresented: $isPresented, arrowEdge: .bottom) {
       menuBuilder { isPresented = false }

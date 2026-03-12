@@ -93,7 +93,7 @@ extension PropertiesPanel {
           }
           .font(.system(size: FontSize.xs))
           .foregroundStyle(ReframedColors.secondaryText)
-          .buttonStyle(.plain)
+          .buttonStyle(SecondaryButtonStyle())
         }
       }
 
@@ -117,7 +117,7 @@ extension PropertiesPanel {
           }
           .font(.system(size: FontSize.xs))
           .foregroundStyle(ReframedColors.secondaryText)
-          .buttonStyle(.plain)
+          .buttonStyle(SecondaryButtonStyle())
         }
       }
 
@@ -140,7 +140,7 @@ extension PropertiesPanel {
           }
           .font(.system(size: FontSize.xs))
           .foregroundStyle(ReframedColors.secondaryText)
-          .buttonStyle(.plain)
+          .buttonStyle(SecondaryButtonStyle())
         }
       }
 

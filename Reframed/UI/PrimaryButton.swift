@@ -122,6 +122,12 @@ struct OutlineButtonStyle: ButtonStyle {
   }
 }
 
+struct PlainCustomButtonStyle: ButtonStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    configuration.label
+  }
+}
+
 private struct HoverEffectModifier: ViewModifier {
   let hoverColor: Color
   var cornerRadius: CGFloat = Radius.md

@@ -144,7 +144,7 @@ private struct DeviceRow: View {
       )
       .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
     .onHover { isHovered = $0 }
   }
 }

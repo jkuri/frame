@@ -23,7 +23,7 @@ struct CheckmarkRow: View {
       .padding(.vertical, 5)
       .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
+    .buttonStyle(PlainCustomButtonStyle())
     .background(CheckmarkRowHoverBackground())
   }
 }
