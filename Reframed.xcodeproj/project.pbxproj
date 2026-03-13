@@ -218,6 +218,11 @@
 		E30000000000000000000002 /* VideoCompositor+ParallelExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* VideoCompositor+ParallelExport.swift */; };
 		E30000000000000000000003 /* VideoCompositor+GIFExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000003 /* VideoCompositor+GIFExport.swift */; };
 		E30000000000000000000004 /* VideoCompositor+Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000004 /* VideoCompositor+Audio.swift */; };
+		E30000000000000000000005 /* ExportConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000005 /* ExportConfiguration.swift */; };
+		E30000000000000000000006 /* VideoCompositor+RegionRemapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000006 /* VideoCompositor+RegionRemapping.swift */; };
+		E30000000000000000000007 /* VideoCompositor+Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000007 /* VideoCompositor+Background.swift */; };
+		E30000000000000000000008 /* VideoCompositor+AudioPreprocessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000008 /* VideoCompositor+AudioPreprocessing.swift */; };
+		E30000000000000000000009 /* VideoCompositor+InstructionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000009 /* VideoCompositor+InstructionBuilder.swift */; };
 		E351B15E58A9971DB73296AD /* EditorState+VideoRegions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8427D1DE351C8DEC7E3104F /* EditorState+VideoRegions.swift */; };
 		E4063B6461F26561418E4A62 /* EditorState+Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4016F798AD537E3A9A1EB1F0 /* EditorState+Project.swift */; };
 		E8B5DFD9612004970422D043 /* CmdScrollZoomOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C3A4D8ED8A124F0232C7E9 /* CmdScrollZoomOverlay.swift */; };
@@ -456,6 +461,11 @@
 		E20000000000000000000002 /* VideoCompositor+ParallelExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoCompositor+ParallelExport.swift"; sourceTree = "<group>"; };
 		E20000000000000000000003 /* VideoCompositor+GIFExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoCompositor+GIFExport.swift"; sourceTree = "<group>"; };
 		E20000000000000000000004 /* VideoCompositor+Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoCompositor+Audio.swift"; sourceTree = "<group>"; };
+		E20000000000000000000005 /* ExportConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExportConfiguration.swift"; sourceTree = "<group>"; };
+		E20000000000000000000006 /* VideoCompositor+RegionRemapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoCompositor+RegionRemapping.swift"; sourceTree = "<group>"; };
+		E20000000000000000000007 /* VideoCompositor+Background.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoCompositor+Background.swift"; sourceTree = "<group>"; };
+		E20000000000000000000008 /* VideoCompositor+AudioPreprocessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoCompositor+AudioPreprocessing.swift"; sourceTree = "<group>"; };
+		E20000000000000000000009 /* VideoCompositor+InstructionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoCompositor+InstructionBuilder.swift"; sourceTree = "<group>"; };
 		E8596CD61869ECC16EAECA92 /* EditorState+CameraLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorState+CameraLayout.swift"; sourceTree = "<group>"; };
 		E926AD0DCDC6B2F794EF9C92 /* SessionState+Recording.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "SessionState+Recording.swift"; sourceTree = "<group>"; };
 		EB80B289E404CFF82DC2A109 /* History+ChangeRules.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "History+ChangeRules.swift"; sourceTree = "<group>"; };
@@ -864,6 +874,11 @@
 				E20000000000000000000002 /* VideoCompositor+ParallelExport.swift */,
 				E20000000000000000000003 /* VideoCompositor+GIFExport.swift */,
 				E20000000000000000000004 /* VideoCompositor+Audio.swift */,
+				E20000000000000000000005 /* ExportConfiguration.swift */,
+				E20000000000000000000006 /* VideoCompositor+RegionRemapping.swift */,
+				E20000000000000000000007 /* VideoCompositor+Background.swift */,
+				E20000000000000000000008 /* VideoCompositor+AudioPreprocessing.swift */,
+				E20000000000000000000009 /* VideoCompositor+InstructionBuilder.swift */,
 				D4DC7CD0FB5405AC0D7BCC7A /* FrameRenderer+Background.swift */,
 				767CF82B028939CF65B9E175 /* FrameRenderer+Screen.swift */,
 				496D11968908B4B678987F2F /* FrameRenderer+Webcam.swift */,
@@ -1035,6 +1050,11 @@
 				E30000000000000000000002 /* VideoCompositor+ParallelExport.swift in Sources */,
 				E30000000000000000000003 /* VideoCompositor+GIFExport.swift in Sources */,
 				E30000000000000000000004 /* VideoCompositor+Audio.swift in Sources */,
+				E30000000000000000000005 /* ExportConfiguration.swift in Sources */,
+				E30000000000000000000006 /* VideoCompositor+RegionRemapping.swift in Sources */,
+				E30000000000000000000007 /* VideoCompositor+Background.swift in Sources */,
+				E30000000000000000000008 /* VideoCompositor+AudioPreprocessing.swift in Sources */,
+				E30000000000000000000009 /* VideoCompositor+InstructionBuilder.swift in Sources */,
 				A20000000000000000000011 /* SendableBox.swift in Sources */,
 				A3000000000000000000001B /* ReframedProject.swift in Sources */,
 				A3000000000000000000001C /* ProjectMetadata.swift in Sources */,

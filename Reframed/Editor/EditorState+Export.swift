@@ -129,9 +129,7 @@ extension EditorState {
       )
     }
 
-    let state = self
-    let url = try await VideoCompositor.export(
-      result: exportResult,
+    let exportConfig = ExportConfiguration(
       cameraLayout: cameraLayout,
       cameraAspect: cameraAspect,
       trimRange: vidRegions.isEmpty
@@ -164,7 +162,7 @@ extension EditorState {
       cursorFillColor: cursorFillColor,
       cursorStrokeColor: cursorStrokeColor,
       showClickHighlights: showClickHighlights,
-      clickHighlightColor: clickHighlightColor.cgColor,
+      clickHighlightColor: clickHighlightColor,
       clickHighlightSize: clickHighlightSize,
       zoomFollowCursor: zoomFollowCursor,
       zoomTimeline: zoomTimeline,
@@ -191,7 +189,13 @@ extension EditorState {
       spotlightEdgeSoftness: spotlightEdgeSoftness,
       clickSoundEnabled: clickSoundEnabled && showCursor,
       clickSoundVolume: clickSoundVolume,
-      clickSoundStyle: clickSoundStyle,
+      clickSoundStyle: clickSoundStyle
+    )
+
+    let state = self
+    let url = try await VideoCompositor.export(
+      result: exportResult,
+      config: exportConfig,
       progressHandler: { progress, eta in
         state.exportProgress = progress
         state.exportETA = eta

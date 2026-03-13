@@ -14,64 +14,7 @@ enum VideoCompositor {
 
   static func export(
     result: RecordingResult,
-    cameraLayout: CameraLayout,
-    cameraAspect: CameraAspect = .original,
-    trimRange: CMTimeRange,
-    systemAudioRegions: [CMTimeRange]? = nil,
-    micAudioRegions: [CMTimeRange]? = nil,
-    cameraFullscreenRegions: [RegionTransitionInfo]? = nil,
-    cameraHiddenRegions: [RegionTransitionInfo]? = nil,
-    cameraCustomRegions: [CameraCustomRegion]? = nil,
-    videoRegions: [RegionTransitionInfo]? = nil,
-    backgroundStyle: BackgroundStyle = .none,
-    backgroundImageURL: URL? = nil,
-    backgroundImageFillMode: BackgroundImageFillMode = .fill,
-    canvasAspect: CanvasAspect = .original,
-    padding: CGFloat = 0,
-    videoCornerRadius: CGFloat = 0,
-    cameraCornerRadius: CGFloat = 12,
-    cameraBorderWidth: CGFloat = 0,
-    cameraBorderColor: CodableColor = CodableColor(r: 1, g: 1, b: 1, a: 0.3),
-    videoShadow: CGFloat = 0,
-    cameraShadow: CGFloat = 0,
-    cameraMirrored: Bool = false,
-    cameraFullscreenFillMode: CameraFullscreenFillMode = .fit,
-    cameraFullscreenAspect: CameraFullscreenAspect = .original,
-    exportSettings: ExportSettings = ExportSettings(),
-    cursorSnapshot: CursorMetadataSnapshot? = nil,
-    cursorStyle: CursorStyle = .centerDefault,
-    cursorSize: CGFloat = 24,
-    cursorFillColor: CodableColor = CodableColor(r: 1, g: 1, b: 1),
-    cursorStrokeColor: CodableColor = CodableColor(r: 0, g: 0, b: 0),
-    showClickHighlights: Bool = true,
-    clickHighlightColor: CGColor = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1.0),
-    clickHighlightSize: CGFloat = 36,
-    zoomFollowCursor: Bool = true,
-    zoomTimeline: ZoomTimeline? = nil,
-    systemAudioVolume: Float = 1.0,
-    micAudioVolume: Float = 1.0,
-    micNoiseReductionEnabled: Bool = false,
-    micNoiseReductionIntensity: Float = 0.5,
-    cameraBackgroundStyle: CameraBackgroundStyle = .none,
-    cameraBackgroundImageURL: URL? = nil,
-    processedMicAudioURL: URL? = nil,
-    captionSegments: [CaptionSegment] = [],
-    captionsEnabled: Bool = false,
-    captionFontSize: CGFloat = 48,
-    captionFontWeight: CaptionFontWeight = .bold,
-    captionTextColor: CodableColor = CodableColor(r: 1, g: 1, b: 1),
-    captionBackgroundColor: CodableColor = CodableColor(r: 0, g: 0, b: 0, a: 1.0),
-    captionBackgroundOpacity: CGFloat = 0.6,
-    captionShowBackground: Bool = true,
-    captionPosition: CaptionPosition = .bottom,
-    captionMaxWordsPerLine: Int = 6,
-    spotlightRegions: [SpotlightRegionData] = [],
-    spotlightRadius: CGFloat = 200,
-    spotlightDimOpacity: CGFloat = 0.6,
-    spotlightEdgeSoftness: CGFloat = 50,
-    clickSoundEnabled: Bool = false,
-    clickSoundVolume: Float = 0.5,
-    clickSoundStyle: ClickSoundStyle = .click001,
+    config: ExportConfiguration,
     progressHandler: (@MainActor @Sendable (Double, Double?) -> Void)? = nil
   ) async throws -> URL {
     let composition = AVMutableComposition()
@@ -85,26 +28,22 @@ enum VideoCompositor {
     let screenTimeRange = try await screenVideoTrack.load(.timeRange)
 
     let effectiveTrim: CMTimeRange
-    if trimRange.duration.isValid && CMTimeCompare(trimRange.duration, .zero) > 0 {
-      effectiveTrim = trimRange
+    if config.trimRange.duration.isValid && CMTimeCompare(config.trimRange.duration, .zero) > 0 {
+      effectiveTrim = config.trimRange
     } else {
       effectiveTrim = screenTimeRange
     }
 
-    let hasVideoRegions = videoRegions != nil && !videoRegions!.isEmpty
+    let hasVideoRegions = config.videoRegions != nil && !config.videoRegions!.isEmpty
     let compScreenTrack = composition.addMutableTrack(
       withMediaType: .video,
       preferredTrackID: 1
     )
 
-    struct VideoSegment {
-      let sourceRange: CMTimeRange
-      let compositionStart: CMTime
-    }
     var videoSegments: [VideoSegment] = []
     let compositionDuration: CMTime
 
-    if hasVideoRegions, let vRegions = videoRegions {
+    if hasVideoRegions, let vRegions = config.videoRegions {
       var insertTime = CMTime.zero
       for region in vRegions {
         let overlapStart = CMTimeMaximum(region.timeRange.start, effectiveTrim.start)
@@ -121,59 +60,20 @@ enum VideoCompositor {
       compositionDuration = effectiveTrim.duration
     }
 
-    var processedMicURL: URL?
-    var shouldCleanupProcessedMic = false
-    if let micURL = result.microphoneAudioURL, micNoiseReductionEnabled, micAudioVolume > 0 {
-      if let cachedURL = processedMicAudioURL, FileManager.default.fileExists(atPath: cachedURL.path) {
-        processedMicURL = cachedURL
-      } else {
-        let tempURL = FileManager.default.temporaryDirectory
-          .appendingPathComponent("reframed-nr-\(UUID().uuidString).m4a")
-        try await RNNoiseProcessor.processFile(
-          inputURL: micURL,
-          outputURL: tempURL,
-          intensity: micNoiseReductionIntensity
-        )
-        processedMicURL = tempURL
-        shouldCleanupProcessedMic = true
-      }
-    }
-    var clickSoundURL: URL?
-    if clickSoundEnabled, let snapshot = cursorSnapshot, !snapshot.clicks.isEmpty {
-      let totalDur = CMTimeGetSeconds(compositionDuration)
-      let clicks: [(time: Double, button: Int)]
-      if hasVideoRegions, !videoSegments.isEmpty {
-        clicks = snapshot.clicks.compactMap { click in
-          for seg in videoSegments {
-            let segStart = CMTimeGetSeconds(seg.sourceRange.start)
-            let segEnd = CMTimeGetSeconds(seg.sourceRange.end)
-            guard click.t >= segStart, click.t <= segEnd else { continue }
-            let compStart = CMTimeGetSeconds(seg.compositionStart)
-            return (time: compStart + (click.t - segStart), button: click.button)
-          }
-          return nil
-        }
-      } else {
-        let trimStartSec = CMTimeGetSeconds(effectiveTrim.start)
-        let trimEndSec = CMTimeGetSeconds(effectiveTrim.end)
-        clicks = snapshot.clicks.compactMap {
-          guard $0.t >= trimStartSec, $0.t <= trimEndSec else { return nil }
-          return (time: $0.t - trimStartSec, button: $0.button)
-        }
-      }
-      if !clicks.isEmpty {
-        let tempURL = FileManager.default.temporaryDirectory
-          .appendingPathComponent("reframed-clicks-\(UUID().uuidString).m4a")
-        try ClickSoundGenerator.generateClickAudioFile(
-          at: tempURL,
-          clickTimes: clicks,
-          volume: clickSoundVolume,
-          totalDuration: totalDur,
-          style: clickSoundStyle
-        )
-        clickSoundURL = tempURL
-      }
-    }
+    let (processedMicURL, shouldCleanupProcessedMic) = try await processMicrophoneAudio(
+      result: result,
+      config: config
+    )
+
+    let clickSoundURL = try generateClickSound(
+      cursorSnapshot: config.cursorSnapshot,
+      config: config,
+      compositionDuration: compositionDuration,
+      videoSegments: videoSegments,
+      hasVideoRegions: hasVideoRegions,
+      effectiveTrim: effectiveTrim
+    )
+
     defer {
       if shouldCleanupProcessedMic, let url = processedMicURL {
         try? FileManager.default.removeItem(at: url)
@@ -189,22 +89,14 @@ enum VideoCompositor {
       : [effectiveTrim]
 
     var audioSources: [AudioSource] = []
-    if let sysURL = result.systemAudioURL, systemAudioVolume > 0 {
-      let sysRegs = systemAudioRegions ?? effectiveAudioRegions
-      audioSources.append(
-        AudioSource(url: sysURL, regions: sysRegs, volume: systemAudioVolume)
-      )
+    if let sysURL = result.systemAudioURL, config.systemAudioVolume > 0 {
+      let sysRegs = config.systemAudioRegions ?? effectiveAudioRegions
+      audioSources.append(AudioSource(url: sysURL, regions: sysRegs, volume: config.systemAudioVolume))
     }
-    if let micURL = result.microphoneAudioURL, micAudioVolume > 0 {
+    if let micURL = result.microphoneAudioURL, config.micAudioVolume > 0 {
       let effectiveMicURL = processedMicURL ?? micURL
-      let micRegs = micAudioRegions ?? effectiveAudioRegions
-      audioSources.append(
-        AudioSource(
-          url: effectiveMicURL,
-          regions: micRegs,
-          volume: micAudioVolume
-        )
-      )
+      let micRegs = config.micAudioRegions ?? effectiveAudioRegions
+      audioSources.append(AudioSource(url: effectiveMicURL, regions: micRegs, volume: config.micAudioVolume))
     }
     if let csURL = clickSoundURL {
       let clickAsset = AVURLAsset(url: csURL)
@@ -221,434 +113,40 @@ enum VideoCompositor {
       }
     }
 
-    let hasNonDefaultBackground: Bool = {
-      switch backgroundStyle {
-      case .none: return false
-      case .solidColor(let c): return !(c.r == 0 && c.g == 0 && c.b == 0)
-      case .gradient, .image: return true
-      }
-    }()
-    let hasVisualEffects =
-      hasNonDefaultBackground || canvasAspect != .original || padding > 0 || videoCornerRadius > 0
-      || videoShadow > 0
-    let hasWebcam = result.webcamVideoURL != nil
-    let hasCursor = cursorSnapshot != nil
-    let hasZoom = zoomTimeline != nil
-    let sourceCodecMatchesExport: Bool = {
-      switch result.captureQuality {
-      case .veryHigh: return exportSettings.codec == .proRes4444
-      case .high: return exportSettings.codec == .proRes422
-      case .standard: return exportSettings.codec == .h265
-      }
-    }()
-    let needsReencode =
-      !sourceCodecMatchesExport || exportSettings.resolution != .original
-      || exportSettings.fps != .original
-    let hasCaptions = captionsEnabled && !captionSegments.isEmpty
-    let hasSpotlight = !spotlightRegions.isEmpty && cursorSnapshot != nil
-    let hasClickSound = clickSoundURL != nil
-    let needsCompositor =
-      hasVisualEffects || hasWebcam || needsReencode || hasCursor || hasZoom
-      || exportSettings.format.isGIF || hasVideoRegions || hasCaptions
-      || hasSpotlight || hasClickSound
+    let needsCompositor = checkNeedsCompositor(
+      result: result,
+      config: config,
+      clickSoundURL: clickSoundURL,
+      hasVideoRegions: hasVideoRegions,
+      screenNaturalSize: screenNaturalSize
+    )
 
-    let canvasSize: CGSize
-    if let baseSize = canvasAspect.size(for: screenNaturalSize) {
-      canvasSize = baseSize
-    } else if padding > 0 {
-      let scale = 1.0 + 2.0 * padding
-      canvasSize = CGSize(width: screenNaturalSize.width * scale, height: screenNaturalSize.height * scale)
-    } else {
-      canvasSize = screenNaturalSize
-    }
-
-    let renderSize: CGSize
-    if let targetWidth = exportSettings.resolution.pixelWidth {
-      let aspect = canvasSize.height / max(canvasSize.width, 1)
-      renderSize = CGSize(width: targetWidth, height: round(targetWidth * aspect))
-    } else {
-      renderSize = canvasSize
-    }
-
-    let exportFPS = exportSettings.fps.value(fallback: result.fps)
+    let canvasSize = computeCanvasSize(
+      screenNaturalSize: screenNaturalSize,
+      canvasAspect: config.canvasAspect,
+      padding: config.padding
+    )
+    let renderSize = computeRenderSize(
+      canvasSize: canvasSize,
+      resolution: config.exportSettings.resolution
+    )
+    let exportFPS = config.exportSettings.fps.value(fallback: result.fps)
 
     if needsCompositor {
-      var webcamTrackID: CMPersistentTrackID?
-      var cameraRect: CGRect?
-
-      if let webcamURL = result.webcamVideoURL, let webcamSize = result.webcamSize {
-        let webcamAsset = AVURLAsset(url: webcamURL)
-        if let webcamVideoTrack = try await webcamAsset.loadTracks(withMediaType: .video).first {
-          let wTrack = composition.addMutableTrack(
-            withMediaType: .video,
-            preferredTrackID: 2
-          )
-          if hasVideoRegions {
-            for seg in videoSegments {
-              try wTrack?.insertTimeRange(seg.sourceRange, of: webcamVideoTrack, at: seg.compositionStart)
-            }
-          } else {
-            try wTrack?.insertTimeRange(effectiveTrim, of: webcamVideoTrack, at: .zero)
-          }
-          webcamTrackID = 2
-          cameraRect = cameraLayout.pixelRect(
-            screenSize: canvasSize,
-            webcamSize: webcamSize,
-            cameraAspect: cameraAspect
-          )
-        }
-      }
-
-      let bgColors = backgroundColorTuples(for: backgroundStyle)
-      let bgStartPoint: CGPoint
-      let bgEndPoint: CGPoint
-      if case .gradient(let id) = backgroundStyle, let preset = GradientPresets.preset(for: id) {
-        bgStartPoint = preset.cgStartPoint
-        bgEndPoint = preset.cgEndPoint
-      } else {
-        bgStartPoint = .zero
-        bgEndPoint = CGPoint(x: 0, y: 1)
-      }
-
-      var bgImage: CGImage?
-      if case .image = backgroundStyle, let imageURL = backgroundImageURL,
-        let dataProvider = CGDataProvider(url: imageURL as CFURL),
-        let source = CGImageSourceCreateWithDataProvider(dataProvider, nil),
-        CGImageSourceGetCount(source) > 0
-      {
-        bgImage = CGImageSourceCreateImageAtIndex(source, 0, nil)
-      }
-
-      var camBgImage: CGImage?
-      if case .image = cameraBackgroundStyle, let imageURL = cameraBackgroundImageURL,
-        let dataProvider = CGDataProvider(url: imageURL as CFURL),
-        let source = CGImageSourceCreateWithDataProvider(dataProvider, nil),
-        CGImageSourceGetCount(source) > 0
-      {
-        camBgImage = CGImageSourceCreateImageAtIndex(source, 0, nil)
-      }
-
-      let scaleX = renderSize.width / canvasSize.width
-      let scaleY = renderSize.height / canvasSize.height
-      let paddingHPx = padding * screenNaturalSize.width * scaleX
-      let paddingVPx = padding * screenNaturalSize.height * scaleY
-
-      let scaledCornerRadius: CGFloat = {
-        let paddedW = renderSize.width - 2 * paddingHPx
-        let paddedH = renderSize.height - 2 * paddingVPx
-        let paddedArea = CGRect(x: 0, y: 0, width: paddedW, height: paddedH)
-        let videoFitRect = AVMakeRect(aspectRatio: screenNaturalSize, insideRect: paddedArea)
-        return min(videoFitRect.width, videoFitRect.height) * (videoCornerRadius / 100.0)
-      }()
-
-      func remapRegion(_ region: RegionTransitionInfo) -> [RegionTransitionInfo] {
-        if hasVideoRegions {
-          var results: [RegionTransitionInfo] = []
-          for seg in videoSegments {
-            let overlapStart = max(
-              CMTimeGetSeconds(region.timeRange.start),
-              CMTimeGetSeconds(seg.sourceRange.start)
-            )
-            let overlapEnd = min(
-              CMTimeGetSeconds(region.timeRange.end),
-              CMTimeGetSeconds(seg.sourceRange.end)
-            )
-            guard overlapEnd > overlapStart else { continue }
-            let segStart = CMTimeGetSeconds(seg.sourceRange.start)
-            let compStart = CMTimeGetSeconds(seg.compositionStart)
-            let mappedStart = compStart + (overlapStart - segStart)
-            let mappedEnd = compStart + (overlapEnd - segStart)
-            results.append(
-              RegionTransitionInfo(
-                timeRange: CMTimeRange(
-                  start: CMTime(seconds: mappedStart, preferredTimescale: 600),
-                  end: CMTime(seconds: mappedEnd, preferredTimescale: 600)
-                ),
-                entryTransition: region.entryTransition,
-                entryDuration: region.entryDuration,
-                exitTransition: region.exitTransition,
-                exitDuration: region.exitDuration
-              )
-            )
-          }
-          return results
-        }
-        let overlapStart = CMTimeMaximum(region.timeRange.start, effectiveTrim.start)
-        let overlapEnd = CMTimeMinimum(region.timeRange.end, effectiveTrim.end)
-        guard CMTimeCompare(overlapEnd, overlapStart) > 0 else { return [] }
-        return [
-          RegionTransitionInfo(
-            timeRange: CMTimeRange(
-              start: CMTimeSubtract(overlapStart, effectiveTrim.start),
-              end: CMTimeSubtract(overlapEnd, effectiveTrim.start)
-            ),
-            entryTransition: region.entryTransition,
-            entryDuration: region.entryDuration,
-            exitTransition: region.exitTransition,
-            exitDuration: region.exitDuration
-          )
-        ]
-      }
-
-      func remapCustomRegion(_ region: CameraCustomRegion) -> [CameraCustomRegion] {
-        if hasVideoRegions {
-          var results: [CameraCustomRegion] = []
-          for seg in videoSegments {
-            let overlapStart = max(
-              CMTimeGetSeconds(region.timeRange.start),
-              CMTimeGetSeconds(seg.sourceRange.start)
-            )
-            let overlapEnd = min(
-              CMTimeGetSeconds(region.timeRange.end),
-              CMTimeGetSeconds(seg.sourceRange.end)
-            )
-            guard overlapEnd > overlapStart else { continue }
-            let segStart = CMTimeGetSeconds(seg.sourceRange.start)
-            let compStart = CMTimeGetSeconds(seg.compositionStart)
-            let mappedStart = compStart + (overlapStart - segStart)
-            let mappedEnd = compStart + (overlapEnd - segStart)
-            results.append(
-              CameraCustomRegion(
-                timeRange: CMTimeRange(
-                  start: CMTime(seconds: mappedStart, preferredTimescale: 600),
-                  end: CMTime(seconds: mappedEnd, preferredTimescale: 600)
-                ),
-                layout: region.layout,
-                cameraAspect: region.cameraAspect,
-                cornerRadius: region.cornerRadius,
-                shadow: region.shadow,
-                borderWidth: region.borderWidth * scaleX,
-                borderColor: region.borderColor,
-                mirrored: region.mirrored,
-                entryTransition: region.entryTransition,
-                entryDuration: region.entryDuration,
-                exitTransition: region.exitTransition,
-                exitDuration: region.exitDuration
-              )
-            )
-          }
-          return results
-        }
-        let overlapStart = CMTimeMaximum(region.timeRange.start, effectiveTrim.start)
-        let overlapEnd = CMTimeMinimum(region.timeRange.end, effectiveTrim.end)
-        guard CMTimeCompare(overlapEnd, overlapStart) > 0 else { return [] }
-        return [
-          CameraCustomRegion(
-            timeRange: CMTimeRange(
-              start: CMTimeSubtract(overlapStart, effectiveTrim.start),
-              end: CMTimeSubtract(overlapEnd, effectiveTrim.start)
-            ),
-            layout: region.layout,
-            cameraAspect: region.cameraAspect,
-            cornerRadius: region.cornerRadius,
-            shadow: region.shadow,
-            borderWidth: region.borderWidth,
-            borderColor: region.borderColor,
-            mirrored: region.mirrored,
-            entryTransition: region.entryTransition,
-            entryDuration: region.entryDuration,
-            exitTransition: region.exitTransition,
-            exitDuration: region.exitDuration
-          )
-        ]
-      }
-
-      func remapSpotlightRegion(_ region: SpotlightRegionData) -> [SpotlightRegionData] {
-        if hasVideoRegions {
-          var results: [SpotlightRegionData] = []
-          for seg in videoSegments {
-            let overlapStart = max(region.startSeconds, CMTimeGetSeconds(seg.sourceRange.start))
-            let overlapEnd = min(region.endSeconds, CMTimeGetSeconds(seg.sourceRange.end))
-            guard overlapEnd > overlapStart else { continue }
-            let segStart = CMTimeGetSeconds(seg.sourceRange.start)
-            let compStart = CMTimeGetSeconds(seg.compositionStart)
-            let mappedStart = compStart + (overlapStart - segStart)
-            let mappedEnd = compStart + (overlapEnd - segStart)
-            var mapped = region
-            mapped.id = UUID()
-            mapped.startSeconds = mappedStart
-            mapped.endSeconds = mappedEnd
-            results.append(mapped)
-          }
-          return results
-        }
-        let trimStart = CMTimeGetSeconds(effectiveTrim.start)
-        let trimEnd = CMTimeGetSeconds(effectiveTrim.end)
-        let overlapStart = max(region.startSeconds, trimStart)
-        let overlapEnd = min(region.endSeconds, trimEnd)
-        guard overlapEnd > overlapStart else { return [] }
-        var mapped = region
-        mapped.startSeconds = overlapStart - trimStart
-        mapped.endSeconds = overlapEnd - trimStart
-        return [mapped]
-      }
-
-      let remappedVideoRegions: [RegionTransitionInfo] = {
-        guard hasVideoRegions else { return [] }
-        var result: [RegionTransitionInfo] = []
-        for seg in videoSegments {
-          let compStart = CMTimeGetSeconds(seg.compositionStart)
-          let segDuration = CMTimeGetSeconds(seg.sourceRange.duration)
-          for vr in videoRegions! {
-            let vrStart = CMTimeGetSeconds(vr.timeRange.start)
-            let vrEnd = CMTimeGetSeconds(vr.timeRange.end)
-            let segSourceStart = CMTimeGetSeconds(seg.sourceRange.start)
-            let segSourceEnd = CMTimeGetSeconds(seg.sourceRange.end)
-            guard abs(vrStart - segSourceStart) < 0.01 && abs(vrEnd - segSourceEnd) < 0.01 else { continue }
-            result.append(
-              RegionTransitionInfo(
-                timeRange: CMTimeRange(
-                  start: CMTime(seconds: compStart, preferredTimescale: 600),
-                  end: CMTime(seconds: compStart + segDuration, preferredTimescale: 600)
-                ),
-                entryTransition: vr.entryTransition,
-                entryDuration: vr.entryDuration,
-                exitTransition: vr.exitTransition,
-                exitDuration: vr.exitDuration
-              )
-            )
-          }
-        }
-        return result
-      }()
-
-      let remappedCaptionSegments: [CaptionSegment] = {
-        guard captionsEnabled, !captionSegments.isEmpty else { return [] }
-        if hasVideoRegions {
-          var results: [CaptionSegment] = []
-          for seg in captionSegments {
-            for vs in videoSegments {
-              let overlapStart = max(seg.startSeconds, CMTimeGetSeconds(vs.sourceRange.start))
-              let overlapEnd = min(seg.endSeconds, CMTimeGetSeconds(vs.sourceRange.end))
-              guard overlapEnd > overlapStart else { continue }
-              let segStart = CMTimeGetSeconds(vs.sourceRange.start)
-              let compStart = CMTimeGetSeconds(vs.compositionStart)
-              let mappedStart = compStart + (overlapStart - segStart)
-              let mappedEnd = compStart + (overlapEnd - segStart)
-              let remappedWords = seg.words?.compactMap { w -> CaptionWord? in
-                let wStart = max(w.startSeconds, overlapStart)
-                let wEnd = min(w.endSeconds, overlapEnd)
-                guard wEnd > wStart else { return nil }
-                return CaptionWord(
-                  word: w.word,
-                  startSeconds: compStart + (wStart - segStart),
-                  endSeconds: compStart + (wEnd - segStart)
-                )
-              }
-              results.append(
-                CaptionSegment(
-                  startSeconds: mappedStart,
-                  endSeconds: mappedEnd,
-                  text: seg.text,
-                  words: remappedWords
-                )
-              )
-            }
-          }
-          return results
-        }
-        let trimStart = CMTimeGetSeconds(effectiveTrim.start)
-        return captionSegments.compactMap { seg in
-          let overlapStart = max(seg.startSeconds, trimStart)
-          let overlapEnd = min(seg.endSeconds, CMTimeGetSeconds(effectiveTrim.end))
-          guard overlapEnd > overlapStart else { return nil }
-          let remappedWords = seg.words?.compactMap { w -> CaptionWord? in
-            let wStart = max(w.startSeconds, trimStart)
-            let wEnd = min(w.endSeconds, CMTimeGetSeconds(effectiveTrim.end))
-            guard wEnd > wStart else { return nil }
-            return CaptionWord(
-              word: w.word,
-              startSeconds: wStart - trimStart,
-              endSeconds: wEnd - trimStart
-            )
-          }
-          return CaptionSegment(
-            startSeconds: overlapStart - trimStart,
-            endSeconds: overlapEnd - trimStart,
-            text: seg.text,
-            words: remappedWords
-          )
-        }
-      }()
-
-      let instruction = CompositionInstruction(
-        timeRange: CMTimeRange(start: .zero, duration: compositionDuration),
-        screenTrackID: 1,
-        webcamTrackID: webcamTrackID,
-        cameraRect: cameraRect.map { rect in
-          let scaleX = renderSize.width / canvasSize.width
-          let scaleY = renderSize.height / canvasSize.height
-          return CGRect(
-            x: rect.origin.x * scaleX,
-            y: rect.origin.y * scaleY,
-            width: rect.width * scaleX,
-            height: rect.height * scaleY
-          )
-        },
-        cameraCornerRadius: {
-          guard let rect = cameraRect else { return 0 }
-          let sX = renderSize.width / canvasSize.width
-          let sY = renderSize.height / canvasSize.height
-          let scaledW = rect.width * sX
-          let scaledH = rect.height * sY
-          return min(scaledW, scaledH) * (cameraCornerRadius / 100.0)
-        }(),
-        cameraBorderWidth: cameraBorderWidth * (renderSize.width / canvasSize.width),
-        cameraBorderColor: cameraBorderColor.cgColor,
-        videoShadow: videoShadow,
-        cameraShadow: cameraShadow,
-        cameraMirrored: cameraMirrored,
-        outputSize: renderSize,
-        backgroundColors: bgColors,
-        backgroundStartPoint: bgStartPoint,
-        backgroundEndPoint: bgEndPoint,
-        backgroundImage: bgImage,
-        backgroundImageFillMode: backgroundImageFillMode,
-        paddingH: paddingHPx,
-        paddingV: paddingVPx,
-        videoCornerRadius: scaledCornerRadius,
-        canvasSize: renderSize,
-        cursorSnapshot: cursorSnapshot,
-        cursorStyle: cursorStyle,
-        cursorSize: cursorSize,
-        cursorFillColor: cursorFillColor,
-        cursorStrokeColor: cursorStrokeColor,
-        showCursor: cursorSnapshot != nil,
-        showClickHighlights: showClickHighlights,
-        clickHighlightColor: clickHighlightColor,
-        clickHighlightSize: clickHighlightSize,
-        zoomFollowCursor: zoomFollowCursor,
-        zoomTimeline: zoomTimeline,
-        trimStartSeconds: hasVideoRegions ? 0 : CMTimeGetSeconds(effectiveTrim.start),
-        cameraFullscreenRegions: (cameraFullscreenRegions ?? []).flatMap { remapRegion($0) },
-        cameraHiddenRegions: (cameraHiddenRegions ?? []).flatMap { remapRegion($0) },
-        cameraCustomRegions: (cameraCustomRegions ?? []).flatMap { remapCustomRegion($0) },
-        videoRegions: remappedVideoRegions,
-        webcamSize: result.webcamSize,
-        cameraAspect: cameraAspect,
-        cameraFullscreenFillMode: cameraFullscreenFillMode,
-        cameraFullscreenAspect: cameraFullscreenAspect,
-        cameraBackgroundStyle: cameraBackgroundStyle,
-        cameraBackgroundImage: camBgImage,
-        captionScreenWidth: screenNaturalSize.width,
-        captionSegments: remappedCaptionSegments,
-        captionsEnabled: captionsEnabled,
-        captionFontSize: captionFontSize,
-        captionFontWeight: captionFontWeight,
-        captionTextColor: captionTextColor,
-        captionBackgroundColor: captionBackgroundColor,
-        captionBackgroundOpacity: captionBackgroundOpacity,
-        captionShowBackground: captionShowBackground,
-        captionPosition: captionPosition,
-        captionMaxWordsPerLine: captionMaxWordsPerLine,
-        spotlightRegions: spotlightRegions.flatMap { remapSpotlightRegion($0) },
-        spotlightRadius: spotlightRadius,
-        spotlightDimOpacity: spotlightDimOpacity,
-        spotlightEdgeSoftness: spotlightEdgeSoftness,
-        isHDR: result.isHDR
+      let instruction = try await buildCompositionInstruction(
+        composition: composition,
+        result: result,
+        config: config,
+        effectiveTrim: effectiveTrim,
+        screenNaturalSize: screenNaturalSize,
+        hasVideoRegions: hasVideoRegions,
+        videoSegments: videoSegments,
+        compositionDuration: compositionDuration,
+        canvasSize: canvasSize,
+        renderSize: renderSize
       )
 
-      if exportSettings.format.isGIF {
+      if config.exportSettings.format.isGIF {
         let outputURL = FileManager.default.tempGIFURL()
         try await gifExport(
           composition: composition,
@@ -657,7 +155,7 @@ enum VideoCompositor {
           fps: exportFPS,
           trimDuration: compositionDuration,
           outputURL: outputURL,
-          gifQuality: exportSettings.gifQuality.value,
+          gifQuality: config.exportSettings.gifQuality.value,
           progressHandler: progressHandler
         )
 
@@ -672,7 +170,9 @@ enum VideoCompositor {
 
       let audioSegInfo: [VideoSegmentInfo]? =
         hasVideoRegions
-        ? videoSegments.map { VideoSegmentInfo(sourceRange: $0.sourceRange, compositionStart: $0.compositionStart) }
+        ? videoSegments.map {
+          VideoSegmentInfo(sourceRange: $0.sourceRange, compositionStart: $0.compositionStart)
+        }
         : nil
       try await addAudioTracks(
         to: composition,
@@ -685,7 +185,7 @@ enum VideoCompositor {
 
       let outputURL = FileManager.default.tempRecordingURL()
 
-      if exportSettings.mode == .parallel {
+      if config.exportSettings.mode == ExportMode.parallel {
         try await parallelRenderExport(
           composition: composition,
           instruction: instruction,
@@ -693,10 +193,10 @@ enum VideoCompositor {
           fps: exportFPS,
           trimDuration: compositionDuration,
           outputURL: outputURL,
-          fileType: exportSettings.format.fileType,
-          codec: exportSettings.codec,
+          fileType: config.exportSettings.format.fileType,
+          codec: config.exportSettings.codec,
           audioMix: audioMix,
-          audioBitrate: exportSettings.audioBitrate.value,
+          audioBitrate: config.exportSettings.audioBitrate.value,
           isHDR: result.isHDR,
           progressHandler: progressHandler
         )
@@ -708,17 +208,20 @@ enum VideoCompositor {
           fps: exportFPS,
           trimDuration: compositionDuration,
           outputURL: outputURL,
-          fileType: exportSettings.format.fileType,
-          codec: exportSettings.codec,
+          fileType: config.exportSettings.format.fileType,
+          codec: config.exportSettings.codec,
           audioMix: audioMix,
-          audioBitrate: exportSettings.audioBitrate.value,
+          audioBitrate: config.exportSettings.audioBitrate.value,
           isHDR: result.isHDR,
           progressHandler: progressHandler
         )
       }
 
       let destination = await MainActor.run {
-        FileManager.default.defaultSaveURL(for: outputURL, extension: exportSettings.format.fileExtension)
+        FileManager.default.defaultSaveURL(
+          for: outputURL,
+          extension: config.exportSettings.format.fileExtension
+        )
       }
       try FileManager.default.moveToFinal(from: outputURL, to: destination)
 
@@ -726,7 +229,12 @@ enum VideoCompositor {
       return destination
     }
 
-    try await addAudioTracks(to: composition, sources: audioSources, videoTrimRange: effectiveTrim, videoDuration: screenTimeRange.duration)
+    try await addAudioTracks(
+      to: composition,
+      sources: audioSources,
+      videoTrimRange: effectiveTrim,
+      videoDuration: screenTimeRange.duration
+    )
 
     let outputURL = FileManager.default.tempRecordingURL()
     guard
@@ -745,40 +253,19 @@ enum VideoCompositor {
     try await runExport(
       exportSession,
       to: outputURL,
-      fileType: exportSettings.format.fileType,
+      fileType: config.exportSettings.format.fileType,
       progressHandler: progressHandler
     )
 
     let destination = await MainActor.run {
-      FileManager.default.defaultSaveURL(for: outputURL, extension: exportSettings.format.fileExtension)
+      FileManager.default.defaultSaveURL(
+        for: outputURL,
+        extension: config.exportSettings.format.fileExtension
+      )
     }
     try FileManager.default.moveToFinal(from: outputURL, to: destination)
 
     logger.info("Passthrough export saved: \(destination.path)")
     return destination
-  }
-
-  private static func backgroundColorTuples(
-    for style: BackgroundStyle
-  ) -> [(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)] {
-    switch style {
-    case .none:
-      return []
-    case .gradient(let id):
-      guard let preset = GradientPresets.preset(for: id) else { return [] }
-      return preset.cgColors.map { color in
-        let components = color.components ?? [0, 0, 0, 1]
-        if components.count >= 4 {
-          return (r: components[0], g: components[1], b: components[2], a: components[3])
-        } else if components.count >= 2 {
-          return (r: components[0], g: components[0], b: components[0], a: components[1])
-        }
-        return (r: 0, g: 0, b: 0, a: 1)
-      }
-    case .solidColor(let color):
-      return [(r: color.r, g: color.g, b: color.b, a: color.a)]
-    case .image:
-      return []
-    }
   }
 }
