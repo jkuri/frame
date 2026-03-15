@@ -80,7 +80,7 @@ extension FrameRenderer {
     compositionTime: CMTime,
     instruction: CompositionInstruction
   ) -> CGRect? {
-    let metadataTime = CMTimeGetSeconds(compositionTime) + instruction.trimStartSeconds
+    let metadataTime = instruction.sourceTime(for: compositionTime)
     var zoomRect = instruction.zoomTimeline?.zoomRect(at: metadataTime)
     if instruction.zoomFollowCursor, let zr = zoomRect, zr.width < 1.0 || zr.height < 1.0,
       let snapshot = instruction.cursorSnapshot

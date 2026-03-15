@@ -195,6 +195,14 @@ extension VideoCompositor {
       cameraHiddenRegions: regions.cameraHidden,
       cameraCustomRegions: regions.cameraCustom,
       videoRegions: regions.video,
+      videoSegmentMappings: hasVideoRegions
+        ? videoSegments.map {
+          VideoSegmentMapping(
+            compositionStart: CMTimeGetSeconds($0.compositionStart),
+            sourceStart: CMTimeGetSeconds($0.sourceRange.start),
+            duration: CMTimeGetSeconds($0.sourceRange.duration)
+          )
+        } : [],
       webcamSize: result.webcamSize,
       cameraAspect: config.cameraAspect,
       cameraFullscreenFillMode: config.cameraFullscreenFillMode,

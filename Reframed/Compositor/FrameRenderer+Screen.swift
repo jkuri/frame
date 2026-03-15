@@ -15,7 +15,7 @@ extension FrameRenderer {
       drawRoundedShadow(in: context, rect: videoRect, cornerRadius: instruction.videoCornerRadius, shadow: instruction.videoShadow)
     }
 
-    let metadataTime = CMTimeGetSeconds(compositionTime) + instruction.trimStartSeconds
+    let metadataTime = instruction.sourceTime(for: compositionTime)
     let zoomRect = resolveZoomRect(compositionTime: compositionTime, instruction: instruction)
     context.saveGState()
     if instruction.videoCornerRadius > 0 {

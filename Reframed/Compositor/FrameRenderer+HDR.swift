@@ -478,7 +478,7 @@ extension FrameRenderer {
     outputWidth: Int,
     outputHeight: Int
   ) -> CIImage {
-    let metadataTime = CMTimeGetSeconds(compositionTime) + instruction.trimStartSeconds
+    let metadataTime = instruction.sourceTime(for: compositionTime)
     let compositionSeconds = CMTimeGetSeconds(compositionTime)
 
     let hasCursor = instruction.showCursor && instruction.cursorSnapshot != nil

@@ -24,6 +24,12 @@ struct CameraCustomRegion: Sendable {
   let exitDuration: Double
 }
 
+struct VideoSegmentMapping: Sendable {
+  let compositionStart: Double
+  let sourceStart: Double
+  let duration: Double
+}
+
 final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProtocol, @unchecked Sendable {
   let timeRange: CMTimeRange
   let enablePostProcessing = false
@@ -68,6 +74,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
   let cameraHiddenRegions: [RegionTransitionInfo]
   let cameraCustomRegions: [CameraCustomRegion]
   let videoRegions: [RegionTransitionInfo]
+  let videoSegmentMappings: [VideoSegmentMapping]
   let webcamSize: CGSize?
   let cameraAspect: CameraAspect
   let cameraFullscreenFillMode: CameraFullscreenFillMode
@@ -130,6 +137,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     cameraHiddenRegions: [RegionTransitionInfo] = [],
     cameraCustomRegions: [CameraCustomRegion] = [],
     videoRegions: [RegionTransitionInfo] = [],
+    videoSegmentMappings: [VideoSegmentMapping] = [],
     webcamSize: CGSize? = nil,
     cameraAspect: CameraAspect = .original,
     cameraFullscreenFillMode: CameraFullscreenFillMode = .fit,
@@ -189,6 +197,7 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
     self.cameraHiddenRegions = cameraHiddenRegions
     self.cameraCustomRegions = cameraCustomRegions
     self.videoRegions = videoRegions
+    self.videoSegmentMappings = videoSegmentMappings
     self.webcamSize = webcamSize
     self.cameraAspect = cameraAspect
     self.cameraFullscreenFillMode = cameraFullscreenFillMode
@@ -257,5 +266,16 @@ final class CompositionInstruction: NSObject, AVVideoCompositionInstructionProto
       edgeSoftness: spotlightEdgeSoftness,
       fadeFactor: 1.0
     )
+  }
+
+  func sourceTime(for compositionTime: CMTime) -> Double {
+    let t = CMTimeGetSeconds(compositionTime)
+    for seg in videoSegmentMappings {
+      let compEnd = seg.compositionStart + seg.duration
+      if t >= seg.compositionStart && t < compEnd {
+        return seg.sourceStart + (t - seg.compositionStart)
+      }
+    }
+    return t + trimStartSeconds
   }
 }
