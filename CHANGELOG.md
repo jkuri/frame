@@ -1,5 +1,34 @@
 # Changelog
 
+## [v0.14.1](https://github.com/jkuri/Reframed/compare/v0.14.0...v0.14.1) (2026-03-15)
+
+### Features
+
+- **captions:** custom position of the captions ([cf70403](https://github.com/jkuri/Reframed/commit/cf70403ce7a79053737f18cd6fe433c714257619))
+- **captions:** add segment editing/deletion, fix transcription merge logic ([9057f72](https://github.com/jkuri/Reframed/commit/9057f721dad3382df65f857c7969034b8d1e5ddf))
+
+### Bug Fixes
+
+- **export:** add video segment mapping to resolve source time from composition time for non-linear video segments ([bc2ae01](https://github.com/jkuri/Reframed/commit/bc2ae013aa7f071dcebeeb0f1740600229b0944f))
+- **captions:** use segment text instead of Whisper words for display ([1d4da22](https://github.com/jkuri/Reframed/commit/1d4da22147fc58d654933f8454860d355f7602c8))
+- revert unintended buttonStyle changes introduced during refactor ([e4fee02](https://github.com/jkuri/Reframed/commit/e4fee021ce9da1ff7e571296dd4dc90bff106e6b))
+- **recording:** handle webcam and microphone disconnect during recording ([1d7858f](https://github.com/jkuri/Reframed/commit/1d7858ff19a5a7d58cccd7a37de1e9e71b43813b))
+- **captions:** scale font relative to recording width instead of hardcoded 1920 ([f8dcc26](https://github.com/jkuri/Reframed/commit/f8dcc2640bbaa6e68d508caa62abef310061f25e))
+- **compositor:** position captions relative to canvas instead of video rect ([4a8fa68](https://github.com/jkuri/Reframed/commit/4a8fa6858ca346320c97a282bfce525aacd4392f))
+
+### Refactoring
+
+- deduplicate caption visibleText and unify text measurement ([334540f](https://github.com/jkuri/Reframed/commit/334540fc622f78f943920a3fc9c68ea74af4cb79))
+- split VideoCompositor export into focused extension files ([c489cec](https://github.com/jkuri/Reframed/commit/c489cec01567f9b503e441bcc6817ac326bd115c))
+- split export sheet and history into smaller files ([8d70034](https://github.com/jkuri/Reframed/commit/8d700345304b5b1fed666de6cc070cb7db0847e7))
+- split RecordingCoordinator and SessionState into focused extension files ([91371f6](https://github.com/jkuri/Reframed/commit/91371f68537b0b88f58e60e403f20b6257921d89))
+- move misplaced functions to correct extension files ([b55dd2f](https://github.com/jkuri/Reframed/commit/b55dd2fcd9264877fb294160e70f39983535272a))
+- split large views into smaller extension files for maintainability ([7acdbde](https://github.com/jkuri/Reframed/commit/7acdbdec0803c36ec20295388465f52689c22581))
+
+### Chores
+
+- add symbolic link AGENTS.md to CLAUDE.md ([7bec5f9](https://github.com/jkuri/Reframed/commit/7bec5f904f0bccd2107de018ab3e10f2a7bb691e))
+
 ## [v0.14.0](https://github.com/jkuri/Reframed/compare/v0.13.2...v0.14.0) (2026-03-09)
 
 ### Features
