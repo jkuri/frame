@@ -25,7 +25,18 @@ extension EditorState {
       exportStatusMessage = nil
     }
 
-    let cursorSnapshot = showCursor ? activeCursorProvider?.makeSnapshot() : nil
+    var cursorSnapshot = showCursor ? activeCursorProvider?.makeSnapshot() : nil
+
+    if settings.format.isGIF, let snapshot = cursorSnapshot {
+      let dur = CMTimeGetSeconds(trimEnd) - CMTimeGetSeconds(trimStart)
+      let loopSamples = CursorLoopTelemetry.makeLoopable(samples: snapshot.samples, duration: dur)
+      cursorSnapshot = CursorMetadataSnapshot(
+        samples: loopSamples,
+        clicks: snapshot.clicks,
+        captureAreaWidth: snapshot.captureAreaWidth,
+        captureAreaHeight: snapshot.captureAreaHeight
+      )
+    }
 
     let sysRegions = systemAudioRegions.map {
       CMTimeRange(
