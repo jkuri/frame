@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.14.3](https://github.com/jkuri/Reframed/compare/v0.14.2...v0.14.3) (2026-03-18)
+
+### Features
+
+- **cursor:** add click bounce, sway, motion blur, system cursor detection, and zoom soft clamping ([94a4451](https://github.com/jkuri/Reframed/commit/94a4451b59330012250102bf16a9ba3e90072dda))
+
 ## [v0.14.2](https://github.com/jkuri/Reframed/compare/v0.14.1...v0.14.2) (2026-03-17)
 
 ### Bug Fixes
