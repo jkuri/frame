@@ -59,6 +59,7 @@ Or grab the `.dmg` from [Releases](https://github.com/jkuri/reframed/releases).
 
 - **Custom cursor styles** with SVG-based designs, adjustable primary and outline colors
 - **Click highlights** and **click sounds** (30 built-in samples across five categories)
+- **Cursor effects:** click bounce, directional sway, and motion blur with adjustable intensity
 - **Movement smoothing** using spring physics-based interpolation and speed presets
 - **Spotlight effect** dims everything outside a radius around the cursor. Timeline regions control when it's active.
 
