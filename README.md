@@ -7,7 +7,7 @@
 > Open-source macOS screen recorder and capture editor. A free alternative to Screen Studio - capture your screen, windows, or iOS devices with a webcam overlay, then edit on a timeline with auto-captions and smooth cursor zooms.
 
 <p align="center">
-  <img width="100%" alt="Reframed Editor" src="https://github.com/user-attachments/assets/a8c20c27-1251-4c7c-a5f3-8bf01f90e868" />
+  <img width="100%" alt="Reframed Editor" src="https://github.com/user-attachments/assets/ea3d9554-8695-4d98-846f-90c422b25550" />
 </p>
 
 ## The idea
