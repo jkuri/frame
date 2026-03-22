@@ -72,7 +72,9 @@ struct PropertiesPanel: View {
           cameraBackgroundSection
           cameraFullscreenSection
         case .audio:
-          audioSection
+          if editorState.hasSystemAudio || editorState.hasMicAudio {
+            audioSection
+          }
           clickSoundSection
         case .cursor:
           cursorSection
