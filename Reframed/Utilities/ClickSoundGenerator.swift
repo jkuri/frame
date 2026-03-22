@@ -129,39 +129,12 @@ enum ClickSoundGenerator {
     sampleRate: Double = 44100
   ) throws {
     let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!
-    let totalFrames = AVAudioFrameCount(sampleRate * totalDuration)
-    guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: totalFrames) else {
-      throw NSError(
-        domain: "ClickSoundGenerator",
-        code: 1,
-        userInfo: [NSLocalizedDescriptionKey: "Failed to create buffer"]
-      )
-    }
-    outputBuffer.frameLength = totalFrames
-
-    guard let outputData = outputBuffer.floatChannelData?[0] else {
-      throw NSError(
-        domain: "ClickSoundGenerator",
-        code: 2,
-        userInfo: [NSLocalizedDescriptionKey: "No channel data"]
-      )
-    }
-
-    memset(outputData, 0, Int(totalFrames) * MemoryLayout<Float>.size)
+    let totalFrames = Int(sampleRate * totalDuration)
 
     let clickSamples = decodeSamples(style: style, sampleRate: sampleRate)
     let clickFrames = clickSamples.count
 
-    for click in clickTimes {
-      let startFrame = Int(click.time * sampleRate)
-      guard startFrame >= 0, startFrame < Int(totalFrames) else { continue }
-
-      for i in 0..<clickFrames {
-        let frameIdx = startFrame + i
-        guard frameIdx < Int(totalFrames) else { break }
-        outputData[frameIdx] += clickSamples[i] * volume
-      }
-    }
+    let sortedClicks = clickTimes.sorted { $0.time < $1.time }
 
     let file = try AVAudioFile(
       forWriting: url,
@@ -172,7 +145,59 @@ enum ClickSoundGenerator {
         AVEncoderBitRateKey: 128000,
       ]
     )
-    try file.write(from: outputBuffer)
+
+    let chunkSeconds = 10.0
+    let chunkFrameCount = Int(sampleRate * chunkSeconds)
+    var frameOffset = 0
+
+    while frameOffset < totalFrames {
+      let remaining = totalFrames - frameOffset
+      let currentChunkFrames = min(chunkFrameCount, remaining)
+
+      guard
+        let chunkBuffer = AVAudioPCMBuffer(
+          pcmFormat: format,
+          frameCapacity: AVAudioFrameCount(currentChunkFrames)
+        )
+      else {
+        throw NSError(
+          domain: "ClickSoundGenerator",
+          code: 1,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to create buffer"]
+        )
+      }
+      chunkBuffer.frameLength = AVAudioFrameCount(currentChunkFrames)
+
+      guard let chunkData = chunkBuffer.floatChannelData?[0] else {
+        throw NSError(
+          domain: "ClickSoundGenerator",
+          code: 2,
+          userInfo: [NSLocalizedDescriptionKey: "No channel data"]
+        )
+      }
+
+      memset(chunkData, 0, currentChunkFrames * MemoryLayout<Float>.size)
+
+      let chunkEnd = frameOffset + currentChunkFrames
+      for click in sortedClicks {
+        let startFrame = Int(click.time * sampleRate)
+        let endFrame = startFrame + clickFrames
+        guard endFrame > frameOffset, startFrame < chunkEnd else {
+          if startFrame >= chunkEnd { break }
+          continue
+        }
+
+        let sampleStart = max(0, frameOffset - startFrame)
+        let sampleEnd = min(clickFrames, chunkEnd - startFrame)
+        for i in sampleStart..<sampleEnd {
+          let chunkIdx = (startFrame + i) - frameOffset
+          chunkData[chunkIdx] += clickSamples[i] * volume
+        }
+      }
+
+      try file.write(from: chunkBuffer)
+      frameOffset += currentChunkFrames
+    }
   }
 
   private static func decodeSamples(style: ClickSoundStyle, sampleRate: Double) -> [Float] {
