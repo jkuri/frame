@@ -1,5 +1,18 @@
 # Changelog
 
+## [v0.14.4](https://github.com/jkuri/Reframed/compare/v0.14.3...v0.14.4) (2026-03-22)
+
+### Features
+
+- **cursor:** add seamless cursor loop animation for GIF export ([644f66f](https://github.com/jkuri/Reframed/commit/644f66f3367b28f82e1ea32b8c24c4c2c0c39dda))
+
+### Bug Fixes
+
+- **export:** write click sound audio in chunks to prevent stall on long recordings (closes #6) ([32c94cc](https://github.com/jkuri/Reframed/commit/32c94cca609c25488d6970622e8988c689544b69))
+- **editor:** add history descriptions for cursor effect changes ([9e90588](https://github.com/jkuri/Reframed/commit/9e905885843ddb30d7c4f95a2679e42235bdd689))
+- **editor:** allow undo/redo keyboard shortcuts to reach editor window ([c9a1b27](https://github.com/jkuri/Reframed/commit/c9a1b27c8c8780c25a74857d7b7b5096d2e29e04))
+- **editor:** remove extra padding above click sound when no audio tracks exist ([50f7f88](https://github.com/jkuri/Reframed/commit/50f7f88f0134d512e3f3d7bb524827d921f242a3))
+
 ## [v0.14.3](https://github.com/jkuri/Reframed/compare/v0.14.2...v0.14.3) (2026-03-18)
 
 ### Features
