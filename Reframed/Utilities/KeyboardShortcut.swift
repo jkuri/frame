@@ -133,6 +133,15 @@ enum ShortcutAction: String, CaseIterable, Codable, Sendable {
     }
   }
 
+  var isSessionAction: Bool {
+    switch self {
+    case .editorUndo, .editorRedo:
+      return false
+    default:
+      return true
+    }
+  }
+
   var isGlobal: Bool {
     switch self {
     case .switchToDisplay, .switchToWindow, .switchToArea:

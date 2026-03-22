@@ -48,7 +48,7 @@ final class KeyboardShortcutManager {
         return event
       }
 
-      for action in ShortcutAction.allCases {
+      for action in ShortcutAction.allCases where action.isSessionAction {
         let shortcut = ConfigService.shared.shortcut(for: action)
         if shortcut.matches(event) {
           self.performAction(action, on: session)
@@ -168,7 +168,7 @@ final class KeyboardShortcutManager {
       }
 
     case .editorUndo, .editorRedo:
-      break
+      return
     }
   }
 }
