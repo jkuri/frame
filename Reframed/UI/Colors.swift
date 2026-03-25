@@ -61,7 +61,8 @@ enum TailwindColors {
 @MainActor
 enum ReframedColors {
   static var isDark: Bool {
-    NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+    guard let app = NSApp else { return true }
+    return app.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
   }
 
   static let overlayBackground = NSColor.black.withAlphaComponent(0.45)
